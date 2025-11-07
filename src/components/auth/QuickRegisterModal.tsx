@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/tex
-import { motion, AnimatePresence } from 'framer-mot
-  EnvelopeSimple,
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Progress } from '@/components/ui/progress'
 import { motion, AnimatePresence } from 'framer-motion'
-  Gradua
+import {
   EnvelopeSimple,
   LockKey,
   User,
@@ -15,67 +15,65 @@ import { motion, AnimatePresence } from 'framer-motion'
   MapPin,
   GraduationCap,
   Briefcase,
-  onSucce
-}
-type Registrat
-export defaul
-  const [cv
-    email: '',
-    fullName: '',
+  Upload,
+  CheckCircle,
+  Lightning
+} from '@phosphor-icons/react'
+import { toast } from 'sonner'
 import type { User as UserType } from '@/lib/types'
 
-    middleSchoolDegree: '',
-    profession: '
+type RegistrationStep = 'basic' | 'personal' | 'professional' | 'documents'
 
+type QuickRegisterModalProps = {
+  isOpen: boolean
+  onClose: () => void
   onSuccess: (user: UserType, quickApply?: boolean) => void
-    personal: 'Dato
- 
+  jobTitle?: string
+}
 
-  const progress = ((currentStepIndex + 1) / steps.length) * 100
-
-    
-    if (nextIndex < steps.length) {
-    }
-
-    const prev
-      setCurrentS
-  }
-  const validateStep
+export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitle }: QuickRegisterModalProps) {
+  const [currentStep, setCurrentStep] = useState<RegistrationStep>('basic')
+  const [cvFile, setCvFile] = useState<File | null>(null)
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    dateOfBirth: '',
     dpi: '',
-          toas
+    phone: '',
     address: '',
+    profession: '',
+    middleSchoolDegree: '',
     universityDegree: '',
-          return false
-      case 'personal':
-          toast.er
-    
+    additionalStudies: ''
+  })
 
-          toast.error('Por favor completa todos los campos requeridos')
-        }
-    }
-  }
-  const handleSubmit = (quickA
+  const steps: RegistrationStep[] = ['basic', 'personal', 'professional', 'documents']
+  const stepTitles = {
+    basic: 'Datos Básicos',
+    personal: 'Datos Personales',
+    professional: 'Datos Profesionales',
     documents: 'Documentos'
   }
 
-      avatar: `https://api.dicebear.com/7.x/initials/
-        fullName: formData.fullName,
+  const currentStepIndex = steps.indexOf(currentStep)
+  const progress = ((currentStepIndex + 1) / steps.length) * 100
 
-        address: formData.ad
-        universityDegree: formD
+  const handleNext = () => {
+    if (!validateStep()) return
     
     const nextIndex = currentStepIndex + 1
     if (nextIndex < steps.length) {
       setCurrentStep(steps[nextIndex])
     }
-  c
+  }
 
   const handleBack = () => {
     const prevIndex = currentStepIndex - 1
     if (prevIndex >= 0) {
       setCurrentStep(steps[prevIndex])
     }
-   
+  }
 
   const validateStep = (): boolean => {
     switch (currentStep) {
@@ -116,35 +114,28 @@ import type { User as UserType } from '@/lib/types'
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(formData.fullName)}`,
       profile: {
         fullName: formData.fullName,
-              <motion.div
-                initial={{
-                exit={{ opacit
-                className="space-y
-                <div className="space-y-2">
-                    Nombre Completo <span className=
-                  <Input
-                    type="text"
-                    value={fo
-                    classNa
-                </div>
-                <div cl
-                    Fe
-                  
-       
-     
+        dateOfBirth: formData.dateOfBirth,
+        dpi: formData.dpi,
+        phone: formData.phone,
+        address: formData.address,
+        profession: formData.profession,
+        middleSchoolDegree: formData.middleSchoolDegree,
+        universityDegree: formData.universityDegree,
+        additionalStudies: formData.additionalStudies,
+        cvFile: cvFile ? URL.createObjectURL(cvFile) : undefined,
+        experience: [],
+        education: [],
+        skills: []
+      }
+    }
 
-
-                  <Label htmlFo
-             
-   
-
-                      id="dpi"
-                      placeholder="123
-                      onC
-            
-                </
-     
-   
+    toast.success(quickApply 
+      ? '¡Cuenta creada y postulación enviada!'
+      : '¡Cuenta creada exitosamente!'
+    )
+    onSuccess(user, quickApply)
+    onClose()
+  }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -158,108 +149,95 @@ import type { User as UserType } from '@/lib/types'
     }
   }
 
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">Registro Completo</DialogTitle>
+          <DialogDescription>
+            Paso {currentStepIndex + 1} de {steps.length}: {stepTitles[currentStep]}
+          </DialogDescription>
+        </DialogHeader>
 
-                  <Label htmlFor="address" classN
-                  </Label>
-                    <d
-                    <
-                      id="address"
-                      value={formData.address}
-                      className="pl-11 min
-           
-              </motion.div>
+        <div className="space-y-6 mt-4">
+          <Progress value={progress} className="h-2" />
 
+          <AnimatePresence mode="wait">
+            {currentStep === 'basic' && (
               <motion.div
-                initial
-                exit={{ 
-                className="space-y-4"
-                <div className="space-y-2">
-                    Profesión <span className="text-destructive">*</span>
-                  
-                  
-          )}
-                      type="text"
-                      value={formData.profes
-                      className="pl-11 h-12"
-                  </div>
-
-                  
-                  
-                    <div class
-                    </d
-
-                      placehol
-                      onChange={(e) => 
-                    />
-                </div>
-                <div classN
-                    Título Universitario
-                  <div className="relative">
-                      <GraduationCap size={20
-                    <Input
-                      type="text"
-               
-                      className="pl-11 h-12
-                  </div>
-
-                  <Label h
-                  </Label>
-                    id="additionalStudies"
-                    value={formData.additionalStudies}
-                    classN
-                </div>
-            )}
-            {currentStep === 'docu
-                key="documents"
-                animate={{ opacity: 1, x: 0 
+                key="basic"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
+                className="space-y-4"
               >
-                  <Lab
-                  </Labe
-                    {c
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-semibold">
+                    Correo Electrónico <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <EnvelopeSimple size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
 
-                        className="space-y-
-                        <div className="flex items-center justify-center text-
-                        </div>
-                        <B
-                          size="sm"
-                        >
-                        </Button>
-                    ) : (
-                        <d
-                            <Upload
-                          <div>
-                            <p className="text-xs text-
-                        </div>
-                          id="cv-upload"
-                          accept=".pdf,.doc,
-                      
-                      </
-                  </di
-
-              
-
-                    className="bg-secondary/
-                    <p cl
-                    </p>
-                      onClick={() => handleSubm
-                      size="lg"
-                      <Lightning size={20} we
-                    </Button>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-semibold">
+                    Contraseña <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <LockKey size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Mínimo 6 caracteres"
+                      value={formData.password}
+                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
+              </motion.div>
             )}
-        </div>
-        <div className="flex gap-3 mt-6 pt-6 border-t">
-            <Button
-              onClick={han
-              size="lg"
-              Atrás
-          )}
-          <Button
-                    value={formData.fullName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-                    className="h-12"
-                  />
+
+            {currentStep === 'personal' && (
+              <motion.div
+                key="personal"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-sm font-semibold">
+                    Nombre Completo <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <User size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="Juan Pérez García"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -331,7 +309,7 @@ import type { User as UserType } from '@/lib/types'
                   </div>
                 </div>
               </motion.div>
-
+            )}
 
             {currentStep === 'professional' && (
               <motion.div
@@ -478,44 +456,42 @@ import type { User as UserType } from '@/lib/types'
                   >
                     <p className="text-sm text-center font-medium">
                       ¿Deseas postularte inmediatamente a <span className="text-secondary font-bold">{jobTitle}</span>?
+                    </p>
+                    <Button
+                      onClick={() => handleSubmit(true)}
+                      className="w-full bg-gradient-to-r from-secondary to-secondary/90"
+                      size="lg"
+                    >
+                      <Lightning size={20} weight="fill" className="mr-2" />
+                      Registrar y Postularme Ahora
+                    </Button>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <div className="flex gap-3 mt-6 pt-6 border-t">
+          {currentStepIndex > 0 && (
+            <Button
+              onClick={handleBack}
+              variant="outline"
+              size="lg"
+              className="flex-1"
+            >
+              Atrás
+            </Button>
+          )}
+          <Button
+            onClick={currentStep === 'documents' ? () => handleSubmit(false) : handleNext}
+            size="lg"
+            className="flex-1"
+          >
+            {currentStep === 'documents' ? 'Completar Registro' : 'Siguiente'}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
