@@ -47,6 +47,20 @@ CoosajerJobs es una plataforma moderna de gestión de talento que conecta a coop
 - **Progression**: Click botón → Confirmación modal con opción rápida destacada → Click "Postular Rápido" ⚡ → Animación envío → Confirmación success
 - **Success criteria**: Solo aparece si usuario tiene CV y datos completos, animación lightning distintiva, toast de confirmación
 
+### Registro Rápido y Postulación Sin Logeo
+- **Functionality**: Formulario de registro en 4 pasos que permite crear cuenta completa y postularse inmediatamente a un empleo sin necesidad de iniciar sesión primero
+- **Purpose**: Reducir fricción en el proceso de postulación permitiendo a usuarios nuevos registrarse y postularse en una sola acción, capturando información completa desde el inicio
+- **Trigger**: Usuario no logueado hace click en "Registro rápido y postularme" desde el detalle de un empleo
+- **Progression**: Click botón → Modal de registro paso 1 (datos básicos: usuario, email, contraseña) → Paso 2 (datos personales: nombre completo, fecha nacimiento, teléfono, dirección, DPI) → Paso 3 (datos profesionales: título medio, universidad, profesión, estudios adicionales) → Paso 4 (subir CV y opción de registrar y postular en un click) → Cuenta creada y postulación enviada
+- **Success criteria**: 4 pasos con validación, barra de progreso, opción de postularse al final o solo registrarse, todos los datos se guardan en el perfil, CV se adjunta automáticamente
+
+### Perfil de Usuario Extendido con DPI y Referencias
+- **Functionality**: Sección completa de perfil con datos personales (DPI, fecha nacimiento, dirección completa), datos profesionales (títulos, profesión) y referencias laborales/personales
+- **Purpose**: Permitir a usuarios completar su perfil profesional de forma exhaustiva con toda la información que las empresas necesitan para procesos de selección
+- **Trigger**: Usuario accede a pestaña "Datos Personales" en su portal
+- **Progression**: Ver pestaña → Secciones de datos personales, profesionales y referencias → Click editar → Modificar campos → Guardar → Agregar referencias con formulario inline → Referencias listadas con opción de eliminar
+- **Success criteria**: Todos los campos del registro rápido editables, sección separada para referencias laborales (nombre, empresa, cargo, teléfono, email) y personales (nombre, relación, teléfono, email), agregar/eliminar referencias con animaciones suaves
+
 ### Microanimaciones en Interacciones
 - **Functionality**: Animaciones sutiles con framer-motion en hover de cards, click de botones, toggle de favoritos, cambio de tabs, transición de vistas
 - **Purpose**: Dar feedback inmediato de interacciones y crear experiencia moderna sin ralentizar navegación
@@ -141,7 +155,10 @@ Las animaciones son sutiles, funcionales y rápidas - reforzando acciones sin ra
 
 ## Edge Case Handling
 
-- **Acciones Sin Autenticación**: Usuarios no logueados ven modal de login al intentar aplicar, guardar favoritos o ver notificaciones
+- **Acciones Sin Autenticación**: Usuarios no logueados ven modal de login o pueden usar registro rápido al intentar aplicar, guardar favoritos o ver notificaciones
+- **Registro Rápido Incompleto**: Validación en cada paso previene avanzar sin completar campos requeridos, con mensajes claros de error
+- **CV No Cargado en Registro Rápido**: Usuario puede continuar sin CV pero se recomienda subirlo para completar postulación
+- **Datos Duplicados en Referencias**: Sistema permite múltiples referencias sin validación de duplicados (común tener mismo contacto en diferentes contextos)
 - **Sin Notificaciones**: Estado vacío amigable con mensaje motivacional cuando usuario no tiene notificaciones aún
 - **Datos de Perfil Inválidos**: Validación de formularios previene envío de campos incompletos con mensajes de error claros y constructivos
 - **Errores de Red**: Manejo elegante con opciones de reintentar y mensajes user-friendly sin jerga técnica

@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import type { Job, Application, User } from '@/lib/types'
 import { categoryLabels, statusLabels } from '@/lib/types'
 import AuthModal from '../auth/AuthModal'
+import QuickRegisterModal from '../auth/QuickRegisterModal'
 import ApplicationForm from './ApplicationForm'
 
 type JobDetailProps = {
@@ -22,9 +23,10 @@ type JobDetailProps = {
 
 export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }: JobDetailProps) {
   const [jobs] = useKV<Job[]>('jobs', [])
-  const [applications] = useKV<Application[]>('applications', [])
+  const [applications, setApplications] = useKV<Application[]>('applications', [])
   const [favorites, setFavorites] = useKV<string[]>('favorites', [])
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showQuickRegisterModal, setShowQuickRegisterModal] = useState(false)
   const [showApplicationForm, setShowApplicationForm] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -216,14 +218,38 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                         </div>
                       </div>
                     ) : (
-                      <Button
-                        size="lg"
-                        className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg gap-2"
-                        onClick={handleApply}
-                      >
-                        <Check size={20} weight="bold" />
-                        Postularme ahora
-                      </Button>
+                      <div className="space-y-3">
+                        <Button
+                          size="lg"
+                          className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg gap-2"
+                          onClick={handleApply}
+                        >
+                          <Check size={20} weight="bold" />
+                          Postularme ahora
+                        </Button>
+                        
+                        {!currentUser && (
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <Separator />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                              <span className="bg-card px-2 text-muted-foreground">o</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {!currentUser && (
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            className="w-full gap-2 border-2 hover:bg-accent/5"
+                            onClick={() => setShowQuickRegisterModal(true)}
+                          >
+                            Registro rápido y postularme
+                          </Button>
+                        )}
+                      </div>
                     )}
 
                     <Button
@@ -272,6 +298,27 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={onLoginSuccess}
+      />
+
+      <QuickRegisterModal
+        isOpen={showQuickRegisterModal}
+        onClose={() => setShowQuickRegisterModal(false)}
+        onSuccess={(user, quickApply) => {
+          onLoginSuccess(user)
+          if (quickApply) {
+            const newApplication: Application = {
+              id: Date.now().toString(),
+              jobId: job.id,
+              userId: user.id,
+              status: 'postulado',
+              appliedDate: new Date().toISOString(),
+              updatedDate: new Date().toISOString(),
+              quickApply: true
+            }
+            setApplications(currentApps => [...(currentApps || []), newApplication])
+          }
+        }}
+        jobTitle={job.title}
       />
 
       <ApplicationForm

@@ -13,10 +13,12 @@ import {
   Bell,
   FileText,
   ChartBar,
-  MapPin
+  MapPin,
+  IdentificationCard
 } from '@phosphor-icons/react'
 import ProfileHeader from './ProfileHeader'
 import ProfileCurriculum from './ProfileCurriculum'
+import ProfilePersonalData from './ProfilePersonalData'
 import ProfileApplications from './ProfileApplications'
 import NotificationsPanel from './NotificationsPanel'
 import StatusSimulator from './StatusSimulator'
@@ -55,7 +57,7 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="border-b border-border bg-card/50 backdrop-blur-sm rounded-lg p-2 sticky top-20 z-40 shadow-sm">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 h-auto gap-2 bg-transparent">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto gap-2 bg-transparent">
               <TabsTrigger 
                 value="curriculum" 
                 className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
@@ -63,6 +65,14 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
                 <FileText size={18} weight="duotone" />
                 <span className="hidden sm:inline">Mi Currículum</span>
                 <span className="sm:hidden">CV</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="personal-data" 
+                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
+              >
+                <IdentificationCard size={18} weight="duotone" />
+                <span className="hidden sm:inline">Datos Personales</span>
+                <span className="sm:hidden">Datos</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="applications" 
@@ -126,6 +136,16 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
               transition={{ duration: 0.3 }}
             >
               <ProfileCurriculum user={user} onUpdateUser={onUpdateUser} />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="personal-data" className="mt-0 space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ProfilePersonalData user={user} onUpdateUser={onUpdateUser} />
             </motion.div>
           </TabsContent>
 

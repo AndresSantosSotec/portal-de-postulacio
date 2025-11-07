@@ -9,12 +9,39 @@ export type User = {
 }
 
 export type UserProfile = {
+  fullName?: string
+  dateOfBirth?: string
   phone?: string
+  address?: string
+  dpi?: string
+  middleSchoolDegree?: string
+  universityDegree?: string
+  profession?: string
+  additionalStudies?: string
+  workReferences?: WorkReference[]
+  personalReferences?: PersonalReference[]
   location?: string
   bio?: string
   experience: WorkExperience[]
   education: Education[]
   skills: string[]
+}
+
+export type WorkReference = {
+  id: string
+  name: string
+  company: string
+  position: string
+  phone: string
+  email?: string
+}
+
+export type PersonalReference = {
+  id: string
+  name: string
+  relationship: string
+  phone: string
+  email?: string
 }
 
 export type WorkExperience = {
