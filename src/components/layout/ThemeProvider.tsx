@@ -1,16 +1,16 @@
 import { createContext, useContext, useEffect, ReactNode } from 'react'
 import { useKV } from '@github/spark/hooks'
 
-type Theme = 'light' | 'dark' | 'system'
-
-interface ThemeProviderProps {
-  actualTheme: 'light
+  theme: Theme
 
 
-  const [currentTheme, setThem
-  const getAct
-      return window.matchMedia('(p
+  children: Re
   actualTheme: 'light' | 'dark'
+
+ 
+
+      return window.matchMedia
+    return currentThe
 
 
 const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
