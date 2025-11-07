@@ -18,6 +18,7 @@ export type UserProfile = {
   universityDegree?: string
   profession?: string
   additionalStudies?: string
+  cvFile?: string
   workReferences?: WorkReference[]
   personalReferences?: PersonalReference[]
   location?: string

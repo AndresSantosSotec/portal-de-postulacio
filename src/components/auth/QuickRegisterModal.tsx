@@ -1,19 +1,18 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, Dial
+import { motion, AnimatePresence } from 'framer-motion'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
-  Envelop
-  Phone, 
-  IdentificationCa
-  Briefcase
-  FilePdf
-  CaretRi
-} from '@phosphor-ico
-import type { Us
+import {
+  EnvelopeSimple,
+  LockKey,
+  Phone,
+  IdentificationCard,
+  MapPin,
+  GraduationCap,
   Briefcase,
   Upload,
   FilePdf,
@@ -31,203 +30,173 @@ type QuickRegisterModalProps = {
   jobTitle?: string
 }
 
+type RegistrationStep = 'basic' | 'personal' | 'professional' | 'documents'
+
+export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitle }: QuickRegisterModalProps) {
+  const [currentStep, setCurrentStep] = useState<RegistrationStep>('basic')
+  const [cvFile, setCvFile] = useState<File | null>(null)
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    dateOfBirth: '',
+    dpi: '',
     phone: '',
-
+    address: '',
+    middleSchoolDegree: '',
     universityDegree: '',
-    additionalStudies: ''
+    additionalStudies: '',
+    profession: ''
+  })
 
+  const steps: RegistrationStep[] = ['basic', 'personal', 'professional', 'documents']
   const stepLabels = {
-    personal:
-    documents:
-
-
-    const currentInd
-      setCurre
+    basic: 'Cuenta',
+    personal: 'Datos Personales',
+    professional: 'Profesión',
+    documents: 'Documentos'
   }
-  const hand
-    if (currentIndex > 0) {
-    }
 
-    const file = e.target
+  const currentStepIndex = steps.indexOf(currentStep)
+  const progress = ((currentStepIndex + 1) / steps.length) * 100
+
+  const handleNext = () => {
+    if (!validateStep()) return
     
-
-      } else {
-      }
-  }
-  const validateStep = () => {
-      case 'basic':
-          toast.error('Por 
-   
-
-        }
-
-          toast.error('Por f
-        }
-      case 'professional':
-      case 'documents':
-     
-   
-
-    if (!validateStep()) ret
-    const user: User = {
-      email: formData.email
-      name: formData.name,
-     
-   
-
-        middleSchoolDegree: formData.middleSchoolDegree,
-        profession: formData.profess
-        workRef
-        experience: [],
-        skills: []
+    const currentIndex = steps.indexOf(currentStep)
+    if (currentIndex < steps.length - 1) {
+      setCurrentStep(steps[currentIndex + 1])
     }
-    toast.success(quickApply ? '¡Registro y postu
+  }
+
+  const handleBack = () => {
+    const currentIndex = steps.indexOf(currentStep)
+    if (currentIndex > 0) {
+      setCurrentStep(steps[currentIndex - 1])
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('El archivo es demasiado grande. Máximo 10MB')
+      } else {
+        setCvFile(file)
+        toast.success('CV cargado correctamente')
+      }
+    }
+  }
+
+  const validateStep = () => {
+    switch (currentStep) {
+      case 'basic':
+        if (!formData.email || !formData.password) {
+          toast.error('Por favor completa todos los campos requeridos')
+          return false
+        }
+        if (formData.password.length < 6) {
+          toast.error('La contraseña debe tener al menos 6 caracteres')
+          return false
+        }
+        return true
+      case 'personal':
+        if (!formData.fullName || !formData.dateOfBirth || !formData.phone) {
+          toast.error('Por favor completa todos los campos requeridos')
+          return false
+        }
+        return true
+      case 'professional':
+        return true
+      case 'documents':
+        return true
+      default:
+        return true
+    }
+  }
+
+  const handleSubmit = (quickApply: boolean = false) => {
+    if (!validateStep()) return
+
+    const user: User = {
+      id: Date.now().toString(),
+      email: formData.email,
+      password: formData.password,
+      name: formData.fullName,
+      profile: {
+        fullName: formData.fullName,
+        dateOfBirth: formData.dateOfBirth,
+        dpi: formData.dpi,
+        phone: formData.phone,
+        address: formData.address,
+        middleSchoolDegree: formData.middleSchoolDegree,
+        universityDegree: formData.universityDegree,
+        profession: formData.profession,
+        additionalStudies: formData.additionalStudies,
+        cvFile: cvFile?.name,
+        workReferences: [],
+        personalReferences: [],
+        experience: [],
+        education: [],
+        skills: []
+      }
+    }
+
+    toast.success(quickApply ? '¡Registro y postulación exitosa!' : '¡Registro completado!')
+    onSuccess(user, quickApply)
     onClose()
+  }
 
-    if 
-    i
-   
+  const handleStepAction = () => {
+    if (currentStep === 'documents') {
+      handleSubmit(false)
+    } else {
+      handleNext()
+    }
+  }
 
-
-    <Dialog open={isOpen} 
-        <DialogHead
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-         
-          <DialogTitle className="text-2xl 
-          </DialogTitle>
-          {jobTitle &&
-         
-              class
-              <p class
+            <DialogTitle className="text-2xl font-bold text-center mb-2">
+              Registro Rápido
+            </DialogTitle>
+          </motion.div>
+          {jobTitle && (
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Postulándote a: <span className="font-semibold text-foreground">{jobTitle}</span>
               </p>
+            </div>
           )}
-          <DialogDescr
-         
-          <div clas
-            <p className="
-            </p>
+          <DialogDescription className="text-center">
+            <div className="mt-4 space-y-2">
+              <Progress value={progress} className="h-2" />
+              <p className="text-xs text-muted-foreground">
+                Paso {currentStepIndex + 1} de {steps.length}: {stepLabels[currentStep]}
+              </p>
+            </div>
+          </DialogDescription>
         </DialogHeader>
-        <div classN
-            {c
-                key
-     
-   
 
-                  <Label htmlFor="name" className="text-s
-                  </Label>
-
-                    </di
-                      id="name"
-                      placeh
-                      onChange={(e
-                    />
-                </div>
-                
-                    Correo Electróni
-                  <div className="relative
-                      <Envelop
-                    <Input
-                      type
-                      value={formData.email}
-                      className="pl-11 h-12"
-                  </div>
-
-                  <Label ht
-                  </Label>
-                    <di
-                    </
-                  
-       
-     
-
-                </div>
-            )}
-            {
-   
-
-                transition={{ dura
+        <div className="mt-6">
+          <AnimatePresence mode="wait">
+            {currentStep === 'basic' && (
+              <motion.div
+                key="basic"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
               >
-
-                  </Label>
-                    id="f
-            
-                  
-     
-
-
-          
-                    <Input
-                      type="date"
-                      onChange={(e) => setFo
-                    /
-
-                    <Label htmlFor="dpi" class
-                    </Label>
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-           
-                        id="dpi"
-                       
-
-                      />
-                  </div>
-
-
-                  </Labe
-                    <di
-                    </div>
-                      id="phone"
-                      placeholder="+502 0000-0000"
-             
-                    />
-                </div>
-                <d
-                    Direc
-            
-
-                    <Textarea
-                      placeholder="Calle, zona, c
-                      onChange
-
-                </div>
-            )}
-            {currentStep === 'professional' && (
-                key="professional"
-                
-                
-              >
-
-                  </Label>
-                    <div className="abs
-                    </div>
-                      id=
-                      place
-                      onChange={(e) => setFormD
-                    />
-                </div>
-                <div className="space-y-2">
-                    Título Universita
-               
-                      <GraduationCap size={
-                    <Input
-                      type="text"
-                      valu
-                      className="pl-11 h-11"
-                  </div>
-
-                  <Label h
-                  </Label>
-                    <div classN
-                    </div>
-                      id="profession"
-                      placeholder="Desarrol
-                      onChange={(e) => setFormData(prev => ({ ...prev, profession: e.target.valu
-                    />
-                </div>
-                <div cla
-                </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-semibold">
                     Correo Electrónico <span className="text-destructive">*</span>
@@ -431,157 +400,6 @@ type QuickRegisterModalProps = {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="additionalStudies" className="text-sm font-semibold">
-                    Estudios Adicionales
-                  </Label>
-                  <Textarea
-                    id="additionalStudies"
-                    placeholder="Cursos, certificaciones, diplomados, etc."
-                    value={formData.additionalStudies}
-                    onChange={(e) => setFormData(prev => ({ ...prev, additionalStudies: e.target.value }))}
-                    className="min-h-[100px]"
-                  />
-                </div>
-              </motion.div>
-            )}
-
-            {currentStep === 'documents' && (
-              <motion.div
-                key="documents"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-5"
-              >
-                <div className="space-y-3">
-                  <Label className="text-sm font-semibold">
-                    Curriculum Vitae (CV)
-                  </Label>
-                  
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all ${
-                      cvFile 
-                        ? 'border-secondary bg-secondary/5' 
-                        : 'border-border hover:border-primary/50 hover:bg-primary/5'
-                    }`}
-                  >
-                    <input
-                      type="file"
-                      id="cv-upload"
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleFileChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    
-                    {cvFile ? (
-                      <div className="space-y-3">
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 200 }}
-                        >
-                          <FilePdf size={48} weight="duotone" className="text-secondary mx-auto" />
-                        </motion.div>
-                        <div>
-                          <p className="font-semibold text-foreground">{cvFile.name}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {(cvFile.size / 1024).toFixed(1)} KB
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-center gap-2 text-secondary">
-                          <CheckCircle size={20} weight="fill" />
-                          <span className="text-sm font-medium">CV cargado correctamente</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <motion.div
-                          animate={{ y: [0, -8, 0] }}
-                          transition={{ repeat: Infinity, duration: 2 }}
-                        >
-                          <Upload size={48} weight="duotone" className="text-muted-foreground mx-auto" />
-                        </motion.div>
-                        <div>
-                          <p className="font-medium text-foreground">
-                            Haz clic o arrastra tu CV aquí
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            PDF, DOC o DOCX (máx. 10MB)
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                </div>
-
-                <div className="bg-muted/30 border border-border rounded-lg p-4 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle size={20} weight="fill" className="text-secondary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Primera impresión lista</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Puedes completar tu perfil más tarde con referencias laborales y personales
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {jobTitle && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/30 rounded-lg p-4"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <Lightning size={24} weight="fill" className="text-secondary" />
-                      <p className="font-semibold text-foreground">¿Postularse ahora?</p>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Puedes registrarte y postularte al puesto de <span className="font-semibold text-foreground">{jobTitle}</span> en un solo paso
-                    </p>
-                    <Button
-                      onClick={() => handleSubmit(true)}
-                      className="w-full bg-gradient-to-r from-secondary to-secondary/90 hover:from-secondary/90 hover:to-secondary"
-                      size="lg"
-                    >
-                      <Lightning size={20} weight="fill" className="mr-2" />
-                      Registrar y Postularme
-                    </Button>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <div className="flex gap-3 mt-6 pt-6 border-t">
-          {currentStep !== 'basic' && (
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              className="flex-1"
-              size="lg"
-            >
-              Atrás
-            </Button>
-          )}
-          
-          <Button
-            onClick={handleStepAction}
-            className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary"
-            size="lg"
-          >
-            {currentStep === 'documents' ? 'Completar Registro' : 'Siguiente'}
-            {currentStep !== 'documents' && <CaretRight size={20} weight="bold" className="ml-1" />}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
                   <Label htmlFor="additionalStudies" className="text-sm font-semibold">
                     Estudios Adicionales
                   </Label>
