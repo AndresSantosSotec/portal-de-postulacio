@@ -1,35 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle, Circle, Clock, Flask } 
+import { CheckCircle, Circle, Clock, Flask } from '@phosphor-icons/react'
 import type { Application } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import type { Application } from '@/lib/types'
 import { statusLabels } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { motion } from 'framer-motion'
 
 const statusSteps = [
-  { key: 'cv-visto', label
- 
+  { key: 'postulado', label: 'Postulado', icon: Circle },
+  { key: 'cv-visto', label: 'CV Visto', icon: CheckCircle },
+  { key: 'en-proceso', label: 'En Proceso', icon: Clock },
+  { key: 'finalista', label: 'Finalista', icon: CheckCircle },
+  { key: 'proceso-finalizado', label: 'Proceso Finalizado', icon: CheckCircle }
+]
 
-export default functi
+export default function ApplicationTimeline({ application }: { application: Application }) {
+  const currentStatusIndex = statusSteps.findIndex(s => s.key === application.status)
 
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-GT', {
       month: 'short',
+      day: 'numeric',
       hour: '2-digit',
+      minute: '2-digit'
     })
-
-
-        <CardTitle className="text-lg">Seguimiento del Proceso</CardTitle>
-      <CardContent>
-
-            const isCompleted = index <= curre
-            const isPending = index > currentStatusIndex
-            const his
-            return (
-                key={s
-                animat
-                classNa
-      
-   
+  }
 
   return (
     <Card>
@@ -130,33 +125,26 @@ export default functi
                         <span className="text-sm font-medium text-success">Completadas</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
+                        {application.psychometricTestCompletedDate && formatDate(application.psychometricTestCompletedDate)}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} weight="bold" className="text-warning" />
+                        <span className="text-sm font-medium text-warning">Pendiente de completar</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Enviadas: {application.psychometricTestSentDate && formatDate(application.psychometricTestSentDate)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
