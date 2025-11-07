@@ -1,35 +1,35 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { CheckCircle, Circle, Clock, Flask } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { CheckCircle, Circle, Clock, Flask } 
+import type { Application } from '@/lib/types'
+import { cn } from '@/lib/utils'
 import type { Application } from '@/lib/types'
 import { statusLabels } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
-type ApplicationTimelineProps = {
-  application: Application
-}
-
 const statusSteps = [
-  { key: 'postulado', label: 'Postulado', icon: Circle },
-  { key: 'cv-visto', label: 'CV Revisado', icon: CheckCircle },
-  { key: 'en-proceso', label: 'En Proceso', icon: Clock },
-  { key: 'finalista', label: 'Finalista', icon: CheckCircle },
-  { key: 'proceso-finalizado', label: 'Proceso Finalizado', icon: CheckCircle }
-]
+  { key: 'cv-visto', label
+ 
 
-export default function ApplicationTimeline({ application }: ApplicationTimelineProps) {
-  const currentStatusIndex = statusSteps.findIndex(step => step.key === application.status)
+export default functi
 
-  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-GT', {
-      day: 'numeric',
       month: 'short',
-      year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
     })
-  }
+
+
+        <CardTitle className="text-lg">Seguimiento del Proceso</CardTitle>
+      <CardContent>
+
+            const isCompleted = index <= curre
+            const isPending = index > currentStatusIndex
+            const his
+            return (
+                key={s
+                animat
+                classNa
+      
+   
 
   return (
     <Card>
@@ -130,33 +130,33 @@ export default function ApplicationTimeline({ application }: ApplicationTimeline
                         <span className="text-sm font-medium text-success">Completadas</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {application.psychometricTestCompletedDate && 
-                          `Completado el ${formatDate(application.psychometricTestCompletedDate)}`
-                        }
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Clock size={16} weight="duotone" className="text-warning" />
-                        <span className="text-sm font-medium text-warning">Pendiente de completar</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {application.psychometricTestSentDate && 
-                          `Enviado el ${formatDate(application.psychometricTestSentDate)}`
-                        }
-                      </p>
-                      <p className="text-sm text-foreground mt-2">
-                        Revisa tu correo electrónico para acceder al enlace de las pruebas.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
