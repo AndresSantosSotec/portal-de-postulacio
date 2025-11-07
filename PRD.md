@@ -1,16 +1,27 @@
 # Planning Guide
 
+**Computrabajo - Portal de Empleos** is a comprehensive job portal application that enables users to discover job opportunities, manage applications, and receive real-time notifications about their application status. The platform emphasizes transparency, professional aesthetics, and user engagement through modern design patterns.
+
 **Experience Qualities**:
 
+- **Professional Trust**: Clean, corporate design with deep blue primary colors that communicate stability and reliability, making users feel confident in the platform's legitimacy.
+- **Responsive Efficiency**: Smooth transitions and instant feedback that respect users' time - every interaction feels purposeful and quick without unnecessary delays.
+- **Proactive Communication**: Real-time notifications and status updates that keep users informed about their application progress, reducing anxiety and improving transparency.
 
-  - This is a full-featured job portal with user authentication, profile/resume management, application tracking, favorites system, alerts, and multi-category 
+**Complexity Level**: Complex Application (advanced functionality, accounts)
+  - Full user authentication with persistent sessions, comprehensive profile management with CV builder, real-time notification system for application status changes, favorites and alerts system, and multi-category job browsing across all industries.
 ## Essential Features
+
+### Real-Time Notification System
+- **Functionality**: Automatic notifications when application status changes, displayed in navbar dropdown and dedicated notifications panel
+- **Purpose**: Keep users informed about their application progress without requiring them to constantly check
+- **Trigger**: Application status changes (postulado → cv-visto → en-proceso → finalista → proceso-finalizado)
+- **Progression**: Status changes → Notification created → Toast appears → Badge in navbar → View in dropdown or panel → Mark as read
+- **Success criteria**: Users receive instant notifications for status changes, can view notification history, and mark notifications as read
+
 ### User Authentication & Login
-
-- **Progression**: Click login → Modal appears → Enter credentials or regist
-
-
-- **Trigger**: User a
+- **Functionality**: Secure login/register modal with form validation
+- **Purpose**: Enable personalized experience and track user applications
 
 ### Job Listings with Category 
 - **Purpose**: Help users discover relevant opportunities across all industries
@@ -34,14 +45,22 @@
 - **Success criteria**: Jobs display in organized grid, filters work instantly, categories cover diverse industries
 
 ### Job Application System
-- **Progression**: Notification appears → Click to view → See matching jobs
+- **Functionality**: Apply to jobs, track application status through multiple stages
+- **Purpose**: Streamline the job application process with clear status tracking
+- **Trigger**: Click "Aplicar" on job detail page
+- **Progression**: View job → Click apply → Confirm application → Track status → Receive notifications
+- **Success criteria**: Applications are tracked, status updates trigger notifications, users can withdraw applications
 
-- **Unauthenticated Actions**: When non-logged-in use
-- **Invalid Profile Data**: Form validation prevents submission of incomplete required fields with clear error messag
+## Edge Case Handling
+## Edge Case Handling
+
+- **Unauthenticated Actions**: Users must log in to apply for jobs, favorite listings, or view notifications
+- **No Notifications**: Empty state with friendly message when user has no notifications yet
+- **Invalid Profile Data**: Form validation prevents submission of incomplete required fields with clear error messages
 - **Network Errors**: Graceful error handling with retry options and user-friendly messages
+- **Concurrent Status Changes**: Notification system handles multiple status changes smoothly with proper ordering
 
-
-**Complementary (opposite colors)** - Using a professional
+## Design Direction
 - **Primary Color**: Deep Professional Blue (oklch(0.45 0.12 250)) - Communicates trust, sta
   - Neutral Gray (oklch(0.55 0.02 250)) - Supporting color for less promi
 - **Accent Color**: Energetic Teal (oklch(0.60 0.14 195)) - Highlight color for CTAs, active states, and 

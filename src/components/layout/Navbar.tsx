@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -19,8 +20,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import AuthModal from '@/components/auth/AuthModal'
+import NotificationsPanel from '@/components/portal/NotificationsPanel'
 import type { User as UserType } from '@/lib/types'
+import type { Notification } from '@/components/portal/NotificationsPanel'
 
 type NavbarProps = {
   currentUser: UserType | null
@@ -38,6 +46,9 @@ export default function Navbar({
   notificationCount = 0
 }: NavbarProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [notifications] = useKV<Notification[]>('notifications', [])
+  
+  const unreadCount = notifications?.filter(n => currentUser && n.userId === currentUser.id && !n.read).length || 0
 
   const handleAuthSuccess = (user: UserType) => {
     onLoginSuccess(user)
@@ -112,22 +123,48 @@ export default function Navbar({
                     </Button>
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onNavigate('alerts')}
-                    className="relative hover:bg-warning/10"
-                  >
-                    <Bell size={20} weight={notificationCount > 0 ? "fill" : "duotone"} className={notificationCount > 0 ? "text-warning" : ""} />
-                    {notificationCount > 0 && (
-                      <Badge 
-                        variant="destructive" 
-                        className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs animate-pulse"
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="relative hover:bg-warning/10"
                       >
-                        {notificationCount}
-                      </Badge>
-                    )}
-                  </Button>
+                        <Bell size={20} weight={unreadCount > 0 ? "fill" : "duotone"} className={unreadCount > 0 ? "text-warning" : ""} />
+                        {unreadCount > 0 && (
+                          <Badge 
+                            variant="destructive" 
+                            className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs animate-pulse"
+                          >
+                            {unreadCount}
+                          </Badge>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-96 p-0" align="end">
+                      <div className="p-4 border-b border-border">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-base">Notificaciones</h3>
+                          {unreadCount > 0 && (
+                            <Badge variant="default">{unreadCount} nuevas</Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-4 max-h-[400px] overflow-y-auto">
+                        {currentUser && <NotificationsPanel user={currentUser} compact={true} />}
+                      </div>
+                      <div className="p-3 border-t border-border">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => onNavigate('alerts')}
+                        >
+                          Ver todas las notificaciones
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
 
                   <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
 

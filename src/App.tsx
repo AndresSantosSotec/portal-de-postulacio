@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/Navbar'
 import JobListings from '@/components/jobs/JobListings'
 import JobDetail from '@/components/jobs/JobDetail'
 import UserPortal from '@/components/portal/UserPortal'
+import { useNotificationService } from '@/hooks/use-notification-service'
 import type { User } from '@/lib/types'
 
 type View = 'listings' | 'detail' | 'profile' | 'applications' | 'favorites' | 'alerts'
@@ -13,7 +14,9 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('listings')
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const [currentUser, setCurrentUser] = useKV<User | null>('current_user', null)
-  const [notificationCount] = useState(3)
+  
+  const { notificationCount } = useNotificationService(currentUser?.id || null)
+  const [notificationCountState] = useState(notificationCount)
 
   const user = currentUser ?? null
 

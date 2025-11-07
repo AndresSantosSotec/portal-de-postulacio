@@ -18,7 +18,11 @@ import {
 import ProfileHeader from './ProfileHeader'
 import ProfileCurriculum from './ProfileCurriculum'
 import ProfileApplications from './ProfileApplications'
+import NotificationsPanel from './NotificationsPanel'
+import StatusSimulator from './StatusSimulator'
+import { useNotificationService } from '@/hooks/use-notification-service'
 import type { User, Application, Job, JobAlert } from '@/lib/types'
+import type { Notification } from './NotificationsPanel'
 import { categoryLabels } from '@/lib/types'
 
 type UserPortalProps = {
@@ -32,11 +36,15 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
   const [applications] = useKV<Application[]>('applications', [])
   const [favorites] = useKV<string[]>('favorites', [])
   const [alerts] = useKV<JobAlert[]>('job_alerts', [])
+  const [notifications] = useKV<Notification[]>('notifications', [])
   const [activeTab, setActiveTab] = useState('curriculum')
+  
+  const { notificationCount } = useNotificationService(user.id)
   
   const userApplications = applications?.filter(app => app.userId === user.id) || []
   const userFavorites = jobs?.filter(job => favorites?.includes(job.id)) || []
   const userAlerts = alerts?.filter(alert => alert.userId === user.id) || []
+  const unreadNotifications = notifications?.filter(n => n.userId === user.id && !n.read).length || 0
 
   return (
     <div className="min-h-screen bg-background">
@@ -47,7 +55,7 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="border-b border-border bg-card/50 backdrop-blur-sm rounded-lg p-2 sticky top-20 z-40 shadow-sm">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto gap-2 bg-transparent">
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 h-auto gap-2 bg-transparent">
               <TabsTrigger 
                 value="curriculum" 
                 className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
@@ -65,6 +73,17 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
                 <span className="sm:hidden">Postulaciones</span>
                 {userApplications.length > 0 && (
                   <Badge variant="secondary" className="ml-1">{userApplications.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications" 
+                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 relative"
+              >
+                <Bell size={18} weight="duotone" />
+                <span className="hidden sm:inline">Notificaciones</span>
+                <span className="sm:hidden">Notif.</span>
+                {unreadNotifications > 0 && (
+                  <Badge variant="destructive" className="ml-1 animate-pulse">{unreadNotifications}</Badge>
                 )}
               </TabsTrigger>
               <TabsTrigger 
@@ -106,6 +125,11 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
 
           <TabsContent value="applications" className="mt-0 space-y-6">
             <ProfileApplications user={user} onViewJob={onViewJob} />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="mt-0 space-y-6">
+            <StatusSimulator userId={user.id} />
+            <NotificationsPanel user={user} onViewJob={onViewJob} />
           </TabsContent>
 
           <TabsContent value="favorites" className="mt-0 space-y-6">
