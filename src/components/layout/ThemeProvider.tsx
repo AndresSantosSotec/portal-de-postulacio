@@ -1,10 +1,10 @@
-import { createContext, useContext, useEffect } from 'react'
+import { createContext, useContext, useEffect, ReactNode } from 'react'
 import { useKV } from '@github/spark/hooks'
 
 type Theme = 'light' | 'dark' | 'system'
 
 interface ThemeProviderProps {
-  actualTheme: 'light' | 'd
+  actualTheme: 'light
 
 
   const [currentTheme, setThem
