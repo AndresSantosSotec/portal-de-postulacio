@@ -74,36 +74,10 @@ export default function NotificationsPanel({ user, compact = false, onViewJob }:
 
   const deleteNotification = (notifId: string) => {
     setNotifications(current => 
-      (current || []).filter(n => n.id !== notifId)
-    )
-  }
-
-  const clearAll = () => {
-    setNotifications(current =>
-      (current || []).filter(n => n.userId !== user.id)
-    )
-  }
-
-  const handleNotificationClick = (notif: Notification) => {
-    markAsRead(notif.id)
-    if (notif.jobId && onViewJob) {
-      onViewJob(notif.jobId)
-    }
-  }
-
-  if (compact) {
-    return (
-      <div className="space-y-3 max-h-96 overflow-y-auto">
-        {userNotifications.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground text-sm">
-            No tienes notificaciones
-          </div>
-        ) : (
-          userNotifications.slice(0, 5).map((notif, index) => {
             const Icon = notificationIcons[notif.type]
             const colorClass = notificationColors[notif.type]
-            
-            return (
+  }
+
               <motion.div
                 key={notif.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -139,6 +113,32 @@ export default function NotificationsPanel({ user, compact = false, onViewJob }:
     )
   }
 
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Notificaciones</h3>
+          <p className="text-sm text-muted-foreground">
+            {unreadCount > 0 ? `${unreadCount} sin leer` : 'Todo al día'}
+          </p>
+        </div>
+        {userNotifications.length > 0 && (
+          <div className="flex gap-2">
+            {unreadCount > 0 && (
+              <Button variant="outline" size="sm" onClick={markAllAsRead}>
+                Marcar todas como leídas
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={clearAll}>
+              Limpiar todo
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {userNotifications.length === 0 ? (
+        <Card>
+          <CardContent className="py-12">
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -228,32 +228,6 @@ export default function NotificationsPanel({ user, compact = false, onViewJob }:
                                 e.stopPropagation()
                                 deleteNotification(notif.id)
                               }}
-                            >
-                              <X size={16} />
-                            </Button>
-                          </div>
-                          
-                          <div className="flex items-center gap-3 mt-3">
-                            <p className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(new Date(notif.createdDate), { addSuffix: true, locale: es })}
-                            </p>
-                            
-                            {!notif.read && (
-                              <>
-                                <Separator orientation="vertical" className="h-3" />
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-auto p-0 text-xs"
-                                  onClick={() => markAsRead(notif.id)}
-                                >
-                                  Marcar como leída
-                                </Button>
-                              </>
-                            )}
-                            
-                            {notif.jobId && onViewJob && (
-                              <>
                                 <Separator orientation="vertical" className="h-3" />
                                 <Button
                                   variant="ghost"
