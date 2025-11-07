@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import {
   CheckCircle,
   UserCircle,
-  CircleWavyCheck,
+  CircleWavyCheckIcon,
   EnvelopeSimple,
   X
 } from '@phosphor-icons/react'
@@ -35,7 +35,7 @@ const notificationIcons = {
   status_change: CheckCircle,
   interview: UserCircle,
   message: EnvelopeSimple,
-  system: CircleWavyCheck
+  system: CircleWavyCheckIcon
 }
 
 const notificationColors = {
@@ -119,7 +119,7 @@ export default function NotificationsPanel({ user, compact = false, onViewJob }:
         <Card>
           <CardContent className="py-12">
             <div className="text-center">
-              <CircleWavyCheck size={48} className="mx-auto text-muted-foreground mb-4" weight="duotone" />
+              <CircleWavyCheckIcon size={48} className="mx-auto text-muted-foreground mb-4" weight="duotone" />
               <h4 className="font-semibold mb-2">No tienes notificaciones</h4>
               <p className="text-sm text-muted-foreground">
                 Cuando haya novedades sobre tus postulaciones, te avisaremos aquí
