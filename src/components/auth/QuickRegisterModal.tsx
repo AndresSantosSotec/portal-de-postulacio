@@ -1,19 +1,20 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, Dial
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/tex
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
-  Upload
-  CheckCircle,
-  Lightnin
+import { motion, AnimatePresence } from 'framer-motion'
 import {
-
-  isOpen:
-  onSuccess: (us
-}
+  EnvelopeSimple,
+  LockKey,
+  User,
+  IdentificationCard,
+  Phone,
+  MapPin,
+  GraduationCap,
+  Briefcase,
   Upload,
   FilePdf,
   CheckCircle,
@@ -21,12 +22,12 @@ import {
   Lightning
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import type { User } from '@/lib/types'
+import type { User as UserType } from '@/lib/types'
 
 type QuickRegisterModalProps = {
   isOpen: boolean
   onClose: () => void
-  onSuccess: (user: User, quickApply?: boolean) => void
+  onSuccess: (user: UserType, quickApply?: boolean) => void
   jobTitle?: string
 }
 
@@ -40,11 +41,11 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
     password: '',
     fullName: '',
     dateOfBirth: '',
-    if (!val
+    dpi: '',
     phone: '',
-    if (currentI
+    address: '',
+    universityDegree: '',
     middleSchoolDegree: '',
-  }
     additionalStudies: '',
     profession: ''
   })
@@ -54,8 +55,8 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
     basic: 'Cuenta',
     personal: 'Datos Personales',
     professional: 'Profesión',
-      } else {
-   
+    documents: 'Documentos'
+  }
 
   const currentStepIndex = steps.indexOf(currentStep)
   const progress = ((currentStepIndex + 1) / steps.length) * 100
@@ -63,69 +64,58 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
   const handleNext = () => {
     if (!validateStep()) return
     
-        phone: formData.phone,
-        middleSchoolDegree: formData.middl
-        profession: formData.profession,
-     
-   
-
-      }
-
-    onSuccess(user, quickAp
+    const nextIndex = currentStepIndex + 1
+    if (nextIndex < steps.length) {
+      setCurrentStep(steps[nextIndex])
+    }
   }
-  con
-   
 
+  const handleBack = () => {
+    const prevIndex = currentStepIndex - 1
+    if (prevIndex >= 0) {
+      setCurrentStep(steps[prevIndex])
+    }
   }
-  return (
-    
-          <moti
-            animate={{ scale: 1, opacity:
-          >
-              
-          </motion.div>
-            <div className="text-center">
-       
-     
-   
 
-                Paso {currentS
-            </div>
-        </DialogHea
-        <div className="mt-6">
-            {currentStep === 'basic' && (
-                key="b
-         
-                transition={{ duration: 0.2
-              >
-                  <Lab
-         
-                   
-                    </
-                      id="email"
-                      placeholder="tu@email.com"
-                      
-         
-                </d
-                <div class
-                   
-                  <div 
-                   
-              
-                   
-     
-   
+  const validateStep = (): boolean => {
+    switch (currentStep) {
+      case 'basic':
+        if (!formData.email || !formData.password) {
+          toast.error('Por favor completa todos los campos requeridos')
+          return false
+        }
+        if (formData.password.length < 6) {
+          toast.error('La contraseña debe tener al menos 6 caracteres')
+          return false
+        }
+        break
+      case 'personal':
+        if (!formData.fullName || !formData.dateOfBirth || !formData.dpi || !formData.phone) {
+          toast.error('Por favor completa todos los campos requeridos')
+          return false
+        }
+        break
+      case 'professional':
+        if (!formData.profession) {
+          toast.error('Por favor completa todos los campos requeridos')
+          return false
+        }
+        break
+    }
+    return true
+  }
 
-              </motion.div>
+  const handleSubmit = (quickApply: boolean = false) => {
+    if (!validateStep()) return
 
-
-                initial=
-                exit={{ opacity:
-                className="s
-                <div className="sp
-                    Nombre Com
-                
-                    type="text"
+    const user: UserType = {
+      id: `user-${Date.now()}`,
+      email: formData.email,
+      password: formData.password,
+      name: formData.fullName,
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(formData.fullName)}`,
+      profile: {
+        fullName: formData.fullName,
         dateOfBirth: formData.dateOfBirth,
         dpi: formData.dpi,
         phone: formData.phone,
@@ -156,6 +146,18 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
     }
   }
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.type === 'application/pdf' || file.type === 'application/msword' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        setCvFile(file)
+        toast.success('Archivo cargado exitosamente')
+      } else {
+        toast.error('Solo se permiten archivos PDF o Word')
+      }
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
@@ -175,7 +177,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
                 Postulándote a: <span className="font-semibold text-foreground">{jobTitle}</span>
               </p>
             </div>
-            
+          )}
           <DialogDescription className="text-center">
             <div className="mt-4 space-y-2">
               <Progress value={progress} className="h-2" />
@@ -254,262 +256,228 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
                     id="fullName"
                     type="text"
                     placeholder="Juan Carlos Pérez García"
-                    </p>
-                      onClick={() => handleSubmit(true)}
-                      size="lg"
-                    
-                    </
+                    value={formData.fullName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                    className="h-12"
+                  />
+                </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="dateOfBirth" className="text-sm font-semibold">
+                    Fecha de Nacimiento <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="dateOfBirth"
+                    type="date"
+                    value={formData.dateOfBirth}
+                    onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                    className="h-12"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dpi" className="text-sm font-semibold">
+                    DPI <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <IdentificationCard size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="dpi"
+                      type="text"
+                      placeholder="1234 56789 0123"
+                      value={formData.dpi}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dpi: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm font-semibold">
+                    Teléfono <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <Phone size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+502 1234 5678"
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="address" className="text-sm font-semibold">
+                    Dirección
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-3 text-muted-foreground">
+                      <MapPin size={20} weight="duotone" />
+                    </div>
+                    <Textarea
+                      id="address"
+                      placeholder="Ciudad, zona, dirección completa"
+                      value={formData.address}
+                      onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                      className="pl-11 min-h-[80px]"
+                    />
+                  </div>
+                </div>
+              </motion.div>
             )}
-        </div>
-        <div className="flex gap-3 mt-6 pt-6 border-t">
-            <Button
-              onClick={handl
-              size="lg"
-              Atrás
-          )}
-          <Button
-            className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:t
-          >
-            {currentSt
-        </div>
 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            {currentStep === 'professional' && (
+              <motion.div
+                key="professional"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="profession" className="text-sm font-semibold">
+                    Profesión <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <Briefcase size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="profession"
+                      type="text"
+                      placeholder="Ej: Ingeniero en Sistemas"
+                      value={formData.profession}
+                      onChange={(e) => setFormData(prev => ({ ...prev, profession: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="middleSchoolDegree" className="text-sm font-semibold">
+                    Título de Educación Media
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <GraduationCap size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="middleSchoolDegree"
+                      type="text"
+                      placeholder="Ej: Bachiller en Ciencias y Letras"
+                      value={formData.middleSchoolDegree}
+                      onChange={(e) => setFormData(prev => ({ ...prev, middleSchoolDegree: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="universityDegree" className="text-sm font-semibold">
+                    Título Universitario
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <GraduationCap size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="universityDegree"
+                      type="text"
+                      placeholder="Ej: Licenciatura en..."
+                      value={formData.universityDegree}
+                      onChange={(e) => setFormData(prev => ({ ...prev, universityDegree: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="additionalStudies" className="text-sm font-semibold">
+                    Estudios Adicionales
+                  </Label>
+                  <Textarea
+                    id="additionalStudies"
+                    placeholder="Cursos, certificaciones, diplomados..."
+                    value={formData.additionalStudies}
+                    onChange={(e) => setFormData(prev => ({ ...prev, additionalStudies: e.target.value }))}
+                    className="min-h-[80px]"
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 'documents' && (
+              <motion.div
+                key="documents"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-6"
+              >
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold">
+                    Curriculum Vitae (CV)
+                  </Label>
+                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                    {cvFile ? (
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="space-y-2"
+                      >
+                        <div className="flex items-center justify-center text-success">
+                          <CheckCircle size={40} weight="fill" />
+                        </div>
+                        <p className="text-sm font-medium">{cvFile.name}</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCvFile(null)}
+                        >
+                          Cambiar archivo
+                        </Button>
+                      </motion.div>
+                    ) : (
+                      <label htmlFor="cv-upload" className="cursor-pointer">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="text-muted-foreground">
+                            <Upload size={40} weight="duotone" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Haz clic para subir tu CV</p>
+                            <p className="text-xs text-muted-foreground">PDF o Word (máx. 10MB)</p>
+                          </div>
+                        </div>
+                        <input
+                          id="cv-upload"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                {jobTitle && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-secondary/20 border border-secondary rounded-lg p-4 space-y-3"
+                  >
+                    <p className="text-sm text-center font-medium">
+                      ¿Deseas postularte inmediatamente a <span className="text-secondary font-bold">{jobTitle}</span>?
                     </p>
                     <Button
                       onClick={() => handleSubmit(true)}
