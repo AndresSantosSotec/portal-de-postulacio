@@ -3,11 +3,13 @@ import { useKV } from '@github/spark/hooks'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MagnifyingGlass, Funnel } from '@phosphor-icons/react'
+import { MagnifyingGlass, Funnel, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import JobCard from './JobCard'
 import { SkeletonJobCard } from '@/components/ui/skeleton-card'
 import type { Job, JobCategory } from '@/lib/types'
 import { categoryLabels } from '@/lib/types'
+
+const JOBS_PER_PAGE = 9
 
 type JobListingsProps = {
   onViewJob: (jobId: string) => void
@@ -24,6 +26,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedLocation, setSelectedLocation] = useState<string>('all')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,6 +57,18 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
       return matchesSearch && matchesCategory && matchesLocation
     })
   }, [jobList, searchTerm, selectedCategory, selectedLocation])
+
+  const totalPages = Math.ceil(filteredJobs.length / JOBS_PER_PAGE)
+  
+  const paginatedJobs = useMemo(() => {
+    const startIndex = (currentPage - 1) * JOBS_PER_PAGE
+    const endIndex = startIndex + JOBS_PER_PAGE
+    return filteredJobs.slice(startIndex, endIndex)
+  }, [filteredJobs, currentPage])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, selectedCategory, selectedLocation])
 
   const handleToggleFavorite = (jobId: string) => {
     setFavorites(currentFavorites => {
@@ -166,18 +181,75 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredJobs.map(job => (
-              <JobCard
-                key={job.id}
-                job={job}
-                isFavorite={favoritesList.includes(job.id)}
-                onToggleFavorite={handleToggleFavorite}
-                onViewJob={onViewJob}
-                isApplied={appliedJobIds.includes(job.id)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedJobs.map(job => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  isFavorite={favoritesList.includes(job.id)}
+                  onToggleFavorite={handleToggleFavorite}
+                  onViewJob={onViewJob}
+                  isApplied={appliedJobIds.includes(job.id)}
+                />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-12">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="gap-1"
+                >
+                  <CaretLeft size={16} weight="bold" />
+                  Anterior
+                </Button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className="min-w-10"
+                        >
+                          {page}
+                        </Button>
+                      )
+                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                      return (
+                        <span key={page} className="px-2 text-muted-foreground">
+                          ...
+                        </span>
+                      )
+                    }
+                    return null
+                  })}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="gap-1"
+                >
+                  Siguiente
+                  <CaretRight size={16} weight="bold" />
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
