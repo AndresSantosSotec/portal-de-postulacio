@@ -1,16 +1,16 @@
 import { createContext, useContext, useEffect } from 'react'
+import { useKV } from '@github/spark/hooks'
+
+type Theme = 'light' | 'dark' | 'system'
+
+interface ThemeProviderProps {
+  actualTheme: 'light' | 'd
 
 
-  children: React.ReactNode
-
-  theme: Theme
-  children: React.ReactNode
-}
-
-  const [currentTheme, setT
+  const [currentTheme, setThem
   const getAct
+      return window.matchMedia('(p
   actualTheme: 'light' | 'dark'
-    return currentTheme
 
 
 const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
@@ -23,21 +23,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
     return currentTheme
-  
-
-  const actualTheme = getActualTheme()
-
-
-
-
-
-
-
-
-
-
-
   }
+
+
+
+
+
+
+
+
 
   return (
 
@@ -48,8 +42,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
 
   const context = useContext(ThemeProviderContext)
-  
-
 
 
 
