@@ -1,31 +1,32 @@
 import { createContext, useContext, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 
-type ThemeProviderProps = {
+type Theme = 'light' | 'dark' | 'system'
 
-type ThemeProviderState = {
+type ThemeProviderProps = {
   children: React.ReactNode
 }
 
 type ThemeProviderState = {
   theme: Theme
   setTheme: (theme: Theme) => void
-export function ThemeProvider({
+  actualTheme: 'light' | 'dark'
+}
 
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
 
-    }
-
-  const currentTheme = theme || 'system'
-
-
-    root.classList.add(actualTheme)
-
-    if (theme === 'system') {
-     
-    return 'light'
+function getSystemTheme(): 'light' | 'dark' {
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark'
   }
+  return 'light'
+}
 
-  const actualTheme = theme === 'system' ? getSystemTheme() : theme
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  const [theme, setTheme] = useKV<Theme>('theme', 'system')
+  
+  const currentTheme = theme || 'system'
+  const actualTheme = currentTheme === 'system' ? getSystemTheme() : currentTheme
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -34,7 +35,7 @@ export function ThemeProvider({
   }, [actualTheme])
 
   useEffect(() => {
-    if (theme === 'system') {
+    if (currentTheme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       const handleChange = () => {
         const root = window.document.documentElement
@@ -44,30 +45,7 @@ export function ThemeProvider({
       mediaQuery.addEventListener('change', handleChange)
       return () => mediaQuery.removeEventListener('change', handleChange)
     }
-  }, [theme])
-
-  return (
-    <ThemeProviderContext.Provider value={{ theme, setTheme, actualTheme }}>
-      {children}
-    </ThemeProviderContext.Provider>
-  )
-}
-
-export function useTheme() {
-  const context = useContext(ThemeProviderContext)
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
-  return context
-}
-        const root = window.document.documentElement
-        root.classList.remove('light', 'dark')
-        root.classList.add(getSystemTheme())
-      }
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
-    }
-  }, [theme])
+  }, [currentTheme])
 
   return (
     <ThemeProviderContext.Provider value={{ theme: currentTheme, setTheme, actualTheme }}>
