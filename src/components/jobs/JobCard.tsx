@@ -69,7 +69,7 @@ export default function JobCard({
           <span className="text-border">•</span>
           <div className="flex items-center gap-1">
             <Briefcase size={16} weight="duotone" />
-            <span className="capitalize">{job.type.replace('-', ' ')}</span>
+            <span className="capitalize">{job.type?.replace('-', ' ') || 'No especificado'}</span>
           </div>
         </div>
 

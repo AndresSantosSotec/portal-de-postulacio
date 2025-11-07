@@ -128,7 +128,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                     </div>
                     <div className="flex items-center gap-2">
                       <Briefcase size={18} weight="duotone" />
-                      <span className="capitalize">{job.type.replace('-', ' ')}</span>
+                      <span className="capitalize">{job.type?.replace('-', ' ') || 'No especificado'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CalendarBlank size={18} weight="duotone" />
@@ -236,7 +236,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                       <Separator />
                       <div>
                         <p className="text-muted-foreground">Tipo de empleo</p>
-                        <p className="font-medium capitalize">{job.type.replace('-', ' ')}</p>
+                        <p className="font-medium capitalize">{job.type?.replace('-', ' ') || 'No especificado'}</p>
                       </div>
                       <Separator />
                       <div>
