@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -15,7 +14,7 @@ import { es } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { User, Job } from '@/lib/types'
 
-type Notification = {
+export type Notification = {
   id: string
   userId: string
   type: 'status_change' | 'interview' | 'message' | 'system'
@@ -74,71 +73,25 @@ export default function NotificationsPanel({ user, compact = false, onViewJob }:
 
   const deleteNotification = (notifId: string) => {
     setNotifications(current => 
-            const Icon = notificationIcons[notif.type]
-            const colorClass = notificationColors[notif.type]
-  }
-
-              <motion.div
-                key={notif.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className={`p-3 rounded-lg border transition-colors cursor-pointer hover:bg-accent/5 ${!notif.read ? 'bg-primary/5 border-primary/20' : 'bg-card border-border'}`}
-                onClick={() => handleNotificationClick(notif)}
-              >
-                <div className="flex gap-3">
-                  <div className={`h-10 w-10 rounded-full bg-background flex items-center justify-center shrink-0 ${colorClass}`}>
-                    <Icon size={20} weight="duotone" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <p className="font-semibold text-sm line-clamp-1">{notif.title}</p>
-                      {!notif.read && (
-                        <div className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1" />
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
-                      {notif.message}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(notif.createdDate), { addSuffix: true, locale: es })}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )
-          })
-        )}
-      </div>
+      (current || []).filter(n => n.id !== notifId)
     )
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">Notificaciones</h3>
-          <p className="text-sm text-muted-foreground">
-            {unreadCount > 0 ? `${unreadCount} sin leer` : 'Todo al día'}
-          </p>
-        </div>
-        {userNotifications.length > 0 && (
-          <div className="flex gap-2">
-            {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={markAllAsRead}>
-                Marcar todas como leídas
-              </Button>
-            )}
-            <Button variant="outline" size="sm" onClick={clearAll}>
-              Limpiar todo
-            </Button>
-          </div>
-        )}
-      </div>
+  const clearAll = () => {
+    setNotifications(current =>
+      (current || []).filter(n => n.userId !== user.id)
+    )
+  }
 
-      {userNotifications.length === 0 ? (
-        <Card>
-          <CardContent className="py-12">
+  const handleNotificationClick = (notif: Notification) => {
+    if (!notif.read) {
+      markAsRead(notif.id)
+    }
+    if (notif.jobId && onViewJob) {
+      onViewJob(notif.jobId)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -228,18 +181,31 @@ export default function NotificationsPanel({ user, compact = false, onViewJob }:
                                 e.stopPropagation()
                                 deleteNotification(notif.id)
                               }}
-                                <Separator orientation="vertical" className="h-3" />
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-auto p-0 text-xs text-primary hover:text-primary"
-                                  onClick={() => handleNotificationClick(notif)}
-                                >
-                                  Ver empleo
-                                </Button>
-                              </>
-                            )}
+                            >
+                              <X size={16} />
+                            </Button>
                           </div>
+
+                          {notif.jobId && (
+                            <div className="flex items-center gap-2 text-xs mt-3 pt-3 border-t">
+                              <p className="text-muted-foreground">
+                                {formatDistanceToNow(new Date(notif.createdDate), { addSuffix: true, locale: es })}
+                              </p>
+                              {onViewJob && (
+                                <>
+                                  <Separator orientation="vertical" className="h-3" />
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-auto p-0 text-xs text-primary hover:text-primary"
+                                    onClick={() => handleNotificationClick(notif)}
+                                  >
+                                    Ver empleo
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </CardContent>

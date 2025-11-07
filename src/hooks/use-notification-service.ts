@@ -59,7 +59,6 @@ export function useNotificationService(userId: string | null) {
           type: 'status_change',
           title: notifData.title,
           message: notifData.message,
-          applicationId: currentApp.id,
           jobId: currentApp.jobId,
           read: false,
           createdDate: new Date().toISOString()
