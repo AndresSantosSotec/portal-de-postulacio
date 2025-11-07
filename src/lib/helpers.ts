@@ -1,4 +1,4 @@
-import type { ApplicationStatus } from './types'
+import type { ApplicationStatus, ApplicationStatusHistory } from './types'
 
 export const statusConfig = {
   under_review: {
@@ -67,3 +67,40 @@ export function validateFileSize(file: File, maxSizeMB: number = 5): boolean {
   const maxSizeBytes = maxSizeMB * 1024 * 1024
   return file.size <= maxSizeBytes
 }
+
+export function generateStatusHistory(
+  currentStatus: ApplicationStatus,
+  appliedDate: string
+): ApplicationStatusHistory[] {
+  const statusOrder: ApplicationStatus[] = [
+    'postulado',
+    'cv-visto',
+    'en-proceso',
+    'finalista',
+    'proceso-finalizado'
+  ]
+
+  const currentIndex = statusOrder.indexOf(currentStatus)
+  if (currentIndex === -1) return []
+
+  const history: ApplicationStatusHistory[] = []
+  const appliedTime = new Date(appliedDate).getTime()
+
+  for (let i = 0; i <= currentIndex; i++) {
+    const daysOffset = i * 2 + Math.random() * 2
+    const statusDate = new Date(appliedTime + daysOffset * 24 * 60 * 60 * 1000)
+
+    history.push({
+      status: statusOrder[i],
+      date: statusDate.toISOString(),
+      note: i === 0 
+        ? 'Postulación recibida exitosamente' 
+        : i === currentIndex 
+          ? 'Estado actual de tu proceso'
+          : undefined
+    })
+  }
+
+  return history
+}
+

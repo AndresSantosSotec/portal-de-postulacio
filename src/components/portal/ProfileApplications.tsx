@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -16,7 +16,9 @@ import {
   ArrowRight,
   FileText,
   Trash,
-  CheckCircle
+  CheckCircle,
+  CaretDown,
+  CaretUp
 } from '@phosphor-icons/react'
 import {
   DropdownMenu,
@@ -25,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
+import ApplicationTimeline from '@/components/jobs/ApplicationTimeline'
 import type { User, Application, Job, ApplicationStatus } from '@/lib/types'
 import { statusLabels } from '@/lib/types'
 
@@ -47,6 +50,7 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
   const [jobs] = useKV<Job[]>('jobs', [])
   const [applications, setApplications] = useKV<Application[]>('applications', [])
   const [statusFilter, setStatusFilter] = useState<StatusFilterType>('all')
+  const [expandedApp, setExpandedApp] = useState<string | null>(null)
 
   const userApplications = (applications?.filter(app => app.userId === user.id) || [])
     .filter(app => statusFilter === 'all' || app.status === statusFilter)
@@ -246,8 +250,41 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
                           Ver empleo
                           <ArrowRight size={16} weight="bold" />
                         </Button>
+
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setExpandedApp(expandedApp === app.id ? null : app.id)}
+                          className="gap-2 w-full lg:w-auto"
+                        >
+                          {expandedApp === app.id ? (
+                            <>
+                              Ocultar seguimiento
+                              <CaretUp size={16} weight="bold" />
+                            </>
+                          ) : (
+                            <>
+                              Ver seguimiento
+                              <CaretDown size={16} weight="bold" />
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </div>
+
+                    <AnimatePresence>
+                      {expandedApp === app.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="mt-6 pt-6 border-t"
+                        >
+                          <ApplicationTimeline application={app} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </CardContent>
                 </Card>
               </motion.div>

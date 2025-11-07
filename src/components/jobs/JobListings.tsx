@@ -4,9 +4,11 @@ import { useKV } from '@github/spark/hooks'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MagnifyingGlass, Funnel, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MagnifyingGlass, Funnel, CaretLeft, CaretRight, CheckCircle, XCircle } from '@phosphor-icons/react'
 import JobCard from './JobCard'
 import CategoryFilter from './CategoryFilter'
+import WorkplaceGallery from './WorkplaceGallery'
 import { SkeletonJobCard } from '@/components/ui/skeleton-card'
 import type { Job, JobCategory } from '@/lib/types'
 import { categoryLabels } from '@/lib/types'
@@ -28,6 +30,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedLocation, setSelectedLocation] = useState<string>('all')
+  const [jobStatusFilter, setJobStatusFilter] = useState<'all' | 'available' | 'occupied'>('all')
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
@@ -63,10 +66,14 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
       
       const matchesCategory = selectedCategory === 'all' || job.category === selectedCategory
       const matchesLocation = selectedLocation === 'all' || job.location === selectedLocation
+      const matchesStatus = 
+        jobStatusFilter === 'all' ||
+        (jobStatusFilter === 'available' && !job.isOccupied) ||
+        (jobStatusFilter === 'occupied' && job.isOccupied)
       
-      return matchesSearch && matchesCategory && matchesLocation
+      return matchesSearch && matchesCategory && matchesLocation && matchesStatus
     })
-  }, [jobList, searchTerm, selectedCategory, selectedLocation])
+  }, [jobList, searchTerm, selectedCategory, selectedLocation, jobStatusFilter])
 
   const totalPages = Math.ceil(filteredJobs.length / JOBS_PER_PAGE)
   
@@ -78,7 +85,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm, selectedCategory, selectedLocation])
+  }, [searchTerm, selectedCategory, selectedLocation, jobStatusFilter])
 
   const handleToggleFavorite = (jobId: string) => {
     setFavorites(currentFavorites => {
@@ -166,12 +173,30 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
           />
         </motion.div>
 
-        <div className="flex items-center justify-between mb-6 mt-8">
-          <h2 className="text-xl font-semibold text-foreground">
-            {isLoading ? 'Cargando empleos...' : `${filteredJobs.length} ${filteredJobs.length === 1 ? 'empleo disponible' : 'empleos disponibles'}`}
-          </h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 mt-8">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              {isLoading ? 'Cargando empleos...' : `${filteredJobs.length} ${filteredJobs.length === 1 ? 'empleo disponible' : 'empleos disponibles'}`}
+            </h2>
+            
+            <Tabs value={jobStatusFilter} onValueChange={(value) => setJobStatusFilter(value as any)} className="w-full sm:w-auto">
+              <TabsList className="grid w-full sm:w-auto grid-cols-3">
+                <TabsTrigger value="all" className="gap-1.5 text-xs sm:text-sm">
+                  Todas
+                </TabsTrigger>
+                <TabsTrigger value="available" className="gap-1.5 text-xs sm:text-sm">
+                  <CheckCircle size={14} weight="duotone" />
+                  Disponibles
+                </TabsTrigger>
+                <TabsTrigger value="occupied" className="gap-1.5 text-xs sm:text-sm">
+                  <XCircle size={14} weight="duotone" />
+                  Ocupadas
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
           
-          {!isLoading && (searchTerm || selectedCategory !== 'all' || selectedLocation !== 'all') && (
+          {!isLoading && (searchTerm || selectedCategory !== 'all' || selectedLocation !== 'all' || jobStatusFilter !== 'all') && (
             <Button
               variant="ghost"
               size="sm"
@@ -179,6 +204,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                 setSearchTerm('')
                 setSelectedCategory('all')
                 setSelectedLocation('all')
+                setJobStatusFilter('all')
               }}
             >
               Limpiar filtros
@@ -274,6 +300,8 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
           </>
         )}
       </div>
+
+      <WorkplaceGallery />
     </div>
   )
 }
