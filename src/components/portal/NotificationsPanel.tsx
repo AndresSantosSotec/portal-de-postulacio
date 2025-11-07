@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { 
+import { rator } from '@/components/ui/separator'
   CheckCircle, 
-  UserCircle,
+  CheckCircle, 
   X,
-  CircleWavyCheck,
+  X,
   EnvelopeSimple
 } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
-import { es } from 'date-fns/locale'
-import type { User, Job } from '@/lib/types'
-import { motion, AnimatePresence } from 'framer-motion'
-
+  id: string
+  type: '
+  me
+  jobId?
 export type Notification = {
   id: string
   userId: string
