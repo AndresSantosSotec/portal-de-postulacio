@@ -5,28 +5,28 @@ type Theme = 'light' | 'dark' | 'system'
 
 type ThemeProviderProps = {
   children: React.ReactNode
-}
+
 
 type ThemeProviderState = {
   theme: Theme
-  actualTheme: 'light' | 'dark'
+    return 'dark'
   setTheme: (theme: Theme) => void
 }
 
-const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
-
-function getSystemTheme(): 'light' | 'dark' {
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark'
-  }
-  return 'light'
-}
-
-export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useKV<Theme>('theme', 'system')
   
-  const currentTheme = theme || 'system'
-  const actualTheme = currentTheme === 'system' ? getSystemTheme() : currentTheme
+
+  useEffect(() => {
+    root.classList.remove('light', 'dark')
+  }, [actualTheme
+  }
+    actualTheme,
+ 
+
+      {children}
+  )
+
+  const context = useContext(ThemeProvid
+    throw new Error('useTheme must be used within a ThemeProvider')
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -38,19 +38,19 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     theme: currentTheme,
     actualTheme,
     setTheme,
-  }
 
-  return (
+
+
     <ThemeProviderContext.Provider value={value}>
       {children}
     </ThemeProviderContext.Provider>
-  )
+
 }
 
 export function useTheme() {
-  const context = useContext(ThemeProviderContext)
+
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider')
   }
-  return context
+
 }
