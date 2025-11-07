@@ -1,25 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { useKV } from '@github/spark/hooks'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { 
   CheckCircle, 
   UserCircle,
   X,
-  CircleW
-import {
-import type { U
-
-  id: string
-  type: '
-  me
-  jobId?
-  CircleWavyCheck
+  CircleWavyCheck,
+  EnvelopeSimple
 } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import type { User, Application, Job } from '@/lib/types'
-import { statusLabels } from '@/lib/types'
+import type { User, Job } from '@/lib/types'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export type Notification = {
   id: string
@@ -30,39 +24,37 @@ export type Notification = {
   applicationId?: string
   jobId?: string
   read: boolean
+  createdDate: string
+}
 
+type NotificationsPanelProps = {
+  user: User
+  compact?: boolean
+  onViewJob?: (jobId: string) => void
+}
 
+const notificationIcons = {
+  status_change: CheckCircle,
+  interview: UserCircle,
+  message: EnvelopeSimple,
+  system: CircleWavyCheck
+}
 
-        n.id === notifId ? { ...
-    )
+const notificationColors = {
+  status_change: 'text-secondary',
+  interview: 'text-accent',
+  message: 'text-primary',
+  system: 'text-muted-foreground'
+}
 
-    setNotification
- 
-
-
-    setNotifications(current 
-    )
-
-    setNotifications(curr
- 
-
-    markAsRead(notif.id)
-      onViewJob(notif.jobId)
-  }
-  if (compact) {
-      <div className="s
- 
-
-          userNotifications.slice(0, 5).map((notif, index) => {
-            const colorClass = notificationColors[notif.type]
-            return (
-                key={notif.id}
-
-                className={`p-3 rounded-lg border
-              >
-                  <div className={`h-10 w-10 rounded-
-                  </div>
-
+export default function NotificationsPanel({ user, compact = false, onViewJob }: NotificationsPanelProps) {
+  const [notifications, setNotifications] = useKV<Notification[]>('notifications', [])
+  const [jobs] = useKV<Job[]>('jobs', [])
+  
+  const userNotifications = (notifications || [])
+    .filter(n => n.userId === user.id)
+    .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+  
   const unreadCount = notifications?.filter(n => n.userId === user.id && !n.read).length || 0
 
   const markAsRead = (notifId: string) => {
@@ -128,136 +120,71 @@ export type Notification = {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <p className="font-semibold text-sm line-clamp-1">{notif.title}</p>
-                  key={notif.id}
-                  animate={{ opacity: 1, y: 0 }}
-                  transi
-                >
-                    className={`transition-all duration-300 hover:shadow-md border-l-4 ${!notif.r
-                    <CardContent className="pt-6">
-                        <div className={`h-12 w-12 rounded-full bg-background border-2 flex items-center 
-                        
-                        
-                      
-                           
-             
-            
-          
-            
-     
-   
+                      {!notif.read && (
+                        <div className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1" />
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
+                      {notif.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(notif.createdDate), { addSuffix: true, locale: es })}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })
+        )}
+      </div>
+    )
+  }
 
-          
-                              s
-                              onClick={(e) => {
-                    
-                            >
-                 
-                          
-                            <p className="text-xs t
-                            </
-                            {!notif.r
-                                <Separator orientation="vert
-                                  varian
-                          
-                  
-                          
-                            )}
-                            {notif.jobId && onViewJob && (
-                  
-                  
-                
-                     
-                     
-                            )}
-                   
-                    </CardContent>
-                </motio
-            })}
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Notificaciones</h3>
+          <p className="text-sm text-muted-foreground">
+            {unreadCount > 0 ? `${unreadCount} sin leer` : 'Todo al día'}
+          </p>
         </div>
-    </div>
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        {userNotifications.length > 0 && (
+          <div className="flex gap-2">
+            {unreadCount > 0 && (
+              <Button variant="outline" size="sm" onClick={markAllAsRead}>
+                Marcar todas como leídas
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={clearAll}>
+              Limpiar todo
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {userNotifications.length === 0 ? (
+        <Card>
+          <CardContent className="py-12">
+            <div className="text-center">
+              <CircleWavyCheck size={48} className="mx-auto text-muted-foreground mb-4" weight="duotone" />
+              <h4 className="font-semibold mb-2">No tienes notificaciones</h4>
+              <p className="text-sm text-muted-foreground">
+                Cuando haya novedades sobre tus postulaciones, te avisaremos aquí
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          <AnimatePresence mode="popLayout">
+            {userNotifications.map((notif, index) => {
+              const Icon = notificationIcons[notif.type]
+              const colorClass = notificationColors[notif.type]
+              const job = notif.jobId ? (jobs || []).find(j => j.id === notif.jobId) : null
+              
+              return (
+                <motion.div
                   key={notif.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
