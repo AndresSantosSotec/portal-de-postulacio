@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Toaster } from '@/components/ui/sonner'
 import Navbar from '@/components/layout/Navbar'
@@ -6,7 +6,8 @@ import JobListings from '@/components/jobs/JobListings'
 import JobDetail from '@/components/jobs/JobDetail'
 import UserPortal from '@/components/portal/UserPortal'
 import { useNotificationService } from '@/hooks/use-notification-service'
-import type { User } from '@/lib/types'
+import { generateSampleJobs } from '@/lib/sampleData'
+import type { User, Job } from '@/lib/types'
 
 type View = 'listings' | 'detail' | 'profile' | 'applications' | 'favorites' | 'alerts'
 
@@ -14,9 +15,16 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('listings')
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const [currentUser, setCurrentUser] = useKV<User | null>('current_user', null)
+  const [jobs, setJobs] = useKV<Job[]>('jobs', [])
   
   const { notificationCount } = useNotificationService(currentUser?.id || null)
   const [notificationCountState] = useState(notificationCount)
+
+  useEffect(() => {
+    if (!jobs || jobs.length === 0) {
+      setJobs(generateSampleJobs())
+    }
+  }, [jobs, setJobs])
 
   const user = currentUser ?? null
 

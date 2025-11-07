@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Progress } from '@/components/ui/progress'
 import { 
   PencilSimple, 
   Plus, 
@@ -21,6 +22,7 @@ import {
   Buildings
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import ProfilePhotoUpload from './ProfilePhotoUpload'
 import type { User, WorkExperience, Education } from '@/lib/types'
 
 type ProfileCurriculumProps = {
@@ -40,6 +42,29 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
     location: user.profile?.location || '',
     bio: user.profile?.bio || ''
   })
+
+  const calculateCompleteness = () => {
+    let completed = 0
+    const total = 7
+    
+    if (user.avatar) completed++
+    if (user.name) completed++
+    if (user.profile?.phone) completed++
+    if (user.profile?.location) completed++
+    if (user.profile?.bio) completed++
+    if (user.profile?.experience && user.profile.experience.length > 0) completed++
+    if (user.profile?.education && user.profile.education.length > 0) completed++
+    
+    return Math.round((completed / total) * 100)
+  }
+
+  const handlePhotoUpdate = (photoDataUrl: string) => {
+    const updatedUser: User = {
+      ...user,
+      avatar: photoDataUrl
+    }
+    onUpdateUser(updatedUser)
+  }
 
   const handleSaveBasic = () => {
     const updatedUser: User = {
@@ -177,6 +202,8 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
     onUpdateUser(updatedUser)
   }
 
+  const completeness = calculateCompleteness()
+
   return (
     <div className="grid lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
@@ -184,6 +211,39 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <ProfilePhotoUpload
+                    currentPhotoUrl={user.avatar}
+                    userName={user.name}
+                    onPhotoUpdate={handlePhotoUpdate}
+                  />
+                  <div>
+                    <CardTitle className="text-2xl">{user.name}</CardTitle>
+                    <CardDescription className="mt-1">{user.email}</CardDescription>
+                    <div className="mt-3">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                        <span>Perfil completado</span>
+                        <Badge variant={completeness === 100 ? "default" : "secondary"} className="text-xs">
+                          {completeness}%
+                        </Badge>
+                      </div>
+                      <Progress value={completeness} className="h-2" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
           <Card>
             <CardHeader>

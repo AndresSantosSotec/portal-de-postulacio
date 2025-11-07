@@ -4,6 +4,7 @@ export type User = {
   name: string
   password: string
   avatar?: string
+  cvFile?: string
   profile?: UserProfile
 }
 
@@ -51,6 +52,14 @@ export type JobCategory =
   | 'construccion'
   | 'otros'
 
+export type CustomQuestion = {
+  id: string
+  question: string
+  type: 'text' | 'textarea' | 'number' | 'select'
+  options?: string[]
+  required: boolean
+}
+
 export type Job = {
   id: string
   title: string
@@ -63,6 +72,8 @@ export type Job = {
   type: 'full-time' | 'part-time' | 'contract' | 'freelance'
   postedDate: string
   applicants: number
+  imageUrl?: string
+  customQuestions?: CustomQuestion[]
 }
 
 export type ApplicationStatus = 
@@ -79,6 +90,8 @@ export type Application = {
   status: ApplicationStatus
   appliedDate: string
   updatedDate: string
+  customAnswers?: Record<string, string>
+  quickApply?: boolean
 }
 
 export type JobAlert = {

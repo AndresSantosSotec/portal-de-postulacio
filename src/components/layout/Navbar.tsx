@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { 
   Briefcase, 
   User, 
@@ -74,16 +74,16 @@ export default function Navbar({
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20"
+                className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary via-primary to-[#003875] flex items-center justify-center shadow-lg shadow-primary/30"
               >
                 <Briefcase size={24} weight="bold" className="text-white" />
               </motion.div>
               <div className="flex flex-col items-start">
-                <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                  Computrabajo
+                <span className="text-xl font-bold bg-gradient-to-r from-primary to-[#003875] bg-clip-text text-transparent group-hover:from-primary/90 group-hover:to-[#003875]/90 transition-all">
+                  CoosajerJobs
                 </span>
                 <span className="text-xs text-muted-foreground hidden sm:block">
-                  Tu próximo empleo te espera
+                  Conectando talento con oportunidades
                 </span>
               </div>
             </button>
@@ -172,7 +172,8 @@ export default function Navbar({
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="gap-2 hover:bg-primary/10">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white text-sm font-semibold">
+                          {currentUser.avatar && <AvatarImage src={currentUser.avatar} alt={currentUser.name} />}
+                          <AvatarFallback className="bg-gradient-to-br from-primary to-[#003875] text-white text-sm font-semibold">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
@@ -219,7 +220,7 @@ export default function Navbar({
                   <Button
                     onClick={() => setShowAuthModal(true)}
                     size="sm"
-                    className="gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20"
+                    className="gap-2 bg-gradient-to-r from-primary to-[#003875] hover:from-primary/90 hover:to-[#003875]/90 shadow-lg shadow-primary/25"
                   >
                     <User size={18} weight="bold" />
                     <span className="hidden sm:inline">Iniciar Sesión</span>

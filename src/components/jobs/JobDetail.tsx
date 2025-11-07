@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, MapPin, Briefcase, Heart, Buildings, CalendarBlank, Check } from '@phosphor-icons/react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { ArrowLeft, MapPin, Briefcase, Heart, Buildings, CalendarBlank, Check, Image as ImageIcon } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import type { Job, Application, User } from '@/lib/types'
 import { categoryLabels, statusLabels } from '@/lib/types'
 import AuthModal from '../auth/AuthModal'
+import ApplicationForm from './ApplicationForm'
 
 type JobDetailProps = {
   jobId: string
@@ -20,9 +22,12 @@ type JobDetailProps = {
 
 export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }: JobDetailProps) {
   const [jobs] = useKV<Job[]>('jobs', [])
-  const [applications, setApplications] = useKV<Application[]>('applications', [])
+  const [applications] = useKV<Application[]>('applications', [])
   const [favorites, setFavorites] = useKV<string[]>('favorites', [])
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showApplicationForm, setShowApplicationForm] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   const job = jobs?.find(j => j.id === jobId)
   const application = applications?.find(app => app.jobId === jobId && app.userId === currentUser?.id)
@@ -45,22 +50,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
       return
     }
 
-    if (application) {
-      toast.info('Ya te has postulado a este empleo')
-      return
-    }
-
-    const newApplication: Application = {
-      id: `app_${Date.now()}`,
-      jobId: job.id,
-      userId: currentUser.id,
-      status: 'postulado',
-      appliedDate: new Date().toISOString(),
-      updatedDate: new Date().toISOString()
-    }
-
-    setApplications(currentApps => [...(currentApps || []), newApplication])
-    toast.success('¡Postulación enviada exitosamente!')
+    setShowApplicationForm(true)
   }
 
   const handleToggleFavorite = () => {
@@ -88,12 +78,12 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
   return (
     <>
       <div className="min-h-screen bg-background">
-        <div className="bg-card border-b border-border sticky top-0 z-10">
+        <div className="bg-card border-b border-border sticky top-16 z-10 shadow-sm">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
             <Button
               variant="ghost"
               onClick={onBack}
-              className="gap-2"
+              className="gap-2 hover:bg-primary/10"
             >
               <ArrowLeft size={18} />
               Volver a empleos
@@ -104,14 +94,39 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <Card>
+              <Card className="overflow-hidden">
+                {job.imageUrl && (
+                  <div className="relative w-full h-80 bg-muted">
+                    {!imageLoaded && !imageError && (
+                      <Skeleton className="absolute inset-0" />
+                    )}
+                    {imageError ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-muted to-muted/50 text-muted-foreground">
+                        <ImageIcon size={64} weight="duotone" className="mb-3 opacity-50" />
+                        <span className="text-sm">Imagen no disponible</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={job.imageUrl}
+                        alt={job.title}
+                        onLoad={() => setImageLoaded(true)}
+                        onError={() => setImageError(true)}
+                        className={cn(
+                          "w-full h-full object-cover transition-opacity duration-500",
+                          imageLoaded ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    )}
+                  </div>
+                )}
+                
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex-1">
-                      <Badge className="mb-3">
+                      <Badge className="mb-3 bg-secondary text-secondary-foreground hover:bg-secondary/90">
                         {categoryLabels[job.category]}
                       </Badge>
-                      <h1 className="text-3xl font-bold text-foreground mb-2">
+                      <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3 leading-tight">
                         {job.title}
                       </h1>
                       <div className="flex items-center gap-2 text-lg font-medium text-muted-foreground">
@@ -139,9 +154,9 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                   </div>
 
                   {job.salary && (
-                    <div className="bg-muted/50 rounded-lg p-4 mb-6">
-                      <p className="text-sm text-muted-foreground mb-1">Salario</p>
-                      <p className="text-xl font-semibold text-foreground">{job.salary}</p>
+                    <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-4 mb-6">
+                      <p className="text-sm text-muted-foreground mb-1">Rango salarial</p>
+                      <p className="text-xl font-bold text-secondary">{job.salary}</p>
                     </div>
                   )}
 
@@ -159,10 +174,10 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                       <Separator className="my-6" />
                       <div>
                         <h2 className="text-xl font-semibold mb-4">Requisitos</h2>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                           {job.requirements.map((req, index) => (
                             <li key={index} className="flex items-start gap-3">
-                              <Check size={20} weight="bold" className="text-accent shrink-0 mt-0.5" />
+                              <Check size={20} weight="bold" className="text-secondary shrink-0 mt-0.5" />
                               <span className="text-muted-foreground">{req}</span>
                             </li>
                           ))}
@@ -175,13 +190,13 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
             </div>
 
             <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-4">
-                <Card>
+              <div className="sticky top-28 space-y-4">
+                <Card className="shadow-lg">
                   <CardContent className="pt-6">
                     {application ? (
                       <div className="space-y-4">
-                        <div className="flex items-center gap-3 p-4 bg-accent/10 rounded-lg">
-                          <Check size={24} weight="bold" className="text-accent shrink-0" />
+                        <div className="flex items-center gap-3 p-4 bg-secondary/10 border border-secondary/20 rounded-xl">
+                          <Check size={24} weight="bold" className="text-secondary shrink-0" />
                           <div>
                             <p className="font-semibold text-foreground">Ya te postulaste</p>
                             <p className="text-sm text-muted-foreground">
@@ -195,7 +210,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                         </div>
                         <div>
                           <p className="text-sm text-muted-foreground mb-2">Estado de postulación</p>
-                          <Badge className="bg-primary text-primary-foreground">
+                          <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
                             {statusLabels[application.status]}
                           </Badge>
                         </div>
@@ -203,9 +218,10 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                     ) : (
                       <Button
                         size="lg"
-                        className="w-full"
+                        className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg gap-2"
                         onClick={handleApply}
                       >
+                        <Check size={20} weight="bold" />
                         Postularme ahora
                       </Button>
                     )}
@@ -214,8 +230,8 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                       variant="outline"
                       size="lg"
                       className={cn(
-                        "w-full mt-3 gap-2",
-                        isFavorite && "border-destructive text-destructive hover:text-destructive"
+                        "w-full mt-3 gap-2 transition-all",
+                        isFavorite && "border-destructive text-destructive hover:text-destructive hover:bg-destructive/10"
                       )}
                       onClick={handleToggleFavorite}
                     >
@@ -231,7 +247,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                     <div className="space-y-3 text-sm">
                       <div>
                         <p className="text-muted-foreground">Candidatos</p>
-                        <p className="font-medium">+{job.applicants} postulados</p>
+                        <p className="font-medium">{job.applicants} postulados</p>
                       </div>
                       <Separator />
                       <div>
@@ -256,6 +272,18 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={onLoginSuccess}
+      />
+
+      <ApplicationForm
+        job={job}
+        currentUser={currentUser}
+        isOpen={showApplicationForm}
+        onClose={() => setShowApplicationForm(false)}
+        onSuccess={() => {}}
+        onLoginRequired={() => {
+          setShowApplicationForm(false)
+          setShowAuthModal(true)
+        }}
       />
     </>
   )

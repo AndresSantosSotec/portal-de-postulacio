@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MagnifyingGlass, Funnel } from '@phosphor-icons/react'
 import JobCard from './JobCard'
+import { SkeletonJobCard } from '@/components/ui/skeleton-card'
 import type { Job, JobCategory } from '@/lib/types'
 import { categoryLabels } from '@/lib/types'
 
@@ -18,10 +19,18 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
   const [jobs] = useKV<Job[]>('jobs', [])
   const [favorites, setFavorites] = useKV<string[]>('favorites', [])
   const [applications] = useKV<any[]>('applications', [])
+  const [isLoading, setIsLoading] = useState(true)
   
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedLocation, setSelectedLocation] = useState<string>('all')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   const jobList = jobs || []
   const favoritesList = favorites || []
@@ -62,13 +71,16 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-primary text-primary-foreground py-12">
+      <div className="bg-gradient-to-r from-primary via-[#003875] to-primary text-primary-foreground py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
             Encuentra tu próximo empleo
           </h1>
+          <p className="text-primary-foreground/90 mb-6">
+            Conectando talento con las mejores oportunidades
+          </p>
           
-          <div className="bg-card rounded-lg p-4 shadow-lg">
+          <div className="bg-card rounded-xl p-4 shadow-xl">
             <div className="flex flex-col md:flex-row gap-3">
               <div className="relative flex-1">
                 <MagnifyingGlass 
@@ -116,13 +128,13 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-foreground">
-            {filteredJobs.length} {filteredJobs.length === 1 ? 'empleo disponible' : 'empleos disponibles'}
+            {isLoading ? 'Cargando empleos...' : `${filteredJobs.length} ${filteredJobs.length === 1 ? 'empleo disponible' : 'empleos disponibles'}`}
           </h2>
           
-          {(searchTerm || selectedCategory !== 'all' || selectedLocation !== 'all') && (
+          {!isLoading && (searchTerm || selectedCategory !== 'all' || selectedLocation !== 'all') && (
             <Button
               variant="ghost"
               size="sm"
@@ -137,7 +149,13 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
           )}
         </div>
 
-        {filteredJobs.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonJobCard key={i} />
+            ))}
+          </div>
+        ) : filteredJobs.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-2xl font-semibold text-foreground mb-2">

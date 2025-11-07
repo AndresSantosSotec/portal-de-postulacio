@@ -1,212 +1,209 @@
 # Planning Guide
 
-**Computrabajo - Portal de Empleos** is a comprehensive job portal application that enables users to discover job opportunities, manage applications, and receive real-time notifications about their application status. The platform emphasizes transparency, professional aesthetics, and user engagement through modern design patterns.
+**CoosajerJobs - Plataforma de Gestión de Talento y Empleos** es una plataforma moderna que conecta a las cooperativas, empresas asociadas y candidatos de la red Coosajer, ofreciendo una experiencia intuitiva y eficiente para explorar vacantes, postularse fácilmente y realizar seguimiento completo del proceso de contratación.
 
 **Experience Qualities**:
 
-- **Professional Trust**: Clean, corporate design with deep blue primary colors that communicate stability and reliability, making users feel confident in the platform's legitimacy.
-- **Responsive Efficiency**: Smooth transitions and instant feedback that respect users' time - every interaction feels purposeful and quick without unnecessary delays.
-- **Proactive Communication**: Real-time notifications and status updates that keep users informed about their application progress, reducing anxiety and improving transparency.
+- **Profesional y Confiable**: Diseño institucional con azul Coosajer (#004082) que transmite estabilidad, seriedad y confianza, haciendo que los usuarios se sientan seguros en la plataforma.
+- **Dinámico pero Sobrio**: Interfaz moderna con microanimaciones sutiles, transiciones suaves y elementos visuales que mantienen la identidad institucional sin perder formalidad.
+- **Eficiencia Responsiva**: Feedback instantáneo en cada interacción - skeleton loaders durante cargas, confirmaciones visuales inmediatas, y flujos optimizados que respetan el tiempo del usuario.
 
 **Complexity Level**: Complex Application (advanced functionality, accounts)
-  - Full user authentication with persistent sessions, comprehensive profile management with CV builder, real-time notification system for application status changes, favorites and alerts system, and multi-category job browsing across all industries.
+  - Sistema completo de autenticación con sesiones persistentes, gestión avanzada de perfiles con foto y CV builder, sistema de notificaciones en tiempo real para cambios de estado, sistema de favoritos y alertas, postulación rápida con un clic, formularios dinámicos configurables por empresa, y navegación multi-categoría en todas las industrias.
+
 ## Essential Features
 
-### Real-Time Notification System
-- **Functionality**: Automatic notifications when application status changes, displayed in navbar dropdown and dedicated notifications panel
-- **Purpose**: Keep users informed about their application progress without requiring them to constantly check
-- **Trigger**: Application status changes (postulado → cv-visto → en-proceso → finalista → proceso-finalizado)
-- **Progression**: Status changes → Notification created → Toast appears → Badge in navbar → View in dropdown or panel → Mark as read
-- **Success criteria**: Users receive instant notifications for status changes, can view notification history, and mark notifications as read
+### Sistema de Postulación Inteligente con Preguntas Dinámicas
+- **Functionality**: Formulario de aplicación que combina campos base estándar con preguntas personalizadas definidas por cada empresa desde el panel administrativo
+- **Purpose**: Permitir a las empresas recopilar información específica de candidatos mientras se mantiene una experiencia fluida de postulación
+- **Trigger**: Usuario hace clic en "Postularme ahora" en detalle de empleo
+- **Progression**: Click aplicar → Modal/página formulario → Campos base (nombre, email, teléfono, CV) → Preguntas dinámicas específicas del puesto → Validación en tiempo real → Auto-guardado de progreso → Enviar → Confirmación con animación
+- **Success criteria**: Formularios se generan dinámicamente según configuración de empresa, validación funciona correctamente, progreso se guarda automáticamente, postulaciones se registran con todas las respuestas
 
-### User Authentication & Login
-- **Functionality**: Secure login/register modal with form validation
-- **Purpose**: Enable personalized experience and track user applications
+### Postulación Rápida (Quick Apply)
+- **Functionality**: Usuarios con perfil completo pueden aplicar a empleos con un solo clic usando su información y CV guardados
+- **Purpose**: Reducir fricción y aumentar conversión permitiendo aplicaciones instantáneas para usuarios registrados
+- **Trigger**: Usuario autenticado con CV cargado hace clic en botón "Postulación Rápida"
+- **Progression**: Click botón → Confirmación rápida → Aplicación enviada → Toast de éxito → Estado actualizado en perfil
+- **Success criteria**: Aplicación se completa en menos de 2 segundos, usuario ve confirmación inmediata, aplicación aparece en "Mis Postulaciones"
 
-### Job Listings with Category 
-- **Purpose**: Help users discover relevant opportunities across all industries
-- **Progression**: View listings → Filter by category/location → See results update → Click job for deta
+### Gestión de Fotos de Perfil
+- **Functionality**: Subida, recorte y gestión de foto de perfil del usuario (máx. 3 MB, jpg/png)
+- **Purpose**: Personalizar la experiencia y hacer el perfil más profesional y humano
+- **Trigger**: Usuario accede a "Mi Curriculum" y hace clic en avatar o botón "Cambiar foto"
+- **Progression**: Click cambiar foto → Dialog selector de archivos → Previsualización → Recorte opcional → Confirmar → Subida → Avatar actualizado en navbar y perfil
+- **Success criteria**: Foto se sube correctamente, aparece en avatar de navbar, se mantiene en sesiones futuras, validación de tamaño funciona
 
-- **Progression**: Click login → Modal appears → Enter credentials or register → Validation → Dashboard access
-- **Success criteria**: Users can create accounts, log in/out, and their session persists across page refreshes
+### Publicaciones de Empleo con Imágenes
+- **Functionality**: Las empresas pueden subir imágenes o banners representativos para sus ofertas de empleo (máx. 5 MB, jpg/png)
+- **Purpose**: Hacer las ofertas más atractivas visualmente y aumentar engagement
+- **Trigger**: Empresa crea o edita oferta en panel administrativo
+- **Progression**: Crear oferta → Formulario campos → Sección "Imagen del puesto" → Subir archivo → Preview → Guardar → Imagen aparece en card y detalle
+- **Success criteria**: Imágenes se muestran en cards de listado y banner superior en detalle, skeleton loader durante carga, fallback elegante si no hay imagen
 
-### User Profile & Curriculum Builder
-- **Functionality**: Comprehensive profile with personal info, work experience, education, skills, and downloadable curriculum
-- **Purpose**: Allow users to showcase their qualifications and maintain an up-to-date professional profile
-- **Trigger**: User accesses "Mi curriculum" from navigation
-- **Progression**: Click curriculum → View/edit mode → Add sections (experience, education, skills) → Save → Preview/download
-- **Success criteria**: Users can create complete profiles, edit all sections, and have their data persist
+### Sistema de Notificaciones en Tiempo Real
+- **Functionality**: Notificaciones automáticas cuando cambia el estado de una postulación, con dropdown en navbar y panel dedicado
+- **Purpose**: Mantener a usuarios informados sobre su proceso sin necesidad de revisar constantemente
+- **Trigger**: Cambio de estado de aplicación (postulado → cv-visto → en-proceso → finalista → proceso-finalizado)
+- **Progression**: Cambio de estado → Notificación creada → Toast aparece → Badge en campana navbar → Ver en dropdown o panel → Marcar como leída
+- **Success criteria**: Notificaciones instantáneas, contador de no leídas funciona, historial accesible, animaciones suaves
 
-### Job Listings with Category Filtering
-- **Functionality**: Browse jobs across multiple categories (not just software) with search and filter capabilities
-- **Purpose**: Help users discover relevant opportunities across all industries
-- **Trigger**: User lands on homepage or clicks "Mi área" 
-- **Progression**: View listings → Filter by category/location → See results update → Click job for details
-- **Success criteria**: Jobs display in organized grid, filters work instantly, categories cover diverse industries
+### Skeleton Loaders Integrales
+- **Functionality**: Indicadores visuales de carga en listas de empleos, formularios, perfil y todas las secciones con datos asíncronos
+- **Purpose**: Mejorar percepción de velocidad y reducir frustración durante cargas
+- **Trigger**: Cualquier operación que requiera cargar datos
+- **Progression**: Inicio de carga → Skeleton con forma similar al contenido → Animación shimmer → Contenido real reemplaza skeleton
+- **Success criteria**: Todos los estados de carga tienen skeleton apropiado, transición suave entre skeleton y contenido, forma del skeleton refleja estructura final
 
-### Job Application System
-- **Functionality**: Apply to jobs, track application status through multiple stages
-- **Purpose**: Streamline the job application process with clear status tracking
-- **Trigger**: Click "Aplicar" on job detail page
-- **Progression**: View job → Click apply → Confirm application → Track status → Receive notifications
-- **Success criteria**: Applications are tracked, status updates trigger notifications, users can withdraw applications
+### Navegación y Gestión de Perfil Completo
+- **Functionality**: Currículum completo con información personal, experiencias laborales, educación, habilidades, y descarga de CV
+- **Purpose**: Centralizar información profesional del usuario para postulaciones rápidas y gestión de carrera
+- **Trigger**: Usuario accede a "Mi Curriculum" desde navegación
+- **Progression**: Click curriculum → Vista/edición → Agregar secciones (experiencia, educación, skills) → Guardar → Preview/descargar
+- **Success criteria**: Perfil editable por secciones, barra de progreso de completitud, descarga de CV funcional, datos persisten
+
+### Sistema de Favoritos y Alertas
+- **Functionality**: Guardar empleos favoritos y crear alertas personalizadas por categoría, ubicación y keywords
+- **Purpose**: Permitir a usuarios trackear oportunidades de interés y recibir notificaciones proactivas
+- **Trigger**: Click en corazón en card de empleo, o acceso a sección "Mis Alertas"
+- **Progression**: Guardar favorito → Confirmación → Ver en sección favoritos → Crear alerta → Definir criterios → Guardar → Recibir notificaciones de matches
+- **Success criteria**: Favoritos se sincronizan en toda la app, alertas generan notificaciones cuando hay matches, gestión fácil de alertas guardadas
 
 ## Edge Case Handling
-## Edge Case Handling
 
-- **Unauthenticated Actions**: Users must log in to apply for jobs, favorite listings, or view notifications
-- **No Notifications**: Empty state with friendly message when user has no notifications yet
-- **Invalid Profile Data**: Form validation prevents submission of incomplete required fields with clear error messages
-- **Network Errors**: Graceful error handling with retry options and user-friendly messages
-- **Concurrent Status Changes**: Notification system handles multiple status changes smoothly with proper ordering
+- **Acciones Sin Autenticación**: Usuarios no logueados ven modal de login al intentar aplicar, guardar favoritos o ver notificaciones
+- **Sin Notificaciones**: Estado vacío amigable con mensaje motivacional cuando usuario no tiene notificaciones aún
+- **Datos de Perfil Inválidos**: Validación de formularios previene envío de campos incompletos con mensajes de error claros y constructivos
+- **Errores de Red**: Manejo elegante con opciones de reintentar y mensajes user-friendly sin jerga técnica
+- **Cambios Concurrentes de Estado**: Sistema de notificaciones maneja múltiples cambios correctamente con orden apropiado
+- **Imágenes No Cargadas**: Fallback con placeholder elegante y opción de reintentar carga
+- **Formularios Dinámicos Vacíos**: Si empresa no define preguntas, muestra solo campos base sin errores
+- **Postulación Rápida Sin CV**: Botón deshabilitado con tooltip explicativo si usuario no ha subido CV
 
 ## Design Direction
-- **Primary Color**: Deep Professional Blue (oklch(0.45 0.12 250)) - Communicates trust, sta
-  - Neutral Gray (oklch(0.55 0.02 250)) - Supporting color for less promi
-- **Accent Color**: Energetic Teal (oklch(0.60 0.14 195)) - Highlight color for CTAs, active states, and 
-  - Background (Light Cream oklch(0.99 0.005 85)): Dark Gray text (oklch(0.25 0.01 250)) - Ratio 13.2:1 ✓
 
-  - Accent (Energetic Teal okl
+El diseño debe evocar profesionalismo institucional con vitalidad moderna - usando el azul corporativo Coosajer (#004082) como ancla de confianza, complementado con verde acento (#4EAD33) para acciones positivas y confirmaciones. La interfaz es sobria pero no aburrida: microanimaciones sutiles, transiciones fluidas, y elementos visuales modulares con tarjetas flotantes y sombras suaves crean dinamismo sin perder formalidad. El balance perfecto entre "institución seria" y "plataforma moderna".
 
-The typography should feel modern, highly legible, and professional - conveying competence 
-- **Typographic Hierarchy**:
-  - H2 (Section Headers): Inter Semibold / 24px / -0.01em / 1.3 line height
-  - Body (Job descriptions, profile text): Inter Regular / 15px / normal / 
-  - Button Text: Inter Semibold / 14px / normal
+## Color Selection
 
+Esquema de colores **Complementario con Acentos Institucionales** - combinando el azul corporativo Coosajer con verde complementario para crear contraste visual profesional y dirigir la atención a acciones clave.
 
-  - Card hover elevations suggest interactivity
-  - Modal entrances/exits maintain spatial context
-  
-  - Primary: Application submissions, login/logout transitions (300ms)
-  - Tertiary: Hover states, tooltips (150ms)
-
-  - **Dialog**: Log
-  - **Tabs**: Switching between "Mis postulaciones" states (All, Applied, CV Viewed, In Process)
-
-  - **Avatar**: Us
-  - **ScrollArea**: Long job descriptions, application lists
-
-  - Job card component with integrated favorite button, status badge, and company logo
-  - Curriculum preview/d
-  - Neutral Gray (oklch(0.55 0.02 250)) - Supporting color for less prominent UI elements and text
-  - Light Background (oklch(0.98 0.005 250)) - Soft off-white for cards and sections
-- **Accent Color**: Energetic Teal (oklch(0.60 0.14 195)) - Highlight color for CTAs, active states, and progress indicators that feels modern and action-oriented
+- **Primary Color**: Azul Institucional Coosajer oklch(0.38 0.08 245) (#004082) - El color de marca que comunica confianza, estabilidad profesional y autoridad institucional. Usado en cabeceras, botones principales y elementos de navegación.
+- **Secondary Colors**: 
+  - Verde Acento oklch(0.65 0.15 145) (#4EAD33) - Color energético para estados positivos (éxito, confirmaciones, iconos check), botones secundarios de acción
+  - Gris Claro oklch(0.97 0.003 250) (#F6F8FA) - Fondos de paneles secundarios, bordes suaves, estados deshabilitados
+  - Gris Texto oklch(0.35 0.01 250) (#4A4A4A) - Tipografía base y contenido
+- **Accent Color**: Amarillo Suave oklch(0.88 0.12 90) (#FFD23B) - Usado estratégicamente para badges "nuevo" o "recomendado", llamadas de atención no urgentes
 - **Foreground/Background Pairings**:
-  - Background (Light Cream oklch(0.99 0.005 85)): Dark Gray text (oklch(0.25 0.01 250)) - Ratio 13.2:1 ✓
-  - Card (White oklch(1 0 0)): Primary text (oklch(0.25 0.01 250)) - Ratio 14.1:1 ✓
-  - Primary (Deep Blue oklch(0.45 0.12 250)): White text (oklch(1 0 0)) - Ratio 8.2:1 ✓
-  - Secondary (Neutral Gray oklch(0.55 0.02 250)): White text (oklch(1 0 0)) - Ratio 4.9:1 ✓
-  - Accent (Energetic Teal oklch(0.60 0.14 195)): White text (oklch(1 0 0)) - Ratio 5.1:1 ✓
-  - Muted (Light Gray oklch(0.95 0.005 250)): Muted text (oklch(0.45 0.01 250)) - Ratio 7.8:1 ✓
+  - Background (Blanco Puro oklch(1 0 0)): Gris Texto (oklch(0.35 0.01 250)) - Ratio 9.1:1 ✓
+  - Card (Blanco oklch(1 0 0)): Gris Texto (oklch(0.35 0.01 250)) - Ratio 9.1:1 ✓
+  - Primary (Azul Coosajer oklch(0.38 0.08 245)): Blanco texto (oklch(1 0 0)) - Ratio 8.9:1 ✓
+  - Secondary (Verde Acento oklch(0.65 0.15 145)): Blanco texto (oklch(1 0 0)) - Ratio 5.2:1 ✓
+  - Accent (Amarillo Suave oklch(0.88 0.12 90)): Gris Oscuro texto (oklch(0.30 0.01 90)) - Ratio 8.5:1 ✓
+  - Muted (Gris Claro oklch(0.97 0.003 250)): Gris Medio texto (oklch(0.50 0.01 250)) - Ratio 6.8:1 ✓
 
 ## Font Selection
-The typography should feel modern, highly legible, and professional - conveying competence without stuffiness. **Inter** is ideal as it's designed for excellent screen readability and has a professional yet approachable character that works across all content types from job titles to body text.
+
+La tipografía debe transmitir modernidad, excelente legibilidad y profesionalismo accesible - **Inter** es perfecta por su diseño optimizado para pantallas y carácter profesional pero no intimidante, funcionando impecablemente desde títulos de puestos hasta texto de descripciones extensas.
 
 - **Typographic Hierarchy**:
-  - H1 (Main Page Titles): Inter Bold / 32px / -0.02em letter spacing / 1.2 line height
-  - H2 (Section Headers): Inter Semibold / 24px / -0.01em / 1.3 line height
-  - H3 (Job Titles, Card Headers): Inter Semibold / 18px / normal / 1.4 line height
-  - Body (Job descriptions, profile text): Inter Regular / 15px / normal / 1.6 line height
-  - Small (Metadata, dates, locations): Inter Medium / 13px / normal / 1.4 line height
-  - Button Text: Inter Semibold / 14px / normal
+  - H1 (Títulos Principales de Página): Inter Bold / 32px / -0.02em letter spacing / 1.2 line height
+  - H2 (Headers de Sección): Inter Semibold / 24px / -0.01em / 1.3 line height
+  - H3 (Títulos de Empleo, Headers de Cards): Inter Semibold / 18px / normal / 1.4 line height
+  - Body (Descripciones de empleo, texto de perfil): Inter Regular / 15px / normal / 1.6 line height
+  - Small (Metadata, fechas, ubicaciones): Inter Medium / 13px / normal / 1.4 line height
+  - Button Text: Inter Semibold / 14px / normal / 1 line height
 
 ## Animations
-Animations should feel purposeful and efficient - reinforcing actions without slowing users down. The motion language should be crisp and responsive, with quick transitions that provide feedback without demanding attention. Think: professional efficiency over playful delight.
+
+Las animaciones deben ser sutiles pero presentes - reforzando acciones sin ralentizar al usuario. El lenguaje de movimiento es ágil y responsivo con transiciones rápidas que dan feedback sin exigir atención. Piensa: eficiencia profesional con momentos calculados de deleite.
 
 - **Purposeful Meaning**: 
-  - Card hover elevations suggest interactivity
-  - Application status transitions show progress
-  - Modal entrances/exits maintain spatial context
-  - Loading states prevent perceived delays
+  - Elevación de cards en hover sugiere interactividad
+  - Transiciones de estado en aplicaciones muestran progreso
+  - Entradas/salidas de modales mantienen contexto espacial
+  - Estados de carga (skeleton) previenen delays percibidos
+  - Confirmaciones con checkmark animado refuerzan éxito
+  - Pulso sutil en notificaciones nuevas atrae atención
   
 - **Hierarchy of Movement**:
-  - Primary: Application submissions, login/logout transitions (300ms)
-  - Secondary: Filter updates, tab switches (200ms)  
-  - Tertiary: Hover states, tooltips (150ms)
+  - Primary: Envío de aplicaciones, transiciones login/logout, confirmaciones (300ms ease-out)
+  - Secondary: Actualizaciones de filtros, cambios de tabs, abrir detalles (200ms ease-in-out)
+  - Tertiary: Hover states, tooltips, badges (150ms ease-in)
+  - Skeleton Shimmer: Animación continua de carga (2000ms linear loop)
 
 ## Component Selection
+
 - **Components**:
-  - **Dialog**: Login/register modal, application confirmation dialogs
-  - **Card**: Job listings, application cards, profile sections - with hover:shadow-lg
-  - **Tabs**: Switching between "Mis postulaciones" states (All, Applied, CV Viewed, In Process)
-  - **Input, Textarea, Select**: Profile forms, job search, filter controls - with focus:ring-2
-  - **Button**: Primary (Apply, Save), Secondary (Edit, Cancel), Ghost (Favorites) - distinct visual weights
-  - **Badge**: Job categories, application status, notification count - using variant colors
-  - **Avatar**: User profile display in navbar
-  - **Separator**: Visual breaks between sections
-  - **ScrollArea**: Long job descriptions, application lists
-  - **Accordion**: Collapsible profile sections (Experience, Education, Skills)
+  - **Dialog**: Modal de login/registro, confirmación de aplicación, editor de foto de perfil
+  - **Card**: Listado de empleos, cards de aplicaciones, secciones de perfil - con hover:shadow-xl y transition
+  - **Tabs**: Cambio entre estados en "Mis Postulaciones" (Todas, Postulado, CV Visto, En Proceso, Finalista)
+  - **Input, Textarea, Select**: Formularios de perfil, búsqueda de empleos, controles de filtros, campos dinámicos - con focus:ring-2 ring-primary
+  - **Button**: Primary (Aplicar, Guardar, Enviar), Secondary (Editar, Cancelar), Ghost (Favoritos, Navegación) - con pesos visuales distintos y animaciones hover
+  - **Badge**: Categorías de empleo, estado de aplicación, contador de notificaciones, tags "nuevo" - usando colores variant apropiados
+  - **Avatar**: Foto de perfil en navbar y perfil, con fallback de iniciales
+  - **Separator**: Divisiones visuales entre secciones
+  - **ScrollArea**: Descripciones largas de empleos, listas de aplicaciones
+  - **Accordion**: Secciones colapsables en perfil (Experiencia, Educación, Habilidades)
+  - **Skeleton**: Placeholders animados para todos los estados de carga
+  - **Progress**: Barra de completitud de perfil, progreso en formulario de postulación
+  - **Popover**: Dropdown de notificaciones en navbar
+  - **Tooltip**: Información adicional en íconos y estados
   
 - **Customizations**:
-  - Job card component with integrated favorite button, status badge, and company logo
-  - Application timeline component showing status progression
-  - Curriculum preview/download component
-  - Category filter grid with icon + label
+  - JobCard component con botón de favorito integrado, badge de estado, imagen/logo empresa
+  - ApplicationTimeline component mostrando progresión de estados con línea conectora
+  - ProfilePhotoUpload component con crop, preview y validación
+  - DynamicQuestionForm component que renderiza campos según configuración
+  - QuickApplyButton component con confirmación one-click
+  - CurriculumPreview y CurriculumDownload components
+  - CategoryFilterGrid con iconos + labels
+  - NotificationBell con contador animado
+  - SkeletonJobCard, SkeletonProfile, SkeletonForm para todos los estados de carga
   
 - **States**:
-  - Buttons: Subtle background shift on hover, pressed state with slight scale, disabled with opacity-50
-  - Inputs: Border color change on focus with ring, error state with red border, success with green
-  - Job cards: Elevation increase on hover, subtle border highlight on active
-  - Favorite icon: Filled heart when active with color transition
+  - Buttons: Background shift sutil en hover, pressed con scale(0.98), disabled con opacity-50 y cursor-not-allowed
+  - Inputs: Border color change en focus con ring-2 ring-primary, error con border-destructive y shake animation, success con border-secondary y check icon
+  - Job cards: Elevación shadow-lg en hover, borde sutil highlight, transition-all duration-200
+  - Favorite icon: Filled heart cuando activo con scale animation y color transition
+  - Notification bell: Pulso en badge cuando hay nuevas, fill cuando activas
+  - Avatar: Ring border en hover, placeholder con gradient cuando no hay foto
   
-- **Icon Selection**:
-  - Briefcase: Job listings
-  - User: Profile
-  - Heart: Favorites
-  - Bell: Alerts/notifications
-  - PaperPlane: Applications
-  - MagnifyingGlass: Search
-  - Funnel: Filters
-  - Download: CV download
-  - Plus: Add new entries
-  - Pencil: Edit
+- **Icon Selection** (usando @phosphor-icons/react con weight="duotone" mayormente):
+  - Briefcase: Listado de empleos, ícono de app
+  - User/UserCircle: Perfil, avatar
+  - Heart: Favoritos (regular/fill states)
+  - Bell: Alertas/notificaciones
+  - PaperPlaneRight: Aplicaciones/postulaciones
+  - MagnifyingGlass: Búsqueda
+  - Funnel: Filtros
+  - Download/DownloadSimple: Descarga de CV
+  - Plus/PlusCircle: Agregar entradas
+  - Pencil/PencilSimple: Editar
+  - Check/CheckCircle: Confirmaciones, éxito
+  - Camera: Cambiar foto de perfil
+  - Buildings: Empresa
+  - MapPin: Ubicación
+  - CalendarBlank: Fechas
+  - ArrowLeft/ArrowRight: Navegación
+  - SignOut: Cerrar sesión
+  - List: Menú/listados
   
 - **Spacing**:
   - Container max-width: 1280px (max-w-7xl)
-  - Section padding: py-8 px-4 md:px-6
+  - Section padding: py-8 px-4 md:py-12 md:px-6
   - Card padding: p-6
-  - Grid gaps: gap-6 for cards, gap-4 for forms
-  - Button padding: px-6 py-2.5
+  - Grid gaps: gap-6 para cards de empleos, gap-4 para forms
+  - Button padding: px-6 py-2.5 (default), px-4 py-2 (sm)
+  - Stack spacing: space-y-4 para forms, space-y-6 para secciones
   
 - **Mobile**:
-  - Stack navigation tabs vertically on mobile with full-width buttons
-  - Job cards switch from grid to single column
-  - Filter panel becomes drawer from bottom
-  - Reduce font sizes: H1 to 24px, H2 to 20px, Body to 14px
-  - Touch-friendly targets minimum 44px
-  - Navbar collapses to hamburger menu with user avatar
-  - Category filter grid with icon + label
-  
-- **States**:
-  - Buttons: Subtle background shift on hover, pressed state with slight scale, disabled with opacity-50
-  - Inputs: Border color change on focus with ring, error state with red border, success with green
-  - Job cards: Elevation increase on hover, subtle border highlight on active
-  - Favorite icon: Filled heart when active with color transition
-  
-- **Icon Selection**:
-  - Briefcase: Job listings
-  - User: Profile
-  - Heart: Favorites
-  - Bell: Alerts/notifications
-  - PaperPlane: Applications
-  - MagnifyingGlass: Search
-  - Funnel: Filters
-  - Download: CV download
-  - Plus: Add new entries
-  - Pencil: Edit
-  
-- **Spacing**:
-  - Container max-width: 1280px (max-w-7xl)
-  - Section padding: py-8 px-4 md:px-6
-  - Card padding: p-6
-  - Grid gaps: gap-6 for cards, gap-4 for forms
-  - Button padding: px-6 py-2.5
-  
-- **Mobile**:
-  - Stack navigation tabs vertically on mobile with full-width buttons
-  - Job cards switch from grid to single column
-  - Filter panel becomes drawer from bottom
-  - Reduce font sizes: H1 to 24px, H2 to 20px, Body to 14px
-  - Touch-friendly targets minimum 44px
-  - Navbar collapses to hamburger menu with user avatar
+  - Navigation tabs se apilan verticalmente con botones full-width
+  - Job cards cambian de grid a columna única
+  - Panel de filtros se convierte en Sheet/Drawer desde bottom
+  - Reducción de font sizes: H1 a 24px, H2 a 20px, H3 a 16px, Body a 14px
+  - Touch targets mínimo 44px para todos los controles
+  - Navbar colapsa a hamburger menu con avatar visible
+  - Formularios de postulación en scroll vertical completo
+  - Skeleton loaders adaptan a layout móvil
+  - Imágenes de empleos con aspect ratio optimizado para móvil
