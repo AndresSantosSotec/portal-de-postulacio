@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useKV } from '@github/spark/hooks'
 import { useKV } from '@github/spark/hooks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 import { 
-  Bell, 
   CheckCircle, 
-  Eye, 
   UserCircle,
-  Trophy,
   X,
-  Trash,
+  CircleW
+import {
+import type { U
+
+  id: string
+  type: '
+  me
+  jobId?
   CircleWavyCheck
 } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
@@ -30,38 +30,38 @@ export type Notification = {
   applicationId?: string
   jobId?: string
   read: boolean
-  createdDate: string
-}
 
-type NotificationsPanelProps = {
-  user: User
-  onViewJob?: (jobId: string) => void
-  compact?: boolean
-}
 
-const notificationIcons = {
-  status_change: CheckCircle,
-  interview: UserCircle,
-  message: Bell,
-  system: CircleWavyCheck
-}
 
-const notificationColors = {
-  status_change: 'text-secondary',
-  interview: 'text-warning-foreground',
-  message: 'text-primary',
-  system: 'text-accent'
-}
+        n.id === notifId ? { ...
+    )
 
-export default function NotificationsPanel({ user, onViewJob, compact = false }: NotificationsPanelProps) {
-  const [notifications, setNotifications] = useKV<Notification[]>('notifications', [])
-  const [jobs] = useKV<Job[]>('jobs', [])
-  const [filter, setFilter] = useState<'all' | 'unread'>('all')
+    setNotification
+ 
 
-  const userNotifications = (notifications || [])
-    .filter(notif => notif.userId === user.id)
-    .filter(notif => filter === 'all' || !notif.read)
-    .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+
+    setNotifications(current 
+    )
+
+    setNotifications(curr
+ 
+
+    markAsRead(notif.id)
+      onViewJob(notif.jobId)
+  }
+  if (compact) {
+      <div className="s
+ 
+
+          userNotifications.slice(0, 5).map((notif, index) => {
+            const colorClass = notificationColors[notif.type]
+            return (
+                key={notif.id}
+
+                className={`p-3 rounded-lg border
+              >
+                  <div className={`h-10 w-10 rounded-
+                  </div>
 
   const unreadCount = notifications?.filter(n => n.userId === user.id && !n.read).length || 0
 
@@ -128,136 +128,136 @@ export default function NotificationsPanel({ user, onViewJob, compact = false }:
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <p className="font-semibold text-sm line-clamp-1">{notif.title}</p>
-                      {!notif.read && (
-                        <div className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1" />
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{notif.message}</p>
-                    <p className="text-xs text-muted-foreground/70 mt-1">
-                      {formatDistanceToNow(new Date(notif.createdDate), { addSuffix: true, locale: es })}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )
-          })
-        )}
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
-      <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5">
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Bell size={24} weight="duotone" />
-                Notificaciones
-                {unreadCount > 0 && (
-                  <Badge variant="default" className="ml-2">
-                    {unreadCount} nuevas
-                  </Badge>
-                )}
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-2">
-                Mantente al día con actualizaciones de tus postulaciones
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={filter === 'all' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilter('all')}
-              className="gap-2"
-            >
-              Todas
-              <Badge variant={filter === 'all' ? 'secondary' : 'outline'} className="ml-1">
-                {userNotifications.length}
-              </Badge>
-            </Button>
-            <Button
-              variant={filter === 'unread' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilter('unread')}
-              className="gap-2"
-            >
-              No leídas
-              {unreadCount > 0 && (
-                <Badge variant={filter === 'unread' ? 'secondary' : 'outline'} className="ml-1">
-                  {unreadCount}
-                </Badge>
-              )}
-            </Button>
-            {unreadCount > 0 && (
-              <>
-                <Separator orientation="vertical" className="h-8" />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={markAllAsRead}
-                  className="gap-2"
+                  key={notif.id}
+                  animate={{ opacity: 1, y: 0 }}
+                  transi
                 >
-                  <CheckCircle size={16} weight="duotone" />
-                  Marcar todas como leídas
-                </Button>
-              </>
-            )}
-            {userNotifications.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearAll}
-                className="gap-2 text-destructive hover:text-destructive"
-              >
-                <Trash size={16} weight="duotone" />
-                Eliminar todas
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                    className={`transition-all duration-300 hover:shadow-md border-l-4 ${!notif.r
+                    <CardContent className="pt-6">
+                        <div className={`h-12 w-12 rounded-full bg-background border-2 flex items-center 
+                        
+                        
+                      
+                           
+             
+            
+          
+            
+     
+   
 
-      {userNotifications.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <Card>
-            <CardContent className="py-20 text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-                className="inline-flex h-20 w-20 rounded-full bg-primary/10 items-center justify-center mx-auto mb-4"
-              >
-                <Bell size={40} className="text-primary" weight="duotone" />
-              </motion.div>
-              <h3 className="text-xl font-semibold mb-2">
-                {filter === 'all' ? 'No tienes notificaciones' : 'No tienes notificaciones sin leer'}
-              </h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                {filter === 'all' 
-                  ? 'Te notificaremos cuando haya actualizaciones en tus postulaciones' 
-                  : 'Todas tus notificaciones están al día'}
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ) : (
-        <div className="space-y-3">
-          <AnimatePresence mode="popLayout">
-            {userNotifications.map((notif, index) => {
-              const Icon = notificationIcons[notif.type]
-              const colorClass = notificationColors[notif.type]
-              const job = notif.jobId ? jobs?.find(j => j.id === notif.jobId) : null
-              
-              return (
-                <motion.div
+          
+                              s
+                              onClick={(e) => {
+                    
+                            >
+                 
+                          
+                            <p className="text-xs t
+                            </
+                            {!notif.r
+                                <Separator orientation="vert
+                                  varian
+                          
+                  
+                          
+                            )}
+                            {notif.jobId && onViewJob && (
+                  
+                  
+                
+                     
+                     
+                            )}
+                   
+                    </CardContent>
+                </motio
+            })}
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                   key={notif.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
