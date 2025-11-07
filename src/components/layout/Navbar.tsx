@@ -1,7 +1,24 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Briefcase, User, Bell, Heart, PaperPlaneRight } from '@phosphor-icons/react'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { 
+  Briefcase, 
+  User, 
+  Bell, 
+  Heart, 
+  PaperPlaneRight,
+  SignOut,
+  List
+} from '@phosphor-icons/react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import AuthModal from '@/components/auth/AuthModal'
 import type { User as UserType } from '@/lib/types'
 
@@ -27,94 +44,129 @@ export default function Navbar({
     setShowAuthModal(false)
   }
 
+  const initials = currentUser?.name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'U'
+
   return (
     <>
-      <nav className="bg-card border-b border-border sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <nav className="bg-card/80 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <button 
               onClick={() => onNavigate('listings')}
-              className="flex items-center gap-2 group"
+              className="flex items-center gap-3 group"
             >
-              <Briefcase size={28} weight="bold" className="text-primary" />
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20"
+              >
+                <Briefcase size={24} weight="bold" className="text-white" />
+              </motion.div>
               <div className="flex flex-col items-start">
                 <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                   Computrabajo
                 </span>
+                <span className="text-xs text-muted-foreground hidden sm:block">
+                  Tu próximo empleo te espera
+                </span>
               </div>
             </button>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {currentUser ? (
                 <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onNavigate('listings')}
-                    className="hidden sm:flex items-center gap-2"
-                  >
-                    <Briefcase size={18} weight="duotone" />
-                    <span>Empleos</span>
-                  </Button>
+                  <div className="hidden lg:flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onNavigate('listings')}
+                      className="gap-2 hover:bg-primary/10 hover:text-primary"
+                    >
+                      <Briefcase size={18} weight="duotone" />
+                      Empleos
+                    </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onNavigate('applications')}
-                    className="hidden sm:flex items-center gap-2"
-                  >
-                    <PaperPlaneRight size={18} weight="duotone" />
-                    <span>Postulaciones</span>
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onNavigate('applications')}
+                      className="gap-2 hover:bg-primary/10 hover:text-primary"
+                    >
+                      <PaperPlaneRight size={18} weight="duotone" />
+                      Postulaciones
+                    </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onNavigate('favorites')}
-                    className="hidden sm:flex items-center gap-2"
-                  >
-                    <Heart size={18} weight="duotone" />
-                    <span>Favoritos</span>
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onNavigate('favorites')}
+                      className="gap-2 hover:bg-primary/10 hover:text-primary"
+                    >
+                      <Heart size={18} weight="duotone" />
+                      Favoritos
+                    </Button>
+                  </div>
 
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onNavigate('alerts')}
-                    className="relative"
+                    className="relative hover:bg-warning/10"
                   >
-                    <Bell size={20} weight="duotone" />
+                    <Bell size={20} weight={notificationCount > 0 ? "fill" : "duotone"} className={notificationCount > 0 ? "text-warning" : ""} />
                     {notificationCount > 0 && (
                       <Badge 
                         variant="destructive" 
-                        className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs"
+                        className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs animate-pulse"
                       >
                         {notificationCount}
                       </Badge>
                     )}
                   </Button>
 
-                  <div className="h-6 w-px bg-border hidden sm:block" />
+                  <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onNavigate('profile')}
-                    className="flex items-center gap-2"
-                  >
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User size={18} weight="bold" className="text-primary" />
-                    </div>
-                    <span className="hidden sm:inline font-medium">{currentUser.name}</span>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onLogout}
-                  >
-                    Salir
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="gap-2 hover:bg-primary/10">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white text-sm font-semibold">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="hidden sm:inline font-medium">{currentUser.name.split(' ')[0]}</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <div className="px-2 py-2">
+                        <p className="text-sm font-medium">{currentUser.name}</p>
+                        <p className="text-xs text-muted-foreground">{currentUser.email}</p>
+                      </div>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => onNavigate('profile')} className="gap-2 cursor-pointer">
+                        <User size={16} weight="duotone" />
+                        Mi Perfil
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onNavigate('applications')} className="gap-2 cursor-pointer">
+                        <PaperPlaneRight size={16} weight="duotone" />
+                        Mis Postulaciones
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onNavigate('favorites')} className="gap-2 cursor-pointer">
+                        <Heart size={16} weight="duotone" />
+                        Favoritos
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={onLogout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+                        <SignOut size={16} weight="duotone" />
+                        Cerrar Sesión
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
                 <>
@@ -122,14 +174,19 @@ export default function Navbar({
                     variant="ghost"
                     size="sm"
                     onClick={() => onNavigate('listings')}
+                    className="hidden sm:flex gap-2"
                   >
+                    <List size={18} weight="duotone" />
                     Explorar Empleos
                   </Button>
                   <Button
                     onClick={() => setShowAuthModal(true)}
                     size="sm"
+                    className="gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20"
                   >
-                    Iniciar Sesión
+                    <User size={18} weight="bold" />
+                    <span className="hidden sm:inline">Iniciar Sesión</span>
+                    <span className="sm:hidden">Ingresar</span>
                   </Button>
                 </>
               )}
