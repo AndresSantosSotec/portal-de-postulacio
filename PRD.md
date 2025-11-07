@@ -1,148 +1,159 @@
 # Planning Guide
 
-**Experience Qualities**: 
+A comprehensive job portal platform that enables users to search for employment opportunities across all industries, manage their professional profile and curriculum, track applications, save favorite jobs, and receive job alerts - inspired by Computrabajo.
 
-**Experience Qualities**: 
-  - The portal includes job listings, application submission, user profiles, and status tracking, but maintains simplicity thr
+**Experience Qualities**:
+1. **Professional** - The interface should feel trustworthy and credible, instilling confidence in users that this is a serious platform for career advancement
+2. **Efficient** - Users should be able to quickly search, filter, and apply to jobs without friction, with clear navigation between key features
+3. **Empowering** - The platform should make users feel in control of their job search with robust tools for profile management, tracking, and personalization
+
+**Complexity Level**: Complex Application (advanced functionality, accounts)
+  - This is a full-featured job portal with user authentication, profile/resume management, application tracking, favorites system, alerts, and multi-category job browsing capabilities
+
 ## Essential Features
-### Job Listings Page
 
-- **Progression**: View grid of job cards → Apply filters (location, area, c
+### User Authentication & Login
+- **Functionality**: Secure login/registration system that persists user sessions
+- **Purpose**: Enable personalized features like applications, favorites, alerts, and profile management
+- **Trigger**: User clicks "Login" or "Register" button in navbar
+- **Progression**: Click login → Modal appears → Enter credentials or register → Validation → Dashboard access
+- **Success criteria**: Users can create accounts, log in/out, and their session persists across page refreshes
 
+### User Profile & Curriculum Builder
+- **Functionality**: Comprehensive profile with personal info, work experience, education, skills, and downloadable curriculum
+- **Purpose**: Allow users to showcase their qualifications and maintain an up-to-date professional profile
+- **Trigger**: User accesses "Mi curriculum" from navigation
+- **Progression**: Click curriculum → View/edit mode → Add sections (experience, education, skills) → Save → Preview/download
+- **Success criteria**: Users can create complete profiles, edit all sections, and have their data persist
 
-## Essential Features
+### Job Listings with Category Filtering
+- **Functionality**: Browse jobs across multiple categories (not just software) with search and filter capabilities
+- **Purpose**: Help users discover relevant opportunities across all industries
+- **Trigger**: User lands on homepage or clicks "Mi área" 
+- **Progression**: View listings → Filter by category/location → See results update → Click job for details
+- **Success criteria**: Jobs display in organized grid, filters work instantly, categories cover diverse industries
 
-### Job Listings Page
-- **Purpose**: Collect necessary data for recruiters while minimizing barriers to applicati
-- **Progression**: Fill personal information form → Upload CV (PDF/DOCX) → Submit → Create user accoun
+### Job Application System
+- **Functionality**: Apply to jobs and track application status (Applied, CV Viewed, In Process, Finalist, Finalized)
+- **Purpose**: Streamline the application process and provide transparency on application progress
+- **Trigger**: User clicks "Apply" on job detail page
+- **Progression**: View job → Click apply → Confirm application → Added to "Mis postulaciones" → Track status changes
+- **Success criteria**: Applications are saved, status updates reflect in user portal, all applications are viewable
 
-- **Progression**: View grid of job cards → Apply filters (location, area, contract type, experience level) → Search by keyword → Click job card → Navigate to detail view
-- **Success criteria**: Users can find relevant jobs within 30 seconds; all filters work independently and in combination
+### Favorites System
+- **Functionality**: Save interesting jobs to review later
+- **Purpose**: Allow users to bookmark opportunities without committing to apply immediately
+- **Trigger**: User clicks heart/favorite icon on job card or detail page
+- **Progression**: Browse jobs → Click favorite icon → Visual confirmation → Job saved to "Mis favoritos"
+- **Success criteria**: Favorites persist, can be added/removed easily, accessible from dedicated section
 
-### Job Detail View
-- **Functionality**: Show complete job information including description, requirements, benefits, and application button
-- **Purpose**: Provide all necessary information for candidates to make informed application decisions
-- **Trigger**: Clicking on a job card from listings
-- **Progression**: View full job details → Read requirements and benefits → Click "Apply Now" → Redirect to application flow (registration if new, confirmation if authenticated)
-- **Success criteria**: All job metadata displays correctly; apply button state reflects user authentication status
-
-### Application Submission
-- **Functionality**: Capture candidate information and CV file, create user profile if needed
-- **Purpose**: Collect necessary data for recruiters while minimizing barriers to application
-- **Trigger**: Clicking "Apply Now" on job detail page
-- **Progression**: Fill personal information form → Upload CV (PDF/DOCX) → Submit → Create user account + application record → Show success confirmation → Redirect to user portal
-- **Success criteria**: Form validates all fields; file upload works for PDF/DOCX; user profile and application are created atomically
-
-### Candidate Portal
-  - Primary (Deep blue oklch(0.35 0.08 250)): White text (oklch(1 0 0)) - Ratio 8.9:1 ✓
-- **Purpose**: Provide transparency into application progress and allow profile updates
-
-- **Progression**: View applications table → Check color-coded status badges → Click application for details → Navigate to profile section → Update information or CV → Save changes
-- **Success criteria**: Status updates reflect immediately; profile changes persist; CV replacement works correctly
-
-### Application Status Tracking
-- **Functionality**: Visual indication of application progress through recruitment pipeline
-
-- **Trigger**: Automatic when admin updates status in backend system
-- **Progression**: Application submitted (blue) → Under review (blue) → Interview scheduled (yellow) → Hired (green) or Rejected (red)
-- **Success criteria**: Status changes appear in real-time; each status has distinct visual identity; notifications accompany changes
+### Job Alerts & Notifications
+- **Functionality**: Set up alerts for specific job types/categories and receive notifications
+- **Purpose**: Keep users informed of new relevant opportunities without constant searching
+- **Trigger**: User configures alert criteria in "Mis alertas" section
+- **Progression**: Go to alerts → Set criteria (category, location, keywords) → Save → Receive notifications badge
+- **Progression**: Notification appears → Click to view → See matching jobs
+- **Success criteria**: Alerts can be created/edited/deleted, notification count displays, users can view alert-matched jobs
 
 ## Edge Case Handling
+- **Unauthenticated Actions**: When non-logged-in users try to apply/favorite, show login modal with clear messaging
+- **Empty States**: When users have no applications/favorites/alerts, show helpful illustrations and CTAs to get started
+- **Invalid Profile Data**: Form validation prevents submission of incomplete required fields with clear error messages
+- **Application Duplicates**: Prevent users from applying to same job twice with visual indicator "Already Applied"
+- **Network Errors**: Graceful error handling with retry options and user-friendly messages
 
-- **Duplicate Applications** - Prevent users from applying to the same job twice with clear messaging if attempted
-  - Table for applications dashboard with sortable columns
-- **Empty States** - Display helpful messages and CTAs when no jobs match filters or user has no applications yet
-- **Expired Job Postings** - Hide from main listings but preserve in user's application history if already applied
-- **Invalid Authentication** - Clear session handling; redirect to login with return URL preservation
-- **Network Errors** - Show retry options; don't lose form data on submission failures
+## Design Direction
+The design should feel professional and trustworthy like established job portals (LinkedIn, Indeed, Computrabajo) while maintaining a clean, modern aesthetic. It should balance information density with breathing room - users need to scan many jobs quickly but not feel overwhelmed. The interface should feel efficient and action-oriented with clear CTAs, while the profile/curriculum sections should feel more spacious and allow for thoughtful content creation.
 
-- **States**: 
+## Color Selection
+**Complementary (opposite colors)** - Using a professional blue as primary with warm accent colors to create visual interest and draw attention to important actions.
 
-The design should feel institutional and trustworthy - like applying through a government or large corporate portal - with professional polish that conveys competence and reliability. A clean, minimal interface keeps focus on content while subtle use of brand colors adds personality without distraction.
-
-  - FileText for C
-
-  - X for close/cancel
-
-- **Primary Color**: Deep professional blue (oklch(0.35 0.08 250)) - conveys trust, stability, and corporate credibility for headers, navigation, and primary actions
-- **Secondary Colors**: Fresh success green (oklch(0.65 0.15 142)) for positive actions and "hired" status; neutral gray (oklch(0.35 0 0)) for body text
-- **Accent Color**: Vibrant green (oklch(0.68 0.17 140)) for CTAs and important interactive elements that drive user action
-- **Foreground/Background Pairings**: 
-  - Background (White oklch(1 0 0)): Dark gray text (oklch(0.3 0 0)) - Ratio 12.6:1 ✓
-  - Card (Light gray oklch(0.98 0 0)): Dark gray text (oklch(0.3 0 0)) - Ratio 12.1:1 ✓
-  - Navigation collapses to hamburger menu
-  - Secondary (Success green oklch(0.65 0.15 142)): White text (oklch(1 0 0)) - Ratio 5.2:1 ✓
-  - Accent (Vibrant green oklch(0.68 0.17 140)): White text (oklch(1 0 0)) - Ratio 4.8:1 ✓
-  - Muted (Light gray oklch(0.96 0 0)): Medium gray text (oklch(0.5 0 0)) - Ratio 6.8:1 ✓
+- **Primary Color**: Deep Professional Blue (oklch(0.45 0.12 250)) - Communicates trust, stability, and professionalism - the foundation of career services
+- **Secondary Colors**: 
+  - Neutral Gray (oklch(0.55 0.02 250)) - Supporting color for less prominent UI elements and text
+  - Light Background (oklch(0.98 0.005 250)) - Soft off-white for cards and sections
+- **Accent Color**: Energetic Teal (oklch(0.60 0.14 195)) - Highlight color for CTAs, active states, and progress indicators that feels modern and action-oriented
+- **Foreground/Background Pairings**:
+  - Background (Light Cream oklch(0.99 0.005 85)): Dark Gray text (oklch(0.25 0.01 250)) - Ratio 13.2:1 ✓
+  - Card (White oklch(1 0 0)): Primary text (oklch(0.25 0.01 250)) - Ratio 14.1:1 ✓
+  - Primary (Deep Blue oklch(0.45 0.12 250)): White text (oklch(1 0 0)) - Ratio 8.2:1 ✓
+  - Secondary (Neutral Gray oklch(0.55 0.02 250)): White text (oklch(1 0 0)) - Ratio 4.9:1 ✓
+  - Accent (Energetic Teal oklch(0.60 0.14 195)): White text (oklch(1 0 0)) - Ratio 5.1:1 ✓
+  - Muted (Light Gray oklch(0.95 0.005 250)): Muted text (oklch(0.45 0.01 250)) - Ratio 7.8:1 ✓
 
 ## Font Selection
+The typography should feel modern, highly legible, and professional - conveying competence without stuffiness. **Inter** is ideal as it's designed for excellent screen readability and has a professional yet approachable character that works across all content types from job titles to body text.
 
-Typography should project authority and clarity, using a modern sans-serif that reads exceptionally well across devices and conveys professional competence.
-
-- **Typographic Hierarchy**: 
-  - H1 (Page Titles): Inter Bold / 32px / -0.02em letter spacing / 1.2 line height
-  - H2 (Section Headers): Inter SemiBold / 24px / -0.01em letter spacing / 1.3 line height
-  - H3 (Card Titles): Inter SemiBold / 18px / normal letter spacing / 1.4 line height
-  - Body (Main Content): Inter Regular / 16px / normal letter spacing / 1.6 line height
-
-  - Button Text: Inter Medium / 16px / normal letter spacing
+- **Typographic Hierarchy**:
+  - H1 (Main Page Titles): Inter Bold / 32px / -0.02em letter spacing / 1.2 line height
+  - H2 (Section Headers): Inter Semibold / 24px / -0.01em / 1.3 line height
+  - H3 (Job Titles, Card Headers): Inter Semibold / 18px / normal / 1.4 line height
+  - Body (Job descriptions, profile text): Inter Regular / 15px / normal / 1.6 line height
+  - Small (Metadata, dates, locations): Inter Medium / 13px / normal / 1.4 line height
+  - Button Text: Inter Semibold / 14px / normal
 
 ## Animations
+Animations should feel purposeful and efficient - reinforcing actions without slowing users down. The motion language should be crisp and responsive, with quick transitions that provide feedback without demanding attention. Think: professional efficiency over playful delight.
 
-Animations should be subtle and purposeful, reinforcing the professional nature of the platform while providing helpful feedback - understated transitions that guide without distracting.
-
-- **Purposeful Meaning**: Smooth page transitions convey polish and care; status badge animations draw attention to important updates; hover states provide clear affordance
-- **Hierarchy of Movement**: Primary CTAs get subtle scale on hover; card elevation changes guide exploration; status transitions animate smoothly to acknowledge change
+- **Purposeful Meaning**: 
+  - Card hover elevations suggest interactivity
+  - Application status transitions show progress
+  - Modal entrances/exits maintain spatial context
+  - Loading states prevent perceived delays
+  
+- **Hierarchy of Movement**:
+  - Primary: Application submissions, login/logout transitions (300ms)
+  - Secondary: Filter updates, tab switches (200ms)  
+  - Tertiary: Hover states, tooltips (150ms)
 
 ## Component Selection
-
-
-  - Card for job listings and application status entries
-  - Button for primary actions with variant support (primary blue, secondary green, ghost for tertiary)
-  - Input, Textarea, Label for forms with clear focus states
-
-  - Dialog for application confirmation and important messages
-
-  - Tabs for portal navigation (applications, profile, notifications)
-
-  - Progress indicator for multi-step forms
-
+- **Components**:
+  - **Dialog**: Login/register modal, application confirmation dialogs
+  - **Card**: Job listings, application cards, profile sections - with hover:shadow-lg
+  - **Tabs**: Switching between "Mis postulaciones" states (All, Applied, CV Viewed, In Process)
+  - **Input, Textarea, Select**: Profile forms, job search, filter controls - with focus:ring-2
+  - **Button**: Primary (Apply, Save), Secondary (Edit, Cancel), Ghost (Favorites) - distinct visual weights
+  - **Badge**: Job categories, application status, notification count - using variant colors
+  - **Avatar**: User profile display in navbar
+  - **Separator**: Visual breaks between sections
+  - **ScrollArea**: Long job descriptions, application lists
+  - **Accordion**: Collapsible profile sections (Experience, Education, Skills)
   
-
-  - Status badges with specific colors (blue/yellow/green/red) beyond default variants
-
-  - Job card component with custom layout for metadata display
-  - Filter sidebar with checkbox groups and search input
+- **Customizations**:
+  - Job card component with integrated favorite button, status badge, and company logo
+  - Application timeline component showing status progression
+  - Curriculum preview/download component
+  - Category filter grid with icon + label
   
-
-  - Buttons: default, hover (slight scale), active (pressed), disabled (muted), loading (spinner)
-  - Inputs: default, focus (blue ring), error (red border + message), disabled (gray background)
-  - Cards: default, hover (elevated shadow), active/selected (blue border)
-
-- **Icon Selection**: 
-  - MagnifyingGlass for search
-  - Funnel for filters
-  - FileText for CV/documents
-  - User for profile
-  - Bell for notifications
-  - Check for success states
-
-  - Upload for file actions
-  - Clock for pending status
-  - CheckCircle for approved/hired
-
+- **States**:
+  - Buttons: Subtle background shift on hover, pressed state with slight scale, disabled with opacity-50
+  - Inputs: Border color change on focus with ring, error state with red border, success with green
+  - Job cards: Elevation increase on hover, subtle border highlight on active
+  - Favorite icon: Filled heart when active with color transition
   
-
-  - Container padding: px-4 sm:px-6 lg:px-8
-
-  - Form field gaps: gap-4
-  - Section margins: mb-8 or mb-12 for major sections
-  - Grid gaps: gap-6 for job cards
-
-- **Mobile**: 
-
-  - Filters become collapsible drawer on mobile
-
-  - Tables convert to stacked cards on mobile for better readability
-
-  - Bottom sheet for mobile application forms
+- **Icon Selection**:
+  - Briefcase: Job listings
+  - User: Profile
+  - Heart: Favorites
+  - Bell: Alerts/notifications
+  - PaperPlane: Applications
+  - MagnifyingGlass: Search
+  - Funnel: Filters
+  - Download: CV download
+  - Plus: Add new entries
+  - Pencil: Edit
+  
+- **Spacing**:
+  - Container max-width: 1280px (max-w-7xl)
+  - Section padding: py-8 px-4 md:px-6
+  - Card padding: p-6
+  - Grid gaps: gap-6 for cards, gap-4 for forms
+  - Button padding: px-6 py-2.5
+  
+- **Mobile**:
+  - Stack navigation tabs vertically on mobile with full-width buttons
+  - Job cards switch from grid to single column
+  - Filter panel becomes drawer from bottom
+  - Reduce font sizes: H1 to 24px, H2 to 20px, Body to 14px
+  - Touch-friendly targets minimum 44px
+  - Navbar collapses to hamburger menu with user avatar
