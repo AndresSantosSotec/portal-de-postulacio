@@ -160,7 +160,9 @@ export function generateSampleJobs(): Job[] {
       postedDate: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
       applicants: 21,
       imageUrl: 'https://images.unsplash.com/photo-1554224311-beee4ece0ca5?w=800&h=400&fit=crop',
-      customQuestions: []
+      customQuestions: [],
+      isOccupied: true,
+      occupiedDate: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: 'job_6',
@@ -264,7 +266,9 @@ export function generateSampleJobs(): Job[] {
       postedDate: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
       applicants: 19,
       imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop',
-      customQuestions: []
+      customQuestions: [],
+      isOccupied: true,
+      occupiedDate: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: 'job_11',
@@ -516,7 +520,9 @@ export function generateSampleJobs(): Job[] {
       postedDate: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
       applicants: 11,
       imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=400&fit=crop',
-      customQuestions: []
+      customQuestions: [],
+      isOccupied: true,
+      occupiedDate: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString()
     },
     {
       id: 'job_23',

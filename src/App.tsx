@@ -6,9 +6,10 @@ import Navbar from '@/components/layout/Navbar'
 import JobListings from '@/components/jobs/JobListings'
 import JobDetail from '@/components/jobs/JobDetail'
 import UserPortal from '@/components/portal/UserPortal'
+import Chatbot from '@/components/jobs/Chatbot'
 import { useNotificationService } from '@/hooks/use-notification-service'
 import { generateSampleJobs } from '@/lib/sampleData'
-import type { User, Job } from '@/lib/types'
+import type { User, Job, Application } from '@/lib/types'
 
 type View = 'listings' | 'detail' | 'profile' | 'applications' | 'favorites' | 'alerts'
 
@@ -17,6 +18,7 @@ export default function App() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const [currentUser, setCurrentUser] = useKV<User | null>('current_user', null)
   const [jobs, setJobs] = useKV<Job[]>('jobs', [])
+  const [applications] = useKV<Application[]>('applications', [])
   
   const { notificationCount } = useNotificationService(currentUser?.id || null)
   const [notificationCountState] = useState(notificationCount)
@@ -93,6 +95,11 @@ export default function App() {
             />
           )}
         </main>
+
+        <Chatbot 
+          applications={currentUser ? applications?.filter(app => app.userId === currentUser.id) : []}
+          userName={currentUser?.name}
+        />
 
         <Toaster />
       </div>

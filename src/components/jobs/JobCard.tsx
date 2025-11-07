@@ -124,6 +124,11 @@ export default function JobCard({
                 {job.salary}
               </Badge>
             )}
+            {job.isOccupied && (
+              <Badge variant="destructive" className="font-medium">
+                Plaza Ocupada
+              </Badge>
+            )}
             {isApplied && (
               <Badge className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
                 Postulado

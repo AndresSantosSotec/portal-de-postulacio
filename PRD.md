@@ -1,15 +1,15 @@
 # Planning Guide
 
-CoosajerJobs es una plataforma moderna de gestión de talento que conecta a cooperativas, empresas asociadas y candidatos de la red Coosajer, con diseño institucional, microanimaciones sutiles y experiencia de usuario excepcional.
+CoosajerJobs es una plataforma moderna de gestión de talento que conecta a cooperativas, empresas asociadas y candidatos de la red Coosajer, con diseño institucional, microanimaciones sutiles, experiencia de usuario excepcional, y un enfoque en accesibilidad y seguimiento transparente del proceso de selección.
 
 **Experience Qualities**:
 
 - **Profesional y Confiable**: Diseño institucional con azul Coosajer (#004082) que transmite estabilidad, seriedad y confianza, haciendo que los usuarios se sientan seguros en la plataforma.
 - **Dinámico pero Sobrio**: Interfaz moderna con microanimaciones sutiles, transiciones fluidas (framer-motion), skeleton loaders animados y elementos visuales que mantienen la identidad institucional sin perder formalidad.
-- **Accesible y Adaptable**: Modo claro/oscuro automático con preferencia del sistema, diseño responsive y controles accesibles que funcionan en cualquier dispositivo.
+- **Accesible y Transparente**: Modo claro/oscuro automático con preferencia del sistema, diseño responsive, controles accesibles que funcionan en cualquier dispositivo, y seguimiento visual completo del proceso de selección para candidatos.
 
 **Complexity Level**: Light Application (múltiples features con estado intermedio)
-- Gestión de perfil, postulaciones, favoritos y notificaciones sin requerir backend complejo. Usa KV storage para persistencia y ofrece funciones avanzadas como postulación rápida y filtros visuales por categoría.
+- Gestión de perfil, postulaciones, favoritos, notificaciones y seguimiento de proceso sin requerir backend complejo. Usa KV storage para persistencia y ofrece funciones avanzadas como postulación rápida, filtros visuales por categoría, chatbot informativo, y visualización de ambiente laboral.
 
 ## Essential Features
 
@@ -87,6 +87,41 @@ CoosajerJobs es una plataforma moderna de gestión de talento que conecta a coop
 - **Progression**: Click área upload → Animación bounce icon → Seleccionar archivo → Preview con ícono PDF → Confirmación visual verde
 - **Success criteria**: Animación smooth, preview claro, estado guardado persistente, uso automático en postulaciones futuras
 
+### Timeline de Seguimiento del Proceso
+- **Functionality**: Visualización paso a paso del proceso de selección con estados completados, actuales y pendientes, incluyendo fechas y notas para cada etapa
+- **Purpose**: Dar transparencia completa al candidato sobre su progreso en el proceso de selección y reducir ansiedad por falta de información
+- **Trigger**: Usuario hace click en "Ver seguimiento" en su postulación
+- **Progression**: Ver postulación → Click "Ver seguimiento" → Timeline expandible aparece → Estados visualizados con iconos y colores → Información de pruebas psicométricas si aplica
+- **Success criteria**: Timeline responsive, estados claramente diferenciados (completado/actual/pendiente), animaciones fluidas de expansión, información de fechas precisa
+
+### Chatbot Informativo Automatizado
+- **Functionality**: Asistente virtual flotante que envía mensajes automáticos según cambios de estado, responde preguntas frecuentes, y mantiene comunicación constante con aspirantes
+- **Purpose**: Mantener a los candidatos informados en tiempo real sobre avances en su proceso y responder dudas comunes sin necesidad de contacto humano
+- **Trigger**: Cambio de estado de aplicación, envío de pruebas psicométricas, o usuario abre el chatbot
+- **Progression**: Estado cambia → Notificación automática en chat → Usuario puede abrir chatbot → Ver historial de mensajes → Hacer preguntas predefinidas → Recibir respuestas instantáneas
+- **Success criteria**: Notificaciones automáticas correctas para cada evento, respuestas FAQ precisas, UI del chat profesional y amigable, badge de notificación cuando hay mensajes nuevos
+
+### Integración de Pruebas Psicométricas
+- **Functionality**: Sistema de tracking para pruebas psicométricas externas, mostrando cuándo fueron enviadas, estado de completado, y notificaciones automáticas vía chatbot
+- **Purpose**: Permitir seguimiento del proceso de pruebas psicométricas aunque se realicen en plataforma externa, manteniendo al candidato informado
+- **Trigger**: Administrador marca que pruebas fueron enviadas o completadas
+- **Progression**: Admin envía pruebas → Candidato recibe notificación en chatbot y email → Estado se muestra en timeline → Candidato completa → Admin marca como completado → Nueva notificación al candidato
+- **Success criteria**: Estados de pruebas visibles en timeline, notificaciones automáticas funcionan, fechas de envío y completado se registran
+
+### Galería de Ambiente Laboral (Fotos y Videos) - Sección Principal Destacada
+- **Functionality**: Sección principal y prominente con galería filtrable de fotos y videos del ambiente laboral de Coosajer, mostrando oficinas, equipo, eventos y cultura organizacional. Aparece como la primera sección destacada después del encabezado de búsqueda, antes del catálogo de empleos.
+- **Purpose**: Atraer candidatos mostrando la cultura y ambiente de trabajo real desde el inicio, aumentando confianza y transparencia sobre la organización. Es la carta de presentación visual de la empresa.
+- **Trigger**: Usuario accede a la página principal y ve inmediatamente la sección de ambiente laboral antes de explorar las vacantes
+- **Progression**: Ver página principal → Sección "Conoce Nuestro Ambiente Laboral" aparece prominentemente con título grande, descripción y tres indicadores visuales (Modernos/Talentoso/Innovadora) → Botones de filtro con contadores (Todas/Oficinas/Equipo/Eventos/Cultura) → Galería de 15 fotos con animaciones de hover → Click en foto/video → Modal con vista ampliada
+- **Success criteria**: Sección visualmente impactante con gradiente de fondo, badges y títulos grandes, 15 imágenes reales del ambiente laboral, galería responsive con grid adaptativo, filtros funcionales con contadores, imágenes se cargan con placeholder, cards con hover effects mejorados (escala, sombras, bordes), modal de vista ampliada con transiciones suaves, animaciones de entrada con framer-motion
+
+### Filtro de Plazas Disponibles/Ocupadas
+- **Functionality**: Sistema de tabs para filtrar empleos por estado (todas/disponibles/ocupadas), permitiendo ver tanto plazas activas como las ya ocupadas para futuras oportunidades
+- **Purpose**: Mostrar transparencia sobre plazas ocupadas y permitir a candidatos postularse anticipadamente para el banco de talento
+- **Trigger**: Usuario accede a listado de empleos
+- **Progression**: Ver listado → Tabs disponibles debajo del título → Click en "Ocupadas" → Listado filtra a solo plazas ocupadas → Badge visual en cada card identifica estado
+- **Success criteria**: Tabs funcionan correctamente, badge "Plaza Ocupada" visible en cards, filtro afecta conteo de empleos, jobs ocupados tienen fecha de ocupación
+
 
 - **Sin Notificaciones**: Estado vacío amigable con mensaje motiva
 - **Errores de Red**: Manejo elegante con opciones de reintentar y mensajes user-friendly sin jerga técnica
@@ -134,24 +169,29 @@ Las animaciones son sutiles, funcionales y rápidas - reforzando acciones sin ra
 ## Component Selection
 
 - **Components**: 
-  - **Dialog**: Modal de login/registro, confirmación de aplicación
-  - **Card**: Job cards con hover effects, application cards, profile sections
-  - **Tabs**: Portal navigation con estado activo visual
+  - **Dialog**: Modal de login/registro, confirmación de aplicación, galería de fotos ampliadas
+  - **Card**: Job cards con hover effects, application cards, profile sections, galería de ambiente laboral
+  - **Tabs**: Portal navigation con estado activo visual, filtros de plazas disponibles/ocupadas
   - **Input/Textarea/Select**: Con focus states y validación visual
   - **Button**: Variants (default, secondary, ghost, outline) con hover animations
-  - **Badge**: Para categorías, estados, contadores
+  - **Badge**: Para categorías, estados, contadores, plazas ocupadas
   - **Avatar**: Con fallback gradient e iniciales
   - **Skeleton**: Shimmer loaders para loading states
   - **Progress**: Barra de progreso en formularios
   - **Popover/DropdownMenu**: Para notificaciones y menús
   - **Sonner Toast**: Para feedback de acciones
+  - **ScrollArea**: Para contenido del chatbot
 
 - **Custom Components**:
   - **CategoryFilter**: Grid visual con iconos y contadores
   - **ThemeToggle**: Selector de tema animado
   - **ThemeProvider**: Context provider para dark/light mode
   - **ApplicationForm**: Con auto-fill y quick apply
-  - **JobCard**: Con imagen, favoritos, badges
+  - **JobCard**: Con imagen, favoritos, badges, indicador de plaza ocupada
+  - **ApplicationTimeline**: Timeline visual del proceso con estados e historial
+  - **Chatbot**: Asistente virtual flotante con mensajes automáticos y FAQs
+  - **WorkplaceGallery**: Galería filtrable de fotos y videos del ambiente laboral
+  - **NotificationService**: Hook para generar notificaciones automáticas
 
 ## Edge Case Handling
 
@@ -166,6 +206,10 @@ Las animaciones son sutiles, funcionales y rápidas - reforzando acciones sin ra
 - **Imágenes No Cargadas**: Fallback con placeholder elegante y opción de reintentar carga
 - **Formularios Dinámicos Vacíos**: Si empresa no define preguntas, muestra solo campos base sin errores
 - **Postulación Rápida Sin CV**: Botón deshabilitado con tooltip explicativo si usuario no ha subido CV
+- **Postulación a Plaza Ocupada**: Usuarios pueden postularse a plazas ocupadas para banco de talento, con mensaje explicativo
+- **Chatbot Sin Mensajes**: Estado inicial con mensajes de bienvenida y opciones de preguntas frecuentes
+- **Pruebas Psicométricas Vencidas**: Sistema muestra si el enlace de pruebas está vencido con mensaje para contactar RRHH
+- **Timeline Sin Historial**: Si aplicación no tiene historial de estados, se genera automáticamente basado en estado actual
 
 ## Design Direction
 

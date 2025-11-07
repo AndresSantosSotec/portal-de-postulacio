@@ -102,6 +102,8 @@ export type Job = {
   applicants: number
   imageUrl?: string
   customQuestions?: CustomQuestion[]
+  isOccupied?: boolean
+  occupiedDate?: string
 }
 
 export type ApplicationStatus = 
@@ -120,6 +122,17 @@ export type Application = {
   updatedDate: string
   customAnswers?: Record<string, string>
   quickApply?: boolean
+  psychometricTestSent?: boolean
+  psychometricTestSentDate?: string
+  psychometricTestCompleted?: boolean
+  psychometricTestCompletedDate?: string
+  statusHistory?: ApplicationStatusHistory[]
+}
+
+export type ApplicationStatusHistory = {
+  status: ApplicationStatus
+  date: string
+  note?: string
 }
 
 export type JobAlert = {
