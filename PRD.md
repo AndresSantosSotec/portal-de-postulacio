@@ -108,12 +108,12 @@ CoosajerJobs es una plataforma moderna de gestión de talento que conecta a coop
 - **Progression**: Admin envía pruebas → Candidato recibe notificación en chatbot y email → Estado se muestra en timeline → Candidato completa → Admin marca como completado → Nueva notificación al candidato
 - **Success criteria**: Estados de pruebas visibles en timeline, notificaciones automáticas funcionan, fechas de envío y completado se registran
 
-### Galería de Ambiente Laboral (Fotos y Videos)
-- **Functionality**: Sección dedicada con galería filtrable de fotos y videos del ambiente laboral de Coosajer, mostrando oficinas, equipo, eventos y cultura organizacional
-- **Purpose**: Atraer candidatos mostrando la cultura y ambiente de trabajo real, aumentando confianza y transparencia sobre la organización
-- **Trigger**: Usuario navega en la página principal de empleos (scroll hasta la sección)
-- **Progression**: Ver listado de empleos → Scroll down → Galería de ambiente laboral aparece → Filtrar por categoría (oficinas/equipo/eventos/cultura) → Click en foto/video → Modal con vista ampliada
-- **Success criteria**: Galería responsive con grid adaptativo, filtros funcionales, imágenes se cargan con placeholder, modal de vista ampliada con transiciones suaves
+### Galería de Ambiente Laboral (Fotos y Videos) - Sección Principal Destacada
+- **Functionality**: Sección principal y prominente con galería filtrable de fotos y videos del ambiente laboral de Coosajer, mostrando oficinas, equipo, eventos y cultura organizacional. Aparece como la primera sección destacada después del encabezado de búsqueda, antes del catálogo de empleos.
+- **Purpose**: Atraer candidatos mostrando la cultura y ambiente de trabajo real desde el inicio, aumentando confianza y transparencia sobre la organización. Es la carta de presentación visual de la empresa.
+- **Trigger**: Usuario accede a la página principal y ve inmediatamente la sección de ambiente laboral antes de explorar las vacantes
+- **Progression**: Ver página principal → Sección "Conoce Nuestro Ambiente Laboral" aparece prominentemente con título grande, descripción y tres indicadores visuales (Modernos/Talentoso/Innovadora) → Botones de filtro con contadores (Todas/Oficinas/Equipo/Eventos/Cultura) → Galería de 15 fotos con animaciones de hover → Click en foto/video → Modal con vista ampliada
+- **Success criteria**: Sección visualmente impactante con gradiente de fondo, badges y títulos grandes, 15 imágenes reales del ambiente laboral, galería responsive con grid adaptativo, filtros funcionales con contadores, imágenes se cargan con placeholder, cards con hover effects mejorados (escala, sombras, bordes), modal de vista ampliada con transiciones suaves, animaciones de entrada con framer-motion
 
 ### Filtro de Plazas Disponibles/Ocupadas
 - **Functionality**: Sistema de tabs para filtrar empleos por estado (todas/disponibles/ocupadas), permitiendo ver tanto plazas activas como las ya ocupadas para futuras oportunidades

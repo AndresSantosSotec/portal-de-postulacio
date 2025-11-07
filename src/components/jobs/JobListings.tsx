@@ -160,6 +160,8 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
         </div>
       </div>
 
+      <WorkplaceGallery />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -300,8 +302,6 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
           </>
         )}
       </div>
-
-      <WorkplaceGallery />
     </div>
   )
 }
