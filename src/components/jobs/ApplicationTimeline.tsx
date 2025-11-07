@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, Circle, Clock, Flask } from '@phosphor-icons/react'
-import type { Application } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 import { statusLabels } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
-import { motion } from 'framer-motion'
+import type { Application } from '@/lib/types'
 
 const statusSteps = [
   { key: 'postulado', label: 'Postulado', icon: Circle },
@@ -19,7 +19,8 @@ export default function ApplicationTimeline({ application }: { application: Appl
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-GT', {
-      month: 'short',
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -47,59 +48,58 @@ export default function ApplicationTimeline({ application }: { application: Appl
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="relative flex gap-4"
+                className="flex gap-4"
               >
-                {index !== statusSteps.length - 1 && (
+                <div className="flex flex-col items-center">
                   <div
                     className={cn(
-                      "absolute left-[15px] top-8 w-0.5 h-full",
-                      isCompleted ? "bg-primary" : "bg-border"
+                      "w-10 h-10 rounded-full flex items-center justify-center",
+                      isCompleted && "bg-success text-success-foreground",
+                      isPending && "bg-muted text-muted-foreground"
                     )}
-                  />
-                )}
-
-                <div className={cn(
-                  "relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
-                  isCompleted && "bg-primary text-primary-foreground",
-                  isCurrent && "bg-primary text-primary-foreground ring-4 ring-primary/20",
-                  isPending && "bg-muted text-muted-foreground"
-                )}>
-                  <Icon size={18} weight={isCompleted ? "fill" : "regular"} />
+                  >
+                    <Icon size={20} weight="bold" />
+                  </div>
+                  {index < statusSteps.length - 1 && (
+                    <div
+                      className={cn(
+                        "w-0.5 h-12 mt-2",
+                        isCompleted ? "bg-success" : "bg-muted"
+                      )}
+                    />
+                  )}
                 </div>
 
                 <div className="flex-1 pb-8">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <h4 className={cn(
-                      "font-semibold",
-                      isCompleted && "text-foreground",
-                      isPending && "text-muted-foreground"
-                    )}>
+                  <div className="flex items-center gap-2">
+                    <h4
+                      className={cn(
+                        "font-semibold",
+                        isPending && "text-muted-foreground"
+                      )}
+                    >
                       {step.label}
                     </h4>
                     {isCurrent && (
-                      <Badge variant="default" className="text-xs">
+                      <Badge variant="secondary" className="text-xs">
                         Estado Actual
                       </Badge>
                     )}
                   </div>
-                  
-                  {historyEntry && (
-                    <div className="text-sm text-muted-foreground">
-                      <p>{formatDate(historyEntry.date)}</p>
-                      {historyEntry.note && (
-                        <p className="mt-1 text-foreground">{historyEntry.note}</p>
-                      )}
-                    </div>
-                  )}
 
-                  {!historyEntry && isCompleted && (
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(application.updatedDate)}
+                  {historyEntry && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {formatDate(historyEntry.date)}
+                      {historyEntry.note && ` - ${historyEntry.note}`}
                     </p>
                   )}
-
+                  {!historyEntry && isCompleted && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {formatDate(application.appliedDate)}
+                    </p>
+                  )}
                   {isPending && (
-                    <p className="text-sm text-muted-foreground">Pendiente</p>
+                    <p className="text-sm text-muted-foreground mt-1">Pendiente</p>
                   )}
                 </div>
               </motion.div>
@@ -110,18 +110,18 @@ export default function ApplicationTimeline({ application }: { application: Appl
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-8 p-4 rounded-lg bg-accent/10 border border-accent"
+              className="mt-8 p-4 rounded-lg bg-accent/10 border border-accent/20"
             >
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center">
-                  <Flask size={20} weight="duotone" />
+                <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <Flask size={20} weight="bold" className="text-accent-foreground" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold mb-1">Pruebas Psicométricas</h4>
+                  <h4 className="font-semibold mb-2">Pruebas Psicométricas</h4>
                   {application.psychometricTestCompleted ? (
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <CheckCircle size={16} weight="fill" className="text-success" />
+                        <CheckCircle size={16} weight="bold" className="text-success" />
                         <span className="text-sm font-medium text-success">Completadas</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
