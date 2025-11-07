@@ -90,6 +90,8 @@ export default function JobCard({
               <motion.div
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
+                animate={isFavorite ? { scale: [1, 1.1, 1] } : {}}
+                transition={{ duration: 0.3 }}
               >
                 <Heart 
                   size={20} 

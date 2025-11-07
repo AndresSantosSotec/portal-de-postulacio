@@ -9,11 +9,11 @@
 
 :root {
   --background: oklch(1 0 0);
-  --foreground: oklch(0.35 0.01 250);
+  --foreground: oklch(0.26 0.015 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.35 0.01 250);
+  --card-foreground: oklch(0.26 0.015 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.35 0.01 250);
+  --popover-foreground: oklch(0.26 0.015 250);
   --primary: oklch(0.38 0.08 245);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.65 0.15 145);
@@ -32,6 +32,32 @@
   --input: oklch(0.92 0.003 250);
   --ring: oklch(0.38 0.08 245);
   --radius: 0.75rem;
+}
+
+.dark {
+  --background: oklch(0.18 0.005 250);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.22 0.005 250);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.22 0.005 250);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.52 0.12 245);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.58 0.15 145);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.25 0.005 250);
+  --muted-foreground: oklch(0.65 0.01 250);
+  --accent: oklch(0.75 0.12 90);
+  --accent-foreground: oklch(0.15 0.01 90);
+  --warning: oklch(0.75 0.12 90);
+  --warning-foreground: oklch(0.15 0.01 90);
+  --success: oklch(0.58 0.15 145);
+  --success-foreground: oklch(1 0 0);
+  --destructive: oklch(0.65 0.22 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.30 0.005 250);
+  --input: oklch(0.30 0.005 250);
+  --ring: oklch(0.52 0.12 245);
 }
 
 @theme {
@@ -65,8 +91,17 @@
   --radius-xl: calc(var(--radius) * 2);
   --radius-2xl: calc(var(--radius) * 3);
   --radius-full: 9999px;
+
+  --animate-shimmer: shimmer 2s infinite;
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

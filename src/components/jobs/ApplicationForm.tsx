@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import {
@@ -27,7 +27,9 @@ import {
   Check, 
   Lightning,
   Upload,
-  Warning
+  Warning,
+  FilePdf,
+  User as UserIcon
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import type { Job, Application, User, CustomQuestion } from '@/lib/types'
@@ -52,12 +54,23 @@ export default function ApplicationForm({
   const [applications, setApplications] = useKV<Application[]>('applications', [])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    name: currentUser?.name || '',
-    email: currentUser?.email || '',
-    phone: currentUser?.profile?.phone || '',
+    name: '',
+    email: '',
+    phone: '',
   })
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({})
   const [cvFile, setCvFile] = useState<string | null>(null)
+  const [useSavedProfile, setUseSavedProfile] = useState(true)
+
+  useEffect(() => {
+    if (currentUser && useSavedProfile) {
+      setFormData({
+        name: currentUser.name || '',
+        email: currentUser.email || '',
+        phone: currentUser.profile?.phone || '',
+      })
+    }
+  }, [currentUser, useSavedProfile])
 
   const existingApplication = applications?.find(
     app => app.jobId === job.id && app.userId === currentUser?.id
@@ -306,6 +319,36 @@ export default function ApplicationForm({
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {currentUser && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="bg-muted/50 border border-border rounded-lg p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <UserIcon size={18} weight="duotone" className="text-primary" />
+                      <span className="text-sm font-medium">Usar datos de mi perfil</span>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={useSavedProfile}
+                        onChange={(e) => setUseSavedProfile(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-muted-foreground/20 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {useSavedProfile 
+                      ? 'Tus datos guardados se completarán automáticamente' 
+                      : 'Completa manualmente los campos del formulario'
+                    }
+                  </p>
+                </motion.div>
+              )}
+              
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="name">Nombre completo *</Label>
@@ -345,12 +388,54 @@ export default function ApplicationForm({
                 {!currentUser?.cvFile && (
                   <div>
                     <Label htmlFor="cv">CV / Hoja de Vida *</Label>
-                    <div className="mt-2 border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                      <Upload size={32} weight="duotone" className="mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-sm font-medium mb-1">Adjuntar CV</p>
-                      <p className="text-xs text-muted-foreground">PDF o DOCX, máximo 5 MB</p>
-                    </div>
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      className="mt-2 border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer group"
+                    >
+                      <motion.div
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      >
+                        <Upload size={40} weight="duotone" className="mx-auto mb-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </motion.div>
+                      <p className="text-sm font-medium mb-1 group-hover:text-primary transition-colors">
+                        Haz clic para adjuntar tu CV
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        PDF o DOCX, máximo 5 MB
+                      </p>
+                      {cvFile && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-3 flex items-center justify-center gap-2 text-secondary"
+                        >
+                          <FilePdf size={20} weight="duotone" />
+                          <span className="text-sm font-medium">CV adjuntado</span>
+                        </motion.div>
+                      )}
+                    </motion.div>
                   </div>
+                )}
+
+                {currentUser?.cvFile && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-secondary/10 border border-secondary/30 rounded-lg p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-lg bg-secondary/20 flex items-center justify-center shrink-0">
+                        <FilePdf size={24} weight="duotone" className="text-secondary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">CV guardado en tu perfil</p>
+                        <p className="text-xs text-muted-foreground">Se usará tu curriculum actual</p>
+                      </div>
+                      <Check size={20} weight="bold" className="text-secondary shrink-0" />
+                    </div>
+                  </motion.div>
                 )}
               </div>
 

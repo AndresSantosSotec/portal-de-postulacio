@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Toaster } from '@/components/ui/sonner'
+import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import Navbar from '@/components/layout/Navbar'
 import JobListings from '@/components/jobs/JobListings'
 import JobDetail from '@/components/jobs/JobDetail'
@@ -53,46 +54,48 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar
-        currentUser={user}
-        onLoginSuccess={handleLoginSuccess}
-        onLogout={handleLogout}
-        onNavigate={handleNavigate}
-        notificationCount={notificationCount}
-      />
+    <ThemeProvider>
+      <div className="min-h-screen bg-background">
+        <Navbar
+          currentUser={user}
+          onLoginSuccess={handleLoginSuccess}
+          onLogout={handleLogout}
+          onNavigate={handleNavigate}
+          notificationCount={notificationCount}
+        />
 
-      <main>
-        {currentView === 'listings' && (
-          <JobListings
-            onViewJob={handleViewJob}
-            currentUser={user}
-          />
-        )}
+        <main>
+          {currentView === 'listings' && (
+            <JobListings
+              onViewJob={handleViewJob}
+              currentUser={user}
+            />
+          )}
 
-        {currentView === 'detail' && selectedJobId && (
-          <JobDetail
-            jobId={selectedJobId}
-            currentUser={user}
-            onBack={handleBackToListings}
-            onLoginSuccess={handleLoginSuccess}
-          />
-        )}
+          {currentView === 'detail' && selectedJobId && (
+            <JobDetail
+              jobId={selectedJobId}
+              currentUser={user}
+              onBack={handleBackToListings}
+              onLoginSuccess={handleLoginSuccess}
+            />
+          )}
 
-        {(currentView === 'profile' || 
-          currentView === 'applications' || 
-          currentView === 'favorites' || 
-          currentView === 'alerts') && 
-          user && (
-          <UserPortal
-            user={user}
-            onUpdateUser={setCurrentUser}
-            onViewJob={handleViewJob}
-          />
-        )}
-      </main>
+          {(currentView === 'profile' || 
+            currentView === 'applications' || 
+            currentView === 'favorites' || 
+            currentView === 'alerts') && 
+            user && (
+            <UserPortal
+              user={user}
+              onUpdateUser={setCurrentUser}
+              onViewJob={handleViewJob}
+            />
+          )}
+        </main>
 
-      <Toaster />
-    </div>
+        <Toaster />
+      </div>
+    </ThemeProvider>
   )
 }

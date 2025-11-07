@@ -1,10 +1,12 @@
 import { useState, useMemo, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MagnifyingGlass, Funnel, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import JobCard from './JobCard'
+import CategoryFilter from './CategoryFilter'
 import { SkeletonJobCard } from '@/components/ui/skeleton-card'
 import type { Job, JobCategory } from '@/lib/types'
 import { categoryLabels } from '@/lib/types'
@@ -42,6 +44,14 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
   const locations = useMemo(() => {
     const uniqueLocations = [...new Set(jobList.map(job => job.location))]
     return uniqueLocations.sort()
+  }, [jobList])
+
+  const jobCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: jobList.length }
+    jobList.forEach(job => {
+      counts[job.category] = (counts[job.category] || 0) + 1
+    })
+    return counts
   }, [jobList])
 
   const filteredJobs = useMemo(() => {
@@ -144,7 +154,19 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-        <div className="flex items-center justify-between mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <CategoryFilter
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            jobCounts={jobCounts}
+          />
+        </motion.div>
+
+        <div className="flex items-center justify-between mb-6 mt-8">
           <h2 className="text-xl font-semibold text-foreground">
             {isLoading ? 'Cargando empleos...' : `${filteredJobs.length} ${filteredJobs.length === 1 ? 'empleo disponible' : 'empleos disponibles'}`}
           </h2>

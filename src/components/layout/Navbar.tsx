@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/popover'
 import AuthModal from '@/components/auth/AuthModal'
 import NotificationsPanel from '@/components/portal/NotificationsPanel'
+import { ThemeToggle } from './ThemeToggle'
 import type { User as UserType } from '@/lib/types'
 import type { Notification } from '@/components/portal/NotificationsPanel'
 
@@ -89,6 +90,8 @@ export default function Navbar({
             </button>
 
             <div className="flex items-center gap-2">
+              <ThemeToggle />
+              
               {currentUser ? (
                 <>
                   <div className="hidden lg:flex items-center gap-1">

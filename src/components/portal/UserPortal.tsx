@@ -120,16 +120,34 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
           </div>
 
           <TabsContent value="curriculum" className="mt-0 space-y-6">
-            <ProfileCurriculum user={user} onUpdateUser={onUpdateUser} />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ProfileCurriculum user={user} onUpdateUser={onUpdateUser} />
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="applications" className="mt-0 space-y-6">
-            <ProfileApplications user={user} onViewJob={onViewJob} />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ProfileApplications user={user} onViewJob={onViewJob} />
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="notifications" className="mt-0 space-y-6">
-            <StatusSimulator userId={user.id} />
-            <NotificationsPanel user={user} onViewJob={onViewJob} />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <StatusSimulator userId={user.id} />
+              <NotificationsPanel user={user} onViewJob={onViewJob} />
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="favorites" className="mt-0 space-y-6">

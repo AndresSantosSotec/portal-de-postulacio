@@ -559,6 +559,258 @@ export function generateSampleJobs(): Job[] {
       applicants: 29,
       imageUrl: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&h=400&fit=crop',
       customQuestions: []
+    },
+    {
+      id: 'job_25',
+      title: 'QA Tester / Analista de Calidad',
+      company: 'Quality Tech GT',
+      location: 'Guatemala, Guatemala',
+      category: 'desarrollo-software',
+      description: 'Únete a nuestro equipo de QA para garantizar la calidad de software. Diseñarás y ejecutarás planes de prueba, identificarás bugs y trabajarás estrechamente con desarrolladores.',
+      requirements: [
+        'Experiencia en testing manual y/o automatizado',
+        'Conocimiento de metodologías de testing',
+        'Familiaridad con herramientas de gestión de bugs (Jira, Bugzilla)',
+        'Atención al detalle y pensamiento analítico',
+        'Conocimiento de Selenium o Cypress (plus)'
+      ],
+      salary: 'Q7,000 - Q12,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 19,
+      imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop',
+      customQuestions: sampleQuestions.developer
+    },
+    {
+      id: 'job_26',
+      title: 'Coordinador de Logística',
+      company: 'Distribuidora Nacional',
+      location: 'Villa Nueva, Guatemala',
+      category: 'administracion',
+      description: 'Buscamos coordinador de logística para gestionar la cadena de suministro, inventarios y distribución. Coordinarás con proveedores y transportistas para garantizar entregas eficientes.',
+      requirements: [
+        'Experiencia de 2+ años en logística o supply chain',
+        'Conocimiento de sistemas ERP',
+        'Capacidad de planificación y organización',
+        'Licencia de conducir (deseable)',
+        'Disponibilidad para horarios flexibles'
+      ],
+      salary: 'Q8,000 - Q11,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 16,
+      imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_27',
+      title: 'Barista / Encargado de Cafetería',
+      company: 'Café Cultura',
+      location: 'Antigua Guatemala, Sacatepéquez',
+      category: 'otros',
+      description: 'Cafetería boutique busca barista apasionado por el café de especialidad. Prepararás bebidas de alta calidad y brindarás servicio excepcional a nuestros clientes.',
+      requirements: [
+        'Experiencia como barista (mínimo 1 año)',
+        'Conocimiento de métodos de extracción',
+        'Excelente atención al cliente',
+        'Capacidad para trabajar bajo presión',
+        'Disponibilidad de horarios rotativos'
+      ],
+      salary: 'Q3,500 - Q5,000 + propinas',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 28,
+      imageUrl: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_28',
+      title: 'Técnico en Redes y Soporte IT',
+      company: 'Soporte Tecnológico GT',
+      location: 'Mixco, Guatemala',
+      category: 'ingenieria',
+      description: 'Empresa de servicios IT busca técnico para mantenimiento de redes, soporte a usuarios y resolución de incidencias técnicas.',
+      requirements: [
+        'Conocimientos de redes (TCP/IP, LAN, WAN)',
+        'Experiencia en soporte técnico',
+        'Conocimiento de Windows Server y Active Directory',
+        'Habilidades de troubleshooting',
+        'Certificaciones (A+, Network+, CCNA) deseable'
+      ],
+      salary: 'Q6,000 - Q9,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 22,
+      imageUrl: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_29',
+      title: 'Copywriter Creativo',
+      company: 'Agencia Creativa Palabras',
+      location: 'Guatemala, Guatemala',
+      category: 'marketing',
+      description: 'Agencia busca copywriter para crear contenido persuasivo y creativo para campañas de publicidad, redes sociales y sitios web.',
+      requirements: [
+        'Portfolio de trabajos escritos',
+        'Excelente redacción y creatividad',
+        'Experiencia en copywriting publicitario',
+        'Conocimiento de SEO (plus)',
+        'Capacidad para trabajar con múltiples proyectos'
+      ],
+      salary: 'Q6,000 - Q10,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 31,
+      imageUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=400&fit=crop',
+      customQuestions: sampleQuestions.marketing
+    },
+    {
+      id: 'job_30',
+      title: 'Psicólogo Clínico',
+      company: 'Centro de Salud Mental Integral',
+      location: 'Guatemala, Guatemala',
+      category: 'salud',
+      description: 'Centro de salud mental busca psicólogo clínico para atención de pacientes adolescentes y adultos. Ambiente profesional y de crecimiento continuo.',
+      requirements: [
+        'Licenciatura en Psicología Clínica',
+        'Colegiado activo',
+        'Experiencia mínima de 2 años',
+        'Conocimiento de enfoques terapéuticos diversos',
+        'Empatía y habilidades de escucha activa'
+      ],
+      salary: 'Q8,000 - Q12,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 14,
+      imageUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_31',
+      title: 'Editor de Video',
+      company: 'Productora Audiovisual Dreams',
+      location: 'Guatemala, Guatemala',
+      category: 'diseno',
+      description: 'Productora audiovisual busca editor de video para trabajar en proyectos comerciales, corporativos y contenido para redes sociales.',
+      requirements: [
+        'Dominio de Adobe Premiere Pro y After Effects',
+        'Portfolio con trabajos realizados',
+        'Conocimiento de color grading',
+        'Creatividad y atención al detalle',
+        'Conocimiento de DaVinci Resolve (plus)'
+      ],
+      salary: 'Q7,000 - Q12,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 26,
+      imageUrl: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_32',
+      title: 'Gerente de Tienda Retail',
+      company: 'Cadena de Tiendas Guatemala',
+      location: 'Quetzaltenango, Quetzaltenango',
+      category: 'ventas',
+      description: 'Cadena retail busca gerente para administrar operaciones de tienda, supervisar equipo de ventas y garantizar excelencia en servicio al cliente.',
+      requirements: [
+        'Experiencia de 3+ años en retail',
+        'Experiencia en gestión de equipos',
+        'Conocimiento de operaciones de tienda',
+        'Orientación a resultados y ventas',
+        'Disponibilidad de horarios'
+      ],
+      salary: 'Q9,000 - Q14,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 18,
+      imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400&fit=crop',
+      customQuestions: sampleQuestions.sales
+    },
+    {
+      id: 'job_33',
+      title: 'Maestro de Inglés',
+      company: 'Instituto de Idiomas Excellence',
+      location: 'Guatemala, Guatemala',
+      category: 'educacion',
+      description: 'Instituto de idiomas busca maestro de inglés para impartir clases a niños, adolescentes y adultos. Grupos reducidos y ambiente dinámico.',
+      requirements: [
+        'Nivel avanzado/nativo de inglés (C1/C2)',
+        'Certificación TEFL, TESOL o similar',
+        'Experiencia en enseñanza de idiomas',
+        'Metodologías comunicativas',
+        'Paciencia y vocación de enseñanza'
+      ],
+      salary: 'Q6,000 - Q9,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 33,
+      imageUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_34',
+      title: 'Nutricionista Clínico',
+      company: 'Clínica de Nutrición Vital',
+      location: 'Antigua Guatemala, Sacatepéquez',
+      category: 'salud',
+      description: 'Clínica de nutrición busca nutricionista para consultas personalizadas, planes alimenticios y seguimiento de pacientes.',
+      requirements: [
+        'Licenciatura en Nutrición',
+        'Colegiado activo',
+        'Experiencia en consulta nutricional',
+        'Conocimiento de software de planes alimenticios',
+        'Empatía y habilidades de comunicación'
+      ],
+      salary: 'Q7,000 - Q11,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 15,
+      imageUrl: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_35',
+      title: 'Scrum Master',
+      company: 'Agile Software Company',
+      location: 'Guatemala, Guatemala',
+      category: 'desarrollo-software',
+      description: 'Empresa de tecnología busca Scrum Master para facilitar procesos ágiles, coordinar equipos de desarrollo y garantizar entrega continua de valor.',
+      requirements: [
+        'Certificación Scrum Master (CSM o PSM)',
+        'Experiencia de 2+ años como Scrum Master',
+        'Conocimiento profundo de metodologías ágiles',
+        'Habilidades de facilitación y liderazgo',
+        'Experiencia con herramientas ágiles (Jira, Trello)'
+      ],
+      salary: 'Q14,000 - Q20,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 11,
+      imageUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&h=400&fit=crop',
+      customQuestions: []
+    },
+    {
+      id: 'job_36',
+      title: 'Chef de Cocina',
+      company: 'Restaurante Gourmet La Estancia',
+      location: 'Antigua Guatemala, Sacatepéquez',
+      category: 'otros',
+      description: 'Restaurante gourmet busca chef para liderar cocina, crear menús innovadores y supervisar equipo culinario.',
+      requirements: [
+        'Experiencia de 5+ años en cocina profesional',
+        'Conocimiento de cocina internacional',
+        'Experiencia en gestión de equipos',
+        'Creatividad e innovación',
+        'Disponibilidad de horarios'
+      ],
+      salary: 'Q10,000 - Q16,000',
+      type: 'full-time',
+      postedDate: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      applicants: 13,
+      imageUrl: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=400&fit=crop',
+      customQuestions: []
     }
   ]
 }

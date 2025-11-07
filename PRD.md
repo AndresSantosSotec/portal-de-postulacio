@@ -1,40 +1,77 @@
 # Planning Guide
 
-**Experience Qualities**:
+CoosajerJobs es una plataforma moderna de gestión de talento que conecta a cooperativas, empresas asociadas y candidatos de la red Coosajer, con diseño institucional, microanimaciones sutiles y experiencia de usuario excepcional.
 
 **Experience Qualities**:
 
 - **Profesional y Confiable**: Diseño institucional con azul Coosajer (#004082) que transmite estabilidad, seriedad y confianza, haciendo que los usuarios se sientan seguros en la plataforma.
-- **Dinámico pero Sobrio**: Interfaz moderna con microanimaciones sutiles, transiciones suaves y elementos visuales que mantienen la identidad institucional sin perder formalidad.
+- **Dinámico pero Sobrio**: Interfaz moderna con microanimaciones sutiles, transiciones fluidas (framer-motion), skeleton loaders animados y elementos visuales que mantienen la identidad institucional sin perder formalidad.
+- **Accesible y Adaptable**: Modo claro/oscuro automático con preferencia del sistema, diseño responsive y controles accesibles que funcionan en cualquier dispositivo.
 
+**Complexity Level**: Light Application (múltiples features con estado intermedio)
+- Gestión de perfil, postulaciones, favoritos y notificaciones sin requerir backend complejo. Usa KV storage para persistencia y ofrece funciones avanzadas como postulación rápida y filtros visuales por categoría.
 
-- **Functionality**: Formulario de aplicación que combina campos base estánd
-- **Trigger**: Usuario hace clic en "Postularme ahora" en detalle de empleo
+## Essential Features
 
-### Postulación Rápid
+### Exploración Visual de Empleos por Categoría
+- **Functionality**: Grid visual con iconos para filtrar empleos por categoría (desarrollo, diseño, marketing, ventas, etc.) mostrando conteo de ofertas en cada una
+- **Purpose**: Facilitar navegación rápida y visual sin depender de dropdowns, mejorando la experiencia de descubrimiento
+- **Trigger**: Usuario accede al listado de empleos
+- **Progression**: Ver grid de categorías → Click en categoría con ícono → Lista se filtra → Empleos relevantes aparecen con animación
+- **Success criteria**: Grid responsive, animaciones fluidas en selección, contadores precisos, iconos duotone de Phosphor
 
-- **Progression**: Click botón → Confirmación rápida → Aplicac
+### Modo Claro/Oscuro Automático
+- **Functionality**: Toggle de tema con opciones claro, oscuro y automático (según preferencia del sistema), con transiciones suaves entre modos
+- **Purpose**: Mejorar accesibilidad y confort visual según preferencias y condiciones de iluminación del usuario
+- **Trigger**: Usuario hace click en botón de tema en navbar
+- **Progression**: Click ícono sol/luna → Dropdown con opciones → Seleccionar modo → Cambio animado de colores → Preferencia guardada
+- **Success criteria**: Transición suave sin parpadeo, modo automático detecta sistema, persistencia entre sesiones, todos los componentes adaptan colores correctamente
 
-- **Functionality**: Subida, recorte y gestión de foto de perfil del usuario (máx. 3 MB, jpg/png)
-- **Trigger**: Usuario accede a "Mi Curriculum" y hace clic en avatar o bot
-- **Success criteria**: Foto se sube correctamente, aparece en avatar de navbar, se mantiene en sesiones futuras, validación de tamaño funciona
-### Publicaciones de Empleo con Imágenes
+### Skeleton Loaders Animados
+- **Functionality**: Placeholders animados con efecto shimmer durante carga de datos (listados, perfiles, formularios)
+- **Purpose**: Prevenir sensación de delay y mantener al usuario informado durante cargas, mejorando percepción de velocidad
+- **Trigger**: Inicio de carga de datos (800ms delay para demo)
+- **Progression**: Inicio carga → Skeletons con shimmer aparecen → Datos cargan → Transición fade-in a contenido real
+- **Success criteria**: Shimmer fluido 2s loop, forma similar al contenido final, colores muted apropiados, no afecta layout
 
-- **Progression**: Crear oferta → Fo
+### Postulación con Datos del Perfil
+- **Functionality**: Toggle para autocompletar formulario de postulación con datos guardados del perfil (nombre, email, teléfono, CV)
+- **Purpose**: Reducir fricción en postulaciones y evitar re-ingreso de datos, manteniendo opción de personalización
+- **Trigger**: Usuario abre formulario de postulación y tiene perfil completo
+- **Progression**: Abrir formulario → Toggle "usar datos de perfil" activado → Campos pre-llenados → Usuario verifica/edita → Envía postulación
+- **Success criteria**: Toggle funcional, datos se llenan reactivamente, CV guardado se muestra con indicador visual, validación funciona
 
-- **Functionality**: Notificaciones automáticas cuando cambia el estado de una postulación, con dropdown en navbar y 
-- **Trigger**: Cambio de estado de aplicación (postulado → cv-visto → en-proceso → finali
-- **Success criteria**: Notificaciones instantáneas, contador de no leídas funciona, historial accesible, animaciones sua
-### Skeleton Loaders Integrales
+### Postulación Rápida
+- **Functionality**: Botón de un click para postular usando perfil y CV guardados, sin llenar formulario
+- **Trigger**: Usuario con perfil completo hace click en "Postularme ahora"
+- **Progression**: Click botón → Confirmación modal con opción rápida destacada → Click "Postular Rápido" ⚡ → Animación envío → Confirmación success
+- **Success criteria**: Solo aparece si usuario tiene CV y datos completos, animación lightning distintiva, toast de confirmación
 
-- **Progression**: Inicio de c
+### Microanimaciones en Interacciones
+- **Functionality**: Animaciones sutiles con framer-motion en hover de cards, click de botones, toggle de favoritos, cambio de tabs, transición de vistas
+- **Purpose**: Dar feedback inmediato de interacciones y crear experiencia moderna sin ralentizar navegación
+- **Trigger**: Cualquier interacción del usuario con elementos interactivos
+- **Progression**: Hover card → Elevación y scale sutil → Click favorito → Scale pulse animation → Cambio tab → Fade slide transition
+- **Success criteria**: Animaciones ≤300ms, no interfieren con UX, mejoran percepción de calidad, funcionan en todos los navegadores
 
-- **Functionality**: Currículum completo con información personal, experiencias labor
-- **Trigger**: Usuario accede a "Mi Curriculum" desde navegación
-- **Success criteria**: Perfil editable por secciones, barra de progreso de completitud, descarga de CV funcional, datos persisten
-### Sistema de Favoritos y Alertas
+### Amplio Catálogo de Empleos Demo
+- **Functionality**: 36+ empleos de muestra en diversas categorías con imágenes, datos reales y preguntas personalizadas
+- **Purpose**: Permitir exploración completa de features sin necesidad de cargar datos, ideal para demo y pruebas
+- **Trigger**: Primera carga de la aplicación
+- **Progression**: App inicia → Verifica si hay empleos → Si vacío, genera 36 empleos de muestra → Usuario explora catálogo variado
+- **Success criteria**: Empleos distribuidos en todas las categorías, imágenes relevantes de Unsplash, fechas variadas, salarios realistas
 
-- **Progression**: Guardar favorito → Co
+### Sistema de Notificaciones Interactivo
+- **Functionality**: Notificaciones automáticas cuando cambia el estado de postulación, con dropdown en navbar y panel completo
+- **Trigger**: Cambio de estado de aplicación (postulado → cv-visto → en-proceso → finalista → proceso-finalizado)
+- **Success criteria**: Notificaciones instantáneas, contador de no leídas funciona, historial accesible, animaciones suaves (pulse en badge)
+
+### CV Mejorado con Visual Feedback  
+- **Functionality**: Upload de CV con animación, preview visual, indicador de archivo guardado con ícono PDF y check verde
+- **Purpose**: Dar certeza al usuario de que su CV está cargado correctamente y será usado en postulaciones
+- **Trigger**: Usuario sube CV en perfil o formulario de postulación
+- **Progression**: Click área upload → Animación bounce icon → Seleccionar archivo → Preview con ícono PDF → Confirmación visual verde
+- **Success criteria**: Animación smooth, preview claro, estado guardado persistente, uso automático en postulaciones futuras
 
 
 - **Sin Notificaciones**: Estado vacío amigable con mensaje motiva
@@ -59,15 +96,48 @@ La tipografía debe transmitir modernidad, excelente legibilidad y profesionalis
   - Body (Descripciones de empleo, texto de perfil): Inter Regular / 15px / normal / 1.6 line height
   - Button Text: Inter Semibold / 14px / normal / 1 line height
 ## Animations
-Las animaciones deben ser sutiles pero presentes - reforzando acciones sin ralentizar al usuario. El lenguaje de movimiento es ágil y 
-- **Purposeful Meaning**: 
 
-  - Estados de carga (skeleton) pr
-  - Pulso sutil en notificaciones nuevas atrae atención
+Las animaciones son sutiles, funcionales y rápidas - reforzando acciones sin ralentizar al usuario. Cada animación tiene un propósito claro: orientar, confirmar o guiar atención. El lenguaje de movimiento es ágil, profesional y consistente en toda la aplicación.
+
+- **Purposeful Meaning**: 
+  - Elevación y scale en hover de job cards (y: -4px, scale: 1.03) sugiere clickeabilidad
+  - Pulse animation en ícono de favorito cuando está activo (scale: [1, 1.1, 1]) confirma acción
+  - Shimmer en skeleton loaders (translateX: -100% → 100%, 2s loop) indica carga en progreso
+  - Transiciones de estado en aplicaciones con fade-in y slide-up muestran progreso
+  - Rotación del ícono sol/luna (180deg) al cambiar tema hace el cambio tangible
+  - Lightning icon con spin en postulación rápida enfatiza velocidad
+  - Bounce animation en ícono de upload hace el área más invitante
+  - Fade slide (opacity + y offset) en cambio de tabs mantiene contexto espacial
+
 - **Hierarchy of Movement**:
-  - Secondary: Actualizaciones de filtros, cambios de tabs, abrir detalles (200ms e
-  - Skeleton Shimmer: Animación continua de carga (2000ms linear loop)
+  - Primary: Envío de postulaciones, confirmaciones de éxito, cambio de tema (300ms ease-out)
+  - Secondary: Hover en cards, filtro por categoría, transiciones de tabs (200ms ease-in-out)  
+  - Tertiary: Hover en botones, tooltips, badges (150ms ease-in)
+  - Continuous: Skeleton shimmer (2000ms linear infinite), notification badge pulse
+
+- **Implementation**: Todas las animaciones usan framer-motion para consistencia y performance. Las transiciones CSS se usan solo para propiedades simples (color, border). Skeleton shimmer usa keyframe CSS nativo para mejor performance en loops largos.
+
 ## Component Selection
+
+- **Components**: 
+  - **Dialog**: Modal de login/registro, confirmación de aplicación
+  - **Card**: Job cards con hover effects, application cards, profile sections
+  - **Tabs**: Portal navigation con estado activo visual
+  - **Input/Textarea/Select**: Con focus states y validación visual
+  - **Button**: Variants (default, secondary, ghost, outline) con hover animations
+  - **Badge**: Para categorías, estados, contadores
+  - **Avatar**: Con fallback gradient e iniciales
+  - **Skeleton**: Shimmer loaders para loading states
+  - **Progress**: Barra de progreso en formularios
+  - **Popover/DropdownMenu**: Para notificaciones y menús
+  - **Sonner Toast**: Para feedback de acciones
+
+- **Custom Components**:
+  - **CategoryFilter**: Grid visual con iconos y contadores
+  - **ThemeToggle**: Selector de tema animado
+  - **ThemeProvider**: Context provider para dark/light mode
+  - **ApplicationForm**: Con auto-fill y quick apply
+  - **JobCard**: Con imagen, favoritos, badges
 
 ## Edge Case Handling
 
@@ -114,96 +184,28 @@ La tipografía debe transmitir modernidad, excelente legibilidad y profesionalis
   - Small (Metadata, fechas, ubicaciones): Inter Medium / 13px / normal / 1.4 line height
   - Button Text: Inter Semibold / 14px / normal / 1 line height
 
-## Animations
+## Icon Selection
 
-Las animaciones deben ser sutiles pero presentes - reforzando acciones sin ralentizar al usuario. El lenguaje de movimiento es ágil y responsivo con transiciones rápidas que dan feedback sin exigir atención. Piensa: eficiencia profesional con momentos calculados de deleite.
+Usando @phosphor-icons/react con weight="duotone" para dar profundidad visual sin añadir ruido:
+- **Briefcase**: Jobs, logo de app
+- **User/UserCircle**: Perfil, avatar
+- **Heart**: Favoritos (regular/fill states con animación)
+- **Bell**: Alertas, notificaciones (pulse cuando hay nuevas)
+- **PaperPlaneRight**: Postulaciones
+- **MagnifyingGlass**: Búsqueda
+- **Funnel**: Filtros
+- **Code, PaintBrush, ChartLineUp**: Categorías de empleos
+- **Moon/Sun**: Theme toggle (con rotación animada)
+- **Lightning**: Quick apply (con spin animation)
+- **Upload/FilePdf**: CV y archivos
+- **Check/CheckCircle**: Confirmaciones
+- **MapPin, Buildings, CalendarBlank**: Metadata de empleos
 
-- **Purposeful Meaning**: 
-  - Elevación de cards en hover sugiere interactividad
-  - Transiciones de estado en aplicaciones muestran progreso
-  - Entradas/salidas de modales mantienen contexto espacial
-  - Estados de carga (skeleton) previenen delays percibidos
-  - Confirmaciones con checkmark animado refuerzan éxito
-  - Pulso sutil en notificaciones nuevas atrae atención
-  
-- **Hierarchy of Movement**:
-  - Primary: Envío de aplicaciones, transiciones login/logout, confirmaciones (300ms ease-out)
-  - Secondary: Actualizaciones de filtros, cambios de tabs, abrir detalles (200ms ease-in-out)
-  - Tertiary: Hover states, tooltips, badges (150ms ease-in)
-  - Skeleton Shimmer: Animación continua de carga (2000ms linear loop)
+## Mobile Responsiveness
 
-  - Touch targets míni
-
-  - Skeleton load
-  - **Dialog**: Modal de login/registro, confirmación de aplicación, editor de foto de perfil
-  - **Card**: Listado de empleos, cards de aplicaciones, secciones de perfil - con hover:shadow-xl y transition
-  - **Tabs**: Cambio entre estados en "Mis Postulaciones" (Todas, Postulado, CV Visto, En Proceso, Finalista)
-  - **Input, Textarea, Select**: Formularios de perfil, búsqueda de empleos, controles de filtros, campos dinámicos - con focus:ring-2 ring-primary
-  - **Button**: Primary (Aplicar, Guardar, Enviar), Secondary (Editar, Cancelar), Ghost (Favoritos, Navegación) - con pesos visuales distintos y animaciones hover
-  - **Badge**: Categorías de empleo, estado de aplicación, contador de notificaciones, tags "nuevo" - usando colores variant apropiados
-  - **Avatar**: Foto de perfil en navbar y perfil, con fallback de iniciales
-  - **Separator**: Divisiones visuales entre secciones
-  - **ScrollArea**: Descripciones largas de empleos, listas de aplicaciones
-  - **Accordion**: Secciones colapsables en perfil (Experiencia, Educación, Habilidades)
-  - **Skeleton**: Placeholders animados para todos los estados de carga
-  - **Progress**: Barra de completitud de perfil, progreso en formulario de postulación
-  - **Popover**: Dropdown de notificaciones en navbar
-  - **Tooltip**: Información adicional en íconos y estados
-
-
-  - JobCard component con botón de favorito integrado, badge de estado, imagen/logo empresa
-  - ApplicationTimeline component mostrando progresión de estados con línea conectora
-  - ProfilePhotoUpload component con crop, preview y validación
-  - DynamicQuestionForm component que renderiza campos según configuración
-  - QuickApplyButton component con confirmación one-click
-  - CurriculumPreview y CurriculumDownload components
-  - CategoryFilterGrid con iconos + labels
-  - NotificationBell con contador animado
-  - SkeletonJobCard, SkeletonProfile, SkeletonForm para todos los estados de carga
-
-
-  - Buttons: Background shift sutil en hover, pressed con scale(0.98), disabled con opacity-50 y cursor-not-allowed
-  - Inputs: Border color change en focus con ring-2 ring-primary, error con border-destructive y shake animation, success con border-secondary y check icon
-  - Job cards: Elevación shadow-lg en hover, borde sutil highlight, transition-all duration-200
-  - Favorite icon: Filled heart cuando activo con scale animation y color transition
-  - Notification bell: Pulso en badge cuando hay nuevas, fill cuando activas
-  - Avatar: Ring border en hover, placeholder con gradient cuando no hay foto
-
-- **Icon Selection** (usando @phosphor-icons/react con weight="duotone" mayormente):
-  - Briefcase: Listado de empleos, ícono de app
-  - User/UserCircle: Perfil, avatar
-  - Heart: Favoritos (regular/fill states)
-  - Bell: Alertas/notificaciones
-  - PaperPlaneRight: Aplicaciones/postulaciones
-  - MagnifyingGlass: Búsqueda
-  - Funnel: Filtros
-  - Download/DownloadSimple: Descarga de CV
-  - Plus/PlusCircle: Agregar entradas
-  - Pencil/PencilSimple: Editar
-  - Check/CheckCircle: Confirmaciones, éxito
-  - Camera: Cambiar foto de perfil
-  - Buildings: Empresa
-  - MapPin: Ubicación
-  - CalendarBlank: Fechas
-  - ArrowLeft/ArrowRight: Navegación
-  - SignOut: Cerrar sesión
-  - List: Menú/listados
-
-
-
-  - Section padding: py-8 px-4 md:py-12 md:px-6
-
-  - Grid gaps: gap-6 para cards de empleos, gap-4 para forms
-  - Button padding: px-6 py-2.5 (default), px-4 py-2 (sm)
-  - Stack spacing: space-y-4 para forms, space-y-6 para secciones
-
-
-  - Navigation tabs se apilan verticalmente con botones full-width
-  - Job cards cambian de grid a columna única
-  - Panel de filtros se convierte en Sheet/Drawer desde bottom
-  - Reducción de font sizes: H1 a 24px, H2 a 20px, H3 a 16px, Body a 14px
-  - Touch targets mínimo 44px para todos los controles
-  - Navbar colapsa a hamburger menu con avatar visible
-  - Formularios de postulación en scroll vertical completo
-  - Skeleton loaders adaptan a layout móvil
-  - Imágenes de empleos con aspect ratio optimizado para móvil
+- Grid de categorías: 2 cols en móvil → 3 en tablet → 7 en desktop
+- Job cards: 1 col móvil → 2 tablet → 3 desktop
+- Tabs: 2 cols móvil → 6 desktop con labels abreviados
+- Navbar: Logo + theme + menu hamburger
+- Touch targets: Mínimo 44px en móviles
+- Font sizes adaptados: H1 24px móvil / 32px desktop
