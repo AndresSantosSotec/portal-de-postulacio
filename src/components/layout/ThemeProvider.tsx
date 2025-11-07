@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useKV } from '@github/spark/hooks'
 
-  children: ReactNode
+type Theme = 'light' | 'dark' | 'system'
 
-type ThemeProviderState = {
+type ThemeProviderProps = {
   children: ReactNode
-}
+  defaultTheme?: Theme
 }
 
 type ThemeProviderState = {
@@ -21,7 +21,7 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
   const [theme, setTheme] = useState<Theme>(storedTheme || defaultTheme)
 
   const getActualTheme = (): 'light' | 'dark' => {
-        const root = window.d
+    if (theme === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
     return theme
@@ -42,31 +42,31 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       const handleChange = () => {
         const root = window.document.documentElement
-  const context = useContext(ThemeProviderCont
+        root.classList.remove('light', 'dark')
         root.classList.add(getActualTheme())
-  }
+      }
       mediaQuery.addEventListener('change', handleChange)
-
+      return () => mediaQuery.removeEventListener('change', handleChange)
     }
   }, [theme])
 
   const value = {
-
+    theme,
     setTheme,
-
+    actualTheme: getActualTheme()
   }
 
-
+  return (
     <ThemeProviderContext.Provider value={value}>
       {children}
     </ThemeProviderContext.Provider>
-
+  )
 }
 
 export function useTheme() {
-
+  const context = useContext(ThemeProviderContext)
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider')
   }
-
+  return context
 }
