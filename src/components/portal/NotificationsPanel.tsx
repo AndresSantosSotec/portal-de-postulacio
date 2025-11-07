@@ -1,20 +1,26 @@
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/but
+import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  CheckCircle,
+  UserCircle,
   CircleWavyCheck,
-  CheckCi
-  EnvelopeSimple
-import { form
-import { motio
-  X,
-  EnvelopeSimple
+  EnvelopeSimple,
+  X
 } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { User, Job } from '@/lib/types'
 
+type Notification = {
+  id: string
+  userId: string
+  type: 'status_change' | 'interview' | 'message' | 'system'
+  title: string
+  message: string
   jobId?: string
   read: boolean
   createdDate: string
