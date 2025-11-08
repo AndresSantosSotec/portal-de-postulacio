@@ -192,7 +192,7 @@ export default function WorkplaceGallery() {
             Conoce Nuestro Ambiente Laboral
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Descubre cómo es trabajar en <span className="font-semibold text-foreground">CoosajerJobs</span>. 
+            Descubre cómo es trabajar en <span className="font-semibold text-foreground">COOSANJER MICOOPE</span>. 
             Espacios modernos, equipo talentoso y una cultura organizacional enfocada en el crecimiento profesional.
           </p>
           

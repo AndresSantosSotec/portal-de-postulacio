@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { EnvelopeSimple, LockKey, User as UserIcon, Eye, EyeSlash, CheckCircle } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { authService } from '@/lib/authService'
 import type { User } from '@/lib/types'
 
 type AuthModalProps = {
@@ -18,52 +19,108 @@ type AuthModalProps = {
 export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: ''
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (isLogin) {
-      const user: User = {
-        id: Date.now().toString(),
-        email: formData.email,
-        password: formData.password,
-        name: formData.email.split('@')[0],
-        profile: {
-          experience: [],
-          education: [],
-          skills: []
+    console.log('🔐 [Portal Login] Iniciando autenticación...')
+    console.log('📧 Email:', formData.email)
+    console.log('🔑 Password length:', formData.password.length)
+    console.log('🎯 Modo:', isLogin ? 'Login' : 'Registro')
+    
+    if (!formData.email || !formData.password) {
+      toast.error('Por favor completa todos los campos')
+      return
+    }
+
+    if (!isLogin && !formData.name) {
+      toast.error('Por favor ingresa tu nombre')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      if (isLogin) {
+        console.log('🔄 [Portal Login] Enviando petición de login...')
+        const response = await authService.login({
+          email: formData.email,
+          password: formData.password,
+          user_type: 'candidate'
+        })
+        
+        console.log('✅ [Portal Login] Respuesta recibida:', response)
+        console.log('👤 Usuario:', response.user)
+        console.log('🎫 Token guardado:', !!localStorage.getItem('auth_token'))
+        
+        if (!response.user) {
+          throw new Error('No se recibió información del usuario')
         }
-      }
-      
-      toast.success('¡Sesión iniciada exitosamente!')
-      onSuccess(user)
-      onClose()
-    } else {
-      if (!formData.name) {
-        toast.error('Por favor ingresa tu nombre')
-        return
-      }
-      
-      const user: User = {
-        id: Date.now().toString(),
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-        profile: {
-          experience: [],
-          education: [],
-          skills: []
+        
+        const user: User = {
+          id: response.user.id.toString(),
+          email: response.user.email,
+          password: '',
+          name: response.user.name,
+          profile: {
+            experience: [],
+            education: [],
+            skills: []
+          }
         }
+        
+        toast.success(`¡Bienvenido, ${response.user.name}!`)
+        console.log('🎉 [Portal Login] Login exitoso')
+        onSuccess(user)
+        onClose()
+      } else {
+        console.log('🔄 [Portal Login] Enviando petición de registro...')
+        const response = await authService.register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          password_confirmation: formData.password,
+          user_type: 'candidate'
+        })
+        
+        console.log('✅ [Portal Login] Registro exitoso:', response)
+        console.log('👤 Usuario creado:', response.user)
+        
+        if (!response.user) {
+          throw new Error('No se recibió información del usuario')
+        }
+        
+        const user: User = {
+          id: response.user.id.toString(),
+          email: response.user.email,
+          password: '',
+          name: response.user.name,
+          profile: {
+            experience: [],
+            education: [],
+            skills: []
+          }
+        }
+        
+        toast.success('¡Cuenta creada exitosamente!')
+        console.log('🎉 [Portal Login] Registro exitoso')
+        onSuccess(user)
+        onClose()
       }
+    } catch (error: any) {
+      console.error('❌ [Portal Login] Error:', error)
+      console.error('📄 Error completo:', error.response?.data)
       
-      toast.success('¡Cuenta creada exitosamente!')
-      onSuccess(user)
-      onClose()
+      const errorMessage = error.message || 'Error de autenticación'
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -189,10 +246,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               
               <Button 
                 type="submit" 
+                disabled={isLoading}
                 className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 transition-all"
                 size="lg"
               >
-                {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta Gratis'}
+                {isLoading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta Gratis')}
               </Button>
             </form>
             
