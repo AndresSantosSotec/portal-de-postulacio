@@ -29,10 +29,12 @@ import {
   Upload,
   Warning,
   FilePdf,
-  User as UserIcon
+  User as UserIcon,
+  X
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import type { Job, Application, User, CustomQuestion } from '@/lib/types'
+import { applicationService } from '@/lib/applicationService'
 
 type ApplicationFormProps = {
   job: Job
@@ -53,14 +55,20 @@ export default function ApplicationForm({
 }: ApplicationFormProps) {
   const [applications, setApplications] = useKV<Application[]>('applications', [])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploadingCV, setIsUploadingCV] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
   })
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({})
-  const [cvFile, setCvFile] = useState<string | null>(null)
+  const [cvFile, setCvFile] = useState<File | null>(null)
+  const [cvFileName, setCvFileName] = useState<string>('')
+  const [hasUploadedCV, setHasUploadedCV] = useState(false)
   const [useSavedProfile, setUseSavedProfile] = useState(true)
+  const [existingCV, setExistingCV] = useState<any>(null)
+  const [hasApplied, setHasApplied] = useState(false)
+  const [applicationData, setApplicationData] = useState<any>(null)
 
   useEffect(() => {
     if (currentUser && useSavedProfile) {
@@ -72,20 +80,106 @@ export default function ApplicationForm({
     }
   }, [currentUser, useSavedProfile])
 
+  // Cargar CV existente al abrir el modal
+  useEffect(() => {
+    if (isOpen && currentUser) {
+      loadExistingCV()
+      checkIfApplied()
+    }
+  }, [isOpen, currentUser])
+
+  const loadExistingCV = async () => {
+    try {
+      const cv = await applicationService.getLatestCV()
+      setExistingCV(cv)
+    } catch (error) {
+      console.error('Error al cargar CV:', error)
+    }
+  }
+
+  const checkIfApplied = async () => {
+    try {
+      const result = await applicationService.checkApplication(parseInt(job.id))
+      setHasApplied(result.has_applied)
+      if (result.application) {
+        setApplicationData(result.application)
+      }
+    } catch (error) {
+      console.error('Error al verificar postulación:', error)
+    }
+  }
+
   const existingApplication = applications?.find(
     app => app.jobId === job.id && app.userId === currentUser?.id
   )
 
-  const canQuickApply = currentUser && currentUser.cvFile && currentUser.profile?.phone
+  const canQuickApply = currentUser && (existingCV || hasUploadedCV) && currentUser.profile?.phone
 
-  const totalFields = 3 + (job.customQuestions?.length || 0) + (currentUser?.cvFile ? 0 : 1)
+  const totalFields = 3 + (job.customQuestions?.length || 0) + (existingCV || hasUploadedCV ? 0 : 1)
   const filledFields = 
     (formData.name ? 1 : 0) +
     (formData.email ? 1 : 0) +
     (formData.phone ? 1 : 0) +
-    (cvFile || currentUser?.cvFile ? 1 : 0) +
+    (cvFile || existingCV || hasUploadedCV ? 1 : 0) +
     Object.keys(customAnswers).length
   const progress = (filledFields / totalFields) * 100
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validar tipo de archivo
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Solo se permiten archivos PDF o DOCX')
+      return
+    }
+
+    // Validar tamaño (5MB máximo)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('El archivo no debe superar 5MB')
+      return
+    }
+
+    setCvFile(file)
+    setCvFileName(file.name)
+
+    // Subir automáticamente si el usuario está autenticado
+    if (currentUser) {
+      await handleCVUpload(file)
+    }
+  }
+
+  const handleCVUpload = async (file: File) => {
+    if (!currentUser) {
+      toast.error('Debes iniciar sesión para subir tu CV')
+      return
+    }
+
+    try {
+      setIsUploadingCV(true)
+      const cvData = await applicationService.uploadCV(file)
+      setHasUploadedCV(true)
+      setExistingCV(cvData)
+      toast.success('CV subido exitosamente ✓')
+    } catch (error: any) {
+      console.error('Error al subir CV:', error)
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error('Error al subir CV. Intenta nuevamente.')
+      }
+      setCvFile(null)
+      setCvFileName('')
+    } finally {
+      setIsUploadingCV(false)
+    }
+  }
+
+  const handleRemoveCV = () => {
+    setCvFile(null)
+    setCvFileName('')
+  }
 
   const handleQuickApply = async () => {
     if (!currentUser) {
@@ -100,26 +194,24 @@ export default function ApplicationForm({
 
     setIsSubmitting(true)
     
-    setTimeout(() => {
-      const newApplication: Application = {
-        id: `app_${Date.now()}`,
-        jobId: job.id,
-        userId: currentUser.id,
-        status: 'postulado',
-        appliedDate: new Date().toISOString(),
-        updatedDate: new Date().toISOString(),
-        quickApply: true,
-      }
-
-      setApplications(apps => [...(apps || []), newApplication])
+    try {
+      await applicationService.applyToJob(parseInt(job.id))
       
-      setIsSubmitting(false)
       toast.success('¡Postulación enviada exitosamente! ⚡', {
         description: 'Aplicaste usando tu perfil guardado'
       })
       onSuccess()
       onClose()
-    }, 800)
+    } catch (error: any) {
+      console.error('Error al postular:', error)
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error('Error al enviar postulación. Intenta nuevamente.')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,7 +232,7 @@ export default function ApplicationForm({
       return
     }
 
-    if (!cvFile && !currentUser.cvFile) {
+    if (!cvFile && !existingCV && !hasUploadedCV) {
       toast.error('Por favor adjunta tu CV')
       return
     }
@@ -155,27 +247,38 @@ export default function ApplicationForm({
 
     setIsSubmitting(true)
 
-    setTimeout(() => {
-      const newApplication: Application = {
-        id: `app_${Date.now()}`,
-        jobId: job.id,
-        userId: currentUser.id,
-        status: 'postulado',
-        appliedDate: new Date().toISOString(),
-        updatedDate: new Date().toISOString(),
-        customAnswers,
-        quickApply: false,
+    try {
+      // Si hay un archivo pendiente de subir, subirlo primero
+      if (cvFile && !hasUploadedCV) {
+        await handleCVUpload(cvFile)
       }
 
-      setApplications(apps => [...(apps || []), newApplication])
+      // Postular al empleo
+      const observaciones = Object.entries(customAnswers)
+        .map(([questionId, answer]) => {
+          const question = job.customQuestions?.find(q => q.id === questionId)
+          return question ? `${question.question}: ${answer}` : ''
+        })
+        .filter(Boolean)
+        .join('\n')
+
+      await applicationService.applyToJob(parseInt(job.id), observaciones || undefined)
       
-      setIsSubmitting(false)
       toast.success('¡Postulación enviada exitosamente!', {
         description: 'Te notificaremos sobre cualquier actualización'
       })
       onSuccess()
       onClose()
-    }, 1200)
+    } catch (error: any) {
+      console.error('Error al postular:', error)
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error('Error al enviar postulación. Intenta nuevamente.')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleCustomAnswerChange = (questionId: string, value: string) => {
@@ -248,7 +351,49 @@ export default function ApplicationForm({
           </DialogDescription>
         </DialogHeader>
 
-        {existingApplication ? (
+        {hasApplied ? (
+          <div className="py-8 space-y-4">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="mx-auto h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center"
+            >
+              <Check size={32} weight="bold" className="text-primary" />
+            </motion.div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-2">Ya has postulado a esta oferta</h3>
+              {applicationData && (
+                <div className="text-sm text-muted-foreground space-y-1 mt-4 p-4 bg-muted/50 rounded-lg">
+                  <p><span className="font-medium">Estado:</span> {applicationData.estado}</p>
+                  <p><span className="font-medium">Fecha de postulación:</span> {new Date(applicationData.fecha_postulacion).toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</p>
+                </div>
+              )}
+              <p className="text-sm text-muted-foreground mt-4">
+                Puedes ver el estado de tu aplicación en "Mis Postulaciones"
+              </p>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button onClick={onClose} variant="outline" className="flex-1">
+                Cerrar
+              </Button>
+              <Button 
+                onClick={() => {
+                  onClose()
+                  toast.info('Redirigiendo a tus postulaciones...')
+                }} 
+                className="flex-1"
+              >
+                Ver mi postulación
+              </Button>
+            </div>
+          </div>
+        ) : existingApplication ? (
           <div className="py-8 text-center space-y-4">
             <motion.div
               initial={{ scale: 0 }}
@@ -385,41 +530,78 @@ export default function ApplicationForm({
                   />
                 </div>
 
-                {!currentUser?.cvFile && (
+                {!existingCV && !hasUploadedCV && (
                   <div>
                     <Label htmlFor="cv">CV / Hoja de Vida *</Label>
-                    <motion.div
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      className="mt-2 border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer group"
-                    >
+                    <input
+                      id="cv"
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <label htmlFor="cv">
                       <motion.div
-                        animate={{ y: [0, -5, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        className="mt-2 border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer group"
                       >
-                        <Upload size={40} weight="duotone" className="mx-auto mb-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                        {isUploadingCV ? (
+                          <div className="flex flex-col items-center">
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            >
+                              <Upload size={40} weight="duotone" className="mx-auto mb-3 text-primary" />
+                            </motion.div>
+                            <p className="text-sm font-medium text-primary">
+                              Subiendo CV...
+                            </p>
+                          </div>
+                        ) : cvFileName ? (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2 text-secondary">
+                              <FilePdf size={20} weight="duotone" />
+                              <span className="text-sm font-medium">{cvFileName}</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleRemoveCV()
+                              }}
+                            >
+                              <X size={16} />
+                            </Button>
+                          </motion.div>
+                        ) : (
+                          <>
+                            <motion.div
+                              animate={{ y: [0, -5, 0] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                            >
+                              <Upload size={40} weight="duotone" className="mx-auto mb-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </motion.div>
+                            <p className="text-sm font-medium mb-1 group-hover:text-primary transition-colors">
+                              Haz clic para adjuntar tu CV
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              PDF o DOCX, máximo 5 MB
+                            </p>
+                          </>
+                        )}
                       </motion.div>
-                      <p className="text-sm font-medium mb-1 group-hover:text-primary transition-colors">
-                        Haz clic para adjuntar tu CV
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        PDF o DOCX, máximo 5 MB
-                      </p>
-                      {cvFile && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-3 flex items-center justify-center gap-2 text-secondary"
-                        >
-                          <FilePdf size={20} weight="duotone" />
-                          <span className="text-sm font-medium">CV adjuntado</span>
-                        </motion.div>
-                      )}
-                    </motion.div>
+                    </label>
                   </div>
                 )}
 
-                {currentUser?.cvFile && (
+                {(existingCV || hasUploadedCV) && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -430,8 +612,10 @@ export default function ApplicationForm({
                         <FilePdf size={24} weight="duotone" className="text-secondary" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium">CV guardado en tu perfil</p>
-                        <p className="text-xs text-muted-foreground">Se usará tu curriculum actual</p>
+                        <p className="text-sm font-medium">
+                          {existingCV?.nombre_archivo || cvFileName || 'CV guardado'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Se usará este CV para tu postulación</p>
                       </div>
                       <Check size={20} weight="bold" className="text-secondary shrink-0" />
                     </div>

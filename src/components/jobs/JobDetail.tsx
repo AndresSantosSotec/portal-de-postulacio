@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -8,8 +7,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, MapPin, Briefcase, Heart, Buildings, CalendarBlank, Check, Image as ImageIcon } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import type { Job, Application, User } from '@/lib/types'
-import { categoryLabels, statusLabels } from '@/lib/types'
+import { publicJobService, type Job } from '@/lib/publicJobService'
+import { applicationService } from '@/lib/applicationService'
+import type { Application, User } from '@/lib/types'
 import AuthModal from '../auth/AuthModal'
 import QuickRegisterModal from '../auth/QuickRegisterModal'
 import ApplicationForm from './ApplicationForm'
@@ -22,18 +22,84 @@ type JobDetailProps = {
 }
 
 export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }: JobDetailProps) {
-  const [jobs] = useKV<Job[]>('jobs', [])
-  const [applications, setApplications] = useKV<Application[]>('applications', [])
-  const [favorites, setFavorites] = useKV<string[]>('favorites', [])
+  const [job, setJob] = useState<Job | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [applications, setApplications] = useState<Application[]>([])
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [isCheckingFavorite, setIsCheckingFavorite] = useState(false)
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
+  const [hasApplied, setHasApplied] = useState(false)
+  const [applicationData, setApplicationData] = useState<any>(null)
+  const [isCheckingApplication, setIsCheckingApplication] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showQuickRegisterModal, setShowQuickRegisterModal] = useState(false)
   const [showApplicationForm, setShowApplicationForm] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
 
-  const job = jobs?.find(j => j.id === jobId)
+  useEffect(() => {
+    loadJobDetail()
+  }, [jobId])
+
+  useEffect(() => {
+    if (currentUser && jobId) {
+      checkIfFavorite()
+      checkIfApplied()
+    }
+  }, [currentUser, jobId])
+
+  const loadJobDetail = async () => {
+    try {
+      setIsLoading(true)
+      const jobData = await publicJobService.getOffer(parseInt(jobId))
+      setJob(jobData)
+    } catch (error) {
+      console.error('Error al cargar detalle del empleo:', error)
+      toast.error('Error al cargar información del empleo')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const checkIfFavorite = async () => {
+    try {
+      setIsCheckingFavorite(true)
+      const isFav = await applicationService.checkFavorite(parseInt(jobId))
+      setIsFavorite(isFav)
+    } catch (error) {
+      console.error('Error al verificar favorito:', error)
+    } finally {
+      setIsCheckingFavorite(false)
+    }
+  }
+
+  const checkIfApplied = async () => {
+    try {
+      setIsCheckingApplication(true)
+      const result = await applicationService.checkApplication(parseInt(jobId))
+      setHasApplied(result.has_applied)
+      if (result.application) {
+        setApplicationData(result.application)
+      }
+    } catch (error) {
+      console.error('Error al verificar postulación:', error)
+    } finally {
+      setIsCheckingApplication(false)
+    }
+  }
+
   const application = applications?.find(app => app.jobId === jobId && app.userId === currentUser?.id)
-  const isFavorite = favorites?.includes(jobId) || false
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Cargando información del empleo...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!job) {
     return (
@@ -55,22 +121,39 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
     setShowApplicationForm(true)
   }
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = async () => {
     if (!currentUser) {
+      toast.error('Debes iniciar sesión para guardar favoritos', {
+        description: 'Regístrate o inicia sesión para continuar'
+      })
       setShowAuthModal(true)
       return
     }
 
-    setFavorites(currentFavorites => {
-      const favs = currentFavorites || []
-      if (favs.includes(jobId)) {
+    if (isTogglingFavorite) return
+
+    setIsTogglingFavorite(true)
+
+    try {
+      if (isFavorite) {
+        await applicationService.removeFavorite(parseInt(jobId))
+        setIsFavorite(false)
         toast.success('Eliminado de favoritos')
-        return favs.filter(id => id !== jobId)
       } else {
+        await applicationService.addFavorite(parseInt(jobId))
+        setIsFavorite(true)
         toast.success('Agregado a favoritos')
-        return [...favs, jobId]
       }
-    })
+    } catch (error: any) {
+      console.error('Error al actualizar favorito:', error)
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error('Error al actualizar favoritos')
+      }
+    } finally {
+      setIsTogglingFavorite(false)
+    }
   }
 
   const daysAgo = Math.floor(
@@ -126,7 +209,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex-1">
                       <Badge className="mb-3 bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                        {categoryLabels[job.category]}
+                        {job.category}
                       </Badge>
                       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3 leading-tight">
                         {job.title}
@@ -187,6 +270,41 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                       </div>
                     </>
                   )}
+
+                  {job.skills && job.skills.length > 0 && (
+                    <>
+                      <Separator className="my-6" />
+                      <div>
+                        <h2 className="text-xl font-semibold mb-4">Habilidades requeridas</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {job.skills.map((skill) => (
+                            <div
+                              key={skill.id}
+                              className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30"
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${skill.required ? 'bg-destructive' : 'bg-secondary'}`} />
+                                <span className="font-medium text-foreground">{skill.name}</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {skill.level}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-3 flex items-center gap-2">
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-destructive inline-block" />
+                            Obligatorio
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-secondary inline-block" />
+                            Deseable
+                          </span>
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -213,20 +331,54 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                         <div>
                           <p className="text-sm text-muted-foreground mb-2">Estado de postulación</p>
                           <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
-                            {statusLabels[application.status]}
+                            {application.status}
                           </Badge>
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <Button
-                          size="lg"
-                          className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg gap-2"
-                          onClick={handleApply}
-                        >
-                          <Check size={20} weight="bold" />
-                          Postularme ahora
-                        </Button>
+                        {hasApplied ? (
+                          <div className="space-y-3">
+                            <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Check size={20} className="text-primary" weight="bold" />
+                                <p className="font-semibold text-primary">Ya has postulado a esta oferta</p>
+                              </div>
+                              {applicationData && (
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                  <p>Estado: <span className="font-medium text-foreground">{applicationData.estado}</span></p>
+                                  <p>Fecha: {new Date(applicationData.fecha_postulacion).toLocaleDateString('es-ES', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric'
+                                  })}</p>
+                                </div>
+                              )}
+                            </div>
+                            <Button
+                              size="lg"
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => {
+                                // Navigate to applications page - you can implement this navigation
+                                toast.info('Redirigiendo a tus postulaciones...')
+                              }}
+                            >
+                              Ver mi postulación
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
+                            <Button
+                              size="lg"
+                              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg gap-2"
+                              onClick={handleApply}
+                            >
+                              <Check size={20} weight="bold" />
+                              Postularme ahora
+                            </Button>
+                          </>
+                        )}
                         
                         {!currentUser && (
                           <div className="relative">
@@ -283,7 +435,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                       <Separator />
                       <div>
                         <p className="text-muted-foreground">Categoría</p>
-                        <p className="font-medium">{categoryLabels[job.category]}</p>
+                        <p className="font-medium">{job.category}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -319,6 +471,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
           }
         }}
         jobTitle={job.title}
+        jobId={parseInt(job.id)}
       />
 
       <ApplicationForm

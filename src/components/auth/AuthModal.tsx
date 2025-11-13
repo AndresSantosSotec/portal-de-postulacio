@@ -126,33 +126,34 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[480px] max-w-[95vw] max-h-[90vh] overflow-y-auto p-0">
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5" />
           
-          <div className="relative p-8">
-            <DialogHeader className="space-y-3">
+          <div className="relative p-4 sm:p-8">
+            <DialogHeader className="space-y-2 sm:space-y-3">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20"
+                className="mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20"
               >
-                <UserIcon size={32} weight="bold" className="text-white" />
+                <UserIcon size={24} weight="bold" className="text-white sm:hidden" />
+                <UserIcon size={32} weight="bold" className="text-white hidden sm:block" />
               </motion.div>
               
-              <DialogTitle className="text-3xl font-bold text-center bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+              <DialogTitle className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
                 {isLogin ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}
               </DialogTitle>
               
-              <DialogDescription className="text-center text-base">
+              <DialogDescription className="text-center text-sm sm:text-base px-2">
                 {isLogin 
                   ? 'Ingresa tus credenciales para acceder a tu cuenta' 
                   : 'Comienza tu búsqueda de empleo hoy mismo'}
               </DialogDescription>
             </DialogHeader>
             
-            <form onSubmit={handleSubmit} className="space-y-5 mt-8">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 mt-6 sm:mt-8">
               <AnimatePresence mode="wait">
                 {!isLogin && (
                   <motion.div
@@ -225,36 +226,40 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               </div>
               
               {!isLogin && (
-                <div className="space-y-3 p-4 rounded-lg bg-accent/5 border border-accent/20">
-                  <p className="text-sm font-medium text-accent-foreground/80">Tu cuenta incluye:</p>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle size={16} weight="fill" className="text-secondary" />
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-accent/5 border border-accent/20"
+                >
+                  <p className="text-xs sm:text-sm font-medium text-accent-foreground/80">Tu cuenta incluye:</p>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle size={14} weight="fill" className="text-secondary sm:w-4 sm:h-4 flex-shrink-0" />
                       <span>Perfil profesional completo</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle size={16} weight="fill" className="text-secondary" />
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle size={14} weight="fill" className="text-secondary sm:w-4 sm:h-4 flex-shrink-0" />
                       <span>Seguimiento de postulaciones</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle size={16} weight="fill" className="text-secondary" />
-                      <span>Alertas personalizadas de empleo</span>
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle size={14} weight="fill" className="text-secondary sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span>Alertas personalizadas</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )}
               
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 transition-all"
                 size="lg"
               >
                 {isLoading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta Gratis')}
               </Button>
             </form>
             
-            <div className="mt-6">
+            <div className="mt-4 sm:mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <Separator />
@@ -264,11 +269,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 </div>
               </div>
               
-              <div className="text-center mt-6">
+              <div className="text-center mt-4 sm:mt-6">
                 <button
                   type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                  onClick={() => {
+                    setIsLogin(!isLogin)
+                    setFormData({ email: '', password: '', name: '' })
+                  }}
+                  className="text-xs sm:text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                 >
                   {isLogin 
                     ? '¿No tienes cuenta? Regístrate gratis' 

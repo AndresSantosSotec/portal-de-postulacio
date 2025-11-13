@@ -1,11 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { Play, Image as ImageIcon, X, Users, BuildingOffice, Coffee, Laptop } from '@phosphor-icons/react'
+import { Play, Image as ImageIcon, X, Users, BuildingOffice, Coffee, Laptop, Spinner, Briefcase, GraduationCap, Heart } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { publicGalleryService, type GalleryPost, type Category } from '@/lib/publicGalleryService'
+import { getStorageUrl } from '@/lib/api'
+import { toast } from 'sonner'
+
+// Helper para obtener el icono de categoría
+const getCategoryIcon = (iconName: string) => {
+  const icons: Record<string, any> = {
+    'building-office': BuildingOffice,
+    'users': Users,
+    'coffee': Coffee,
+    'laptop': Laptop,
+    'briefcase': Briefcase,
+    'graduation-cap': GraduationCap,
+    'heart': Heart,
+  }
+  return icons[iconName] || BuildingOffice
+}
+
+// Helper para formatear duración de video
+const formatDuration = (seconds?: number): string => {
+  if (!seconds) return '0:00'
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}
 
 type MediaItem = {
   id: string
@@ -14,156 +39,62 @@ type MediaItem = {
   thumbnail?: string
   title: string
   description?: string
-  category: 'office' | 'team' | 'events' | 'culture'
-}
-
-const sampleMedia: MediaItem[] = [
-  {
-    id: 'img1',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=800&fit=crop',
-    title: 'Oficinas Modernas',
-    description: 'Espacios de trabajo colaborativo diseñados para la innovación',
-    category: 'office'
-  },
-  {
-    id: 'img2',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=800&fit=crop',
-    title: 'Nuestro Equipo',
-    description: 'Un equipo diverso trabajando juntos hacia el éxito',
-    category: 'team'
-  },
-  {
-    id: 'img3',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=800&fit=crop',
-    title: 'Eventos y Capacitaciones',
-    description: 'Desarrollo profesional continuo para nuestro equipo',
-    category: 'events'
-  },
-  {
-    id: 'img4',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&h=800&fit=crop',
-    title: 'Áreas de Descanso',
-    description: 'Espacios para relajarse y conectar con compañeros',
-    category: 'culture'
-  },
-  {
-    id: 'img5',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&h=800&fit=crop',
-    title: 'Colaboración Activa',
-    description: 'Trabajo en equipo es parte de nuestra cultura',
-    category: 'team'
-  },
-  {
-    id: 'img6',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&h=800&fit=crop',
-    title: 'Tecnología de Punta',
-    description: 'Herramientas modernas para el trabajo del futuro',
-    category: 'office'
-  },
-  {
-    id: 'img7',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=1200&h=800&fit=crop',
-    title: 'Espacios Creativos',
-    description: 'Ambientes diseñados para fomentar la creatividad',
-    category: 'office'
-  },
-  {
-    id: 'img8',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1200&h=800&fit=crop',
-    title: 'Reuniones Productivas',
-    description: 'Salas de juntas equipadas con tecnología moderna',
-    category: 'office'
-  },
-  {
-    id: 'img9',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=1200&h=800&fit=crop',
-    title: 'Liderazgo Inspirador',
-    description: 'Líderes comprometidos con el desarrollo del equipo',
-    category: 'team'
-  },
-  {
-    id: 'img10',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=800&fit=crop',
-    title: 'Trabajo en Equipo',
-    description: 'Colaboración constante para alcanzar objetivos',
-    category: 'team'
-  },
-  {
-    id: 'img11',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=1200&h=800&fit=crop',
-    title: 'Celebraciones',
-    description: 'Celebramos cada logro del equipo',
-    category: 'events'
-  },
-  {
-    id: 'img12',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&h=800&fit=crop',
-    title: 'Workshops y Talleres',
-    description: 'Aprendizaje continuo a través de talleres especializados',
-    category: 'events'
-  },
-  {
-    id: 'img13',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&h=800&fit=crop',
-    title: 'Balance Vida-Trabajo',
-    description: 'Promovemos un balance saludable para nuestro equipo',
-    category: 'culture'
-  },
-  {
-    id: 'img14',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&h=800&fit=crop',
-    title: 'Innovación Constante',
-    description: 'Fomentamos la innovación en cada proyecto',
-    category: 'culture'
-  },
-  {
-    id: 'img15',
-    type: 'image',
-    url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200&h=800&fit=crop',
-    title: 'Espacios Compartidos',
-    description: 'Áreas comunes que promueven la interacción',
-    category: 'culture'
-  }
-]
-
-const categoryIcons = {
-  office: BuildingOffice,
-  team: Users,
-  events: Coffee,
-  culture: Laptop
-}
-
-const categoryLabels = {
-  office: 'Oficinas',
-  team: 'Equipo',
-  events: 'Eventos',
-  culture: 'Cultura'
+  category: string
+  categoryId: number
+  duration?: number
 }
 
 export default function WorkplaceGallery() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null)
   const [imageError, setImageError] = useState<Record<string, boolean>>({})
+  const [categories, setCategories] = useState<Category[]>([])
+  const [posts, setPosts] = useState<GalleryPost[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Cargar categorías y posts al montar el componente
+  useEffect(() => {
+    loadGalleryData()
+  }, [])
+
+  const loadGalleryData = async () => {
+    try {
+      setLoading(true)
+      const [categoriesData, postsData] = await Promise.all([
+        publicGalleryService.getCategories(),
+        publicGalleryService.getPosts({ per_page: 100 })
+      ])
+      
+      setCategories(categoriesData)
+      setPosts(postsData?.data || [])
+    } catch (error: any) {
+      console.error('Error al cargar galería:', error)
+      toast.error('Error al cargar la galería')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Convertir posts de API a MediaItems
+  const mediaItems: MediaItem[] = posts.map(post => ({
+    id: post.id.toString(),
+    type: post.media_type || 'image',
+    url: getStorageUrl(
+      post.media_type === 'video' ? post.video_url : post.image_url
+    ) || '',
+    thumbnail: getStorageUrl(
+      post.media_type === 'video' ? post.video_thumbnail_url : post.thumbnail_url
+    ) || undefined,
+    title: post.title,
+    description: post.description,
+    category: post.category?.slug || '',
+    categoryId: post.category_id,
+    duration: post.video_duration
+  }))
 
   const filteredMedia = selectedCategory
-    ? sampleMedia.filter(item => item.category === selectedCategory)
-    : sampleMedia
-
-  const categories = Array.from(new Set(sampleMedia.map(item => item.category)))
+    ? mediaItems.filter(item => item.categoryId === selectedCategory)
+    : mediaItems
 
   return (
     <section className="py-16 md:py-20 bg-gradient-to-b from-muted/50 via-muted/30 to-background">
@@ -235,48 +166,69 @@ export default function WorkplaceGallery() {
           </motion.div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-3 mb-10"
-        >
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant={selectedCategory === null ? "default" : "outline"}
-              size="lg"
-              onClick={() => setSelectedCategory(null)}
-              className="font-semibold shadow-md hover:shadow-lg transition-all"
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="text-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="inline-block"
+              >
+                <Spinner size={48} weight="bold" className="text-primary" />
+              </motion.div>
+              <p className="mt-4 text-muted-foreground">Cargando galería...</p>
+            </div>
+          </div>
+        ) : mediaItems.length === 0 ? (
+          <div className="text-center py-20">
+            <ImageIcon size={64} weight="duotone" className="mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No hay contenido disponible</h3>
+            <p className="text-muted-foreground">Aún no se han publicado fotos o videos.</p>
+          </div>
+        ) : (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex flex-wrap justify-center gap-3 mb-10"
             >
-              Todas ({sampleMedia.length})
-            </Button>
-          </motion.div>
-          {categories.map(category => {
-            const Icon = categoryIcons[category as keyof typeof categoryIcons]
-            const count = sampleMedia.filter(item => item.category === category).length
-            return (
-              <motion.div key={category} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
-                  variant={selectedCategory === category ? "default" : "outline"}
+                  variant={selectedCategory === null ? "default" : "outline"}
                   size="lg"
-                  onClick={() => setSelectedCategory(category)}
-                  className="gap-2 font-semibold shadow-md hover:shadow-lg transition-all"
+                  onClick={() => setSelectedCategory(null)}
+                  className="font-semibold shadow-md hover:shadow-lg transition-all"
                 >
-                  <Icon size={18} weight="duotone" />
-                  {categoryLabels[category as keyof typeof categoryLabels]} ({count})
+                  Todas ({mediaItems.length})
                 </Button>
               </motion.div>
-            )
-          })}
-        </motion.div>
+              {categories.map(category => {
+                const count = mediaItems.filter(item => item.categoryId === category.id).length
+                const Icon = category.icon ? getCategoryIcon(category.icon) : BuildingOffice
+                return (
+                  <motion.div key={category.id} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      variant={selectedCategory === category.id ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => setSelectedCategory(category.id)}
+                      className="gap-2 font-semibold shadow-md hover:shadow-lg transition-all"
+                    >
+                      <Icon size={18} weight="duotone" />
+                      {category.name} ({count})
+                    </Button>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
 
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredMedia.map((item, index) => (
+            <motion.div
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredMedia.map((item, index) => (
               <motion.div
                 key={item.id}
                 layout
@@ -291,36 +243,45 @@ export default function WorkplaceGallery() {
                 >
                   <CardContent className="p-0">
                     <div className="relative aspect-video overflow-hidden bg-muted">
-                      {!imageError[item.id] ? (
+                      {!imageError[item.id] && item.url ? (
                         <>
                           <img
-                            src={item.url}
+                            src={item.type === 'video' ? (item.thumbnail || item.url) : item.url}
                             alt={item.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                             onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
                           {item.type === 'video' && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <motion.div 
-                                className="w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center"
-                                whileHover={{ scale: 1.15 }}
-                                transition={{ type: "spring", stiffness: 300 }}
-                              >
-                                <Play size={28} weight="fill" className="text-primary-foreground ml-1" />
-                              </motion.div>
-                            </div>
+                            <>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <motion.div 
+                                  className="w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-xl"
+                                  whileHover={{ scale: 1.15 }}
+                                  transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                  <Play size={28} weight="fill" className="text-primary-foreground ml-1" />
+                                </motion.div>
+                              </div>
+                              {item.duration && (
+                                <Badge
+                                  variant="default"
+                                  className="absolute bottom-3 left-3 gap-1 backdrop-blur-md bg-black/70 text-white border-0"
+                                >
+                                  {formatDuration(item.duration)}
+                                </Badge>
+                              )}
+                            </>
                           )}
                           <Badge
                             variant="secondary"
                             className="absolute top-3 right-3 gap-1 backdrop-blur-md bg-background/80"
                           >
                             {item.type === 'image' ? (
-                              <ImageIcon size={14} weight="duotone" />
+                              <><ImageIcon size={14} weight="duotone" /> Foto</>
                             ) : (
-                              <Play size={14} weight="fill" />
+                              <><Play size={14} weight="fill" /> Video</>
                             )}
-                            {item.type === 'image' ? 'Foto' : 'Video'}
                           </Badge>
                         </>
                       ) : (
@@ -345,14 +306,25 @@ export default function WorkplaceGallery() {
             ))}
           </AnimatePresence>
         </motion.div>
+          </>
+        )}
       </div>
 
       <Dialog open={!!selectedMedia} onOpenChange={() => setSelectedMedia(null)}>
-        <DialogContent className="max-w-4xl p-0">
+        <DialogContent className="max-w-5xl p-0 max-h-[90vh] overflow-y-auto">
           {selectedMedia && (
             <>
               <DialogHeader className="p-6 pb-0">
-                <DialogTitle>{selectedMedia.title}</DialogTitle>
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="text-2xl">{selectedMedia.title}</DialogTitle>
+                  <Badge variant={selectedMedia.type === 'video' ? 'default' : 'secondary'} className="gap-1">
+                    {selectedMedia.type === 'image' ? (
+                      <><ImageIcon size={14} weight="duotone" /> Foto</>
+                    ) : (
+                      <><Play size={14} weight="fill" /> Video {selectedMedia.duration && `• ${formatDuration(selectedMedia.duration)}`}</>
+                    )}
+                  </Badge>
+                </div>
               </DialogHeader>
               <div className="relative aspect-video bg-muted">
                 {selectedMedia.type === 'image' ? (
@@ -365,14 +337,17 @@ export default function WorkplaceGallery() {
                   <video
                     src={selectedMedia.url}
                     controls
-                    className="w-full h-full"
+                    className="w-full h-full bg-black"
                     autoPlay
-                  />
+                    poster={selectedMedia.thumbnail}
+                  >
+                    Tu navegador no soporta la reproducción de video.
+                  </video>
                 )}
               </div>
               {selectedMedia.description && (
                 <div className="p-6 pt-4">
-                  <p className="text-muted-foreground">{selectedMedia.description}</p>
+                  <p className="text-muted-foreground leading-relaxed">{selectedMedia.description}</p>
                 </div>
               )}
             </>

@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useKV } from '@github/spark/hooks'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -10,8 +9,9 @@ import JobCard from './JobCard'
 import CategoryFilter from './CategoryFilter'
 import WorkplaceGallery from './WorkplaceGallery'
 import { SkeletonJobCard } from '@/components/ui/skeleton-card'
-import type { Job, JobCategory } from '@/lib/types'
-import { categoryLabels } from '@/lib/types'
+import { publicJobService, type Job, type JobCategory } from '@/lib/publicJobService'
+import { applicationService } from '@/lib/applicationService'
+import { toast } from 'sonner'
 
 const JOBS_PER_PAGE = 9
 
@@ -22,58 +22,90 @@ type JobListingsProps = {
 }
 
 export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }: JobListingsProps) {
-  const [jobs] = useKV<Job[]>('jobs', [])
-  const [favorites, setFavorites] = useKV<string[]>('favorites', [])
-  const [applications] = useKV<any[]>('applications', [])
+  // Estados para datos de API
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [categories, setCategories] = useState<JobCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   
+  // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedLocation, setSelectedLocation] = useState<string>('all')
-  const [jobStatusFilter, setJobStatusFilter] = useState<'all' | 'available' | 'occupied'>('all')
+  const [employmentType, setEmploymentType] = useState<string>('all')
   const [currentPage, setCurrentPage] = useState(1)
 
+  // Estados para favoritos y postulaciones
+  const [favoriteJobIds, setFavoriteJobIds] = useState<number[]>([])
+  const [applications, setApplications] = useState<any[]>([])
+
+  // Cargar datos al montar
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 800)
-    return () => clearTimeout(timer)
+    loadJobsData()
   }, [])
 
-  const jobList = jobs || []
-  const favoritesList = favorites || []
-  const applicationsList = applications || []
+  useEffect(() => {
+    if (currentUser) {
+      loadFavorites()
+    } else {
+      setFavoriteJobIds([])
+    }
+  }, [currentUser])
+
+  const loadJobsData = async () => {
+    try {
+      setIsLoading(true)
+      const [categoriesData, offersData] = await Promise.all([
+        publicJobService.getCategories(),
+        publicJobService.getOffers({ per_page: 100 })
+      ])
+      
+      setCategories(categoriesData)
+      setJobs(offersData.offers || [])
+    } catch (error: any) {
+      console.error('Error al cargar datos:', error)
+      toast.error('Error al cargar ofertas laborales')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const loadFavorites = async () => {
+    try {
+      const favorites = await applicationService.getFavorites()
+      setFavoriteJobIds(favorites.map(fav => fav.oferta_id))
+    } catch (error) {
+      console.error('Error al cargar favoritos:', error)
+    }
+  }
 
   const locations = useMemo(() => {
-    const uniqueLocations = [...new Set(jobList.map(job => job.location))]
+    const uniqueLocations = [...new Set(jobs.map(job => job.location))]
     return uniqueLocations.sort()
-  }, [jobList])
+  }, [jobs])
 
   const jobCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: jobList.length }
-    jobList.forEach(job => {
+    const counts: Record<string, number> = {}
+    jobs.forEach(job => {
       counts[job.category] = (counts[job.category] || 0) + 1
     })
     return counts
-  }, [jobList])
+  }, [jobs])
 
   const filteredJobs = useMemo(() => {
-    return jobList.filter(job => {
+    return jobs.filter(job => {
       const matchesSearch = 
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchTerm.toLowerCase())
+        job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.requirements?.join(' ')?.toLowerCase().includes(searchTerm.toLowerCase())
       
-      const matchesCategory = selectedCategory === 'all' || job.category === selectedCategory
+      const matchesCategory = selectedCategory === null || job.category === selectedCategory
       const matchesLocation = selectedLocation === 'all' || job.location === selectedLocation
-      const matchesStatus = 
-        jobStatusFilter === 'all' ||
-        (jobStatusFilter === 'available' && !job.isOccupied) ||
-        (jobStatusFilter === 'occupied' && job.isOccupied)
+      const matchesType = employmentType === 'all' || job.type === employmentType
+      const isNotOccupied = !job.isOccupied
       
-      return matchesSearch && matchesCategory && matchesLocation && matchesStatus
+      return matchesSearch && matchesCategory && matchesLocation && matchesType && isNotOccupied
     })
-  }, [jobList, searchTerm, selectedCategory, selectedLocation, jobStatusFilter])
+  }, [jobs, searchTerm, selectedCategory, selectedLocation, employmentType])
 
   const totalPages = Math.ceil(filteredJobs.length / JOBS_PER_PAGE)
   
@@ -85,21 +117,41 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm, selectedCategory, selectedLocation, jobStatusFilter])
+  }, [searchTerm, selectedCategory, selectedLocation, employmentType])
 
-  const handleToggleFavorite = (jobId: string) => {
-    setFavorites(currentFavorites => {
-      const favs = currentFavorites || []
-      if (favs.includes(jobId)) {
-        return favs.filter(id => id !== jobId)
+  const handleToggleFavorite = async (jobId: string) => {
+    if (!currentUser) {
+      toast.error('Debes iniciar sesión para guardar favoritos', {
+        description: 'Regístrate o inicia sesión para continuar'
+      })
+      return
+    }
+
+    const jobIdNum = parseInt(jobId)
+    const isFavorite = favoriteJobIds.includes(jobIdNum)
+
+    try {
+      if (isFavorite) {
+        await applicationService.removeFavorite(jobIdNum)
+        setFavoriteJobIds(prev => prev.filter(id => id !== jobIdNum))
+        toast.success('Eliminado de favoritos')
       } else {
-        return [...favs, jobId]
+        await applicationService.addFavorite(jobIdNum)
+        setFavoriteJobIds(prev => [...prev, jobIdNum])
+        toast.success('Agregado a favoritos')
       }
-    })
-    onFavoriteToggle?.()
+      onFavoriteToggle?.()
+    } catch (error: any) {
+      console.error('Error al actualizar favorito:', error)
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error('Error al actualizar favoritos')
+      }
+    }
   }
 
-  const appliedJobIds = applicationsList.map(app => app.jobId)
+  const appliedJobIds = applications.map(app => app.jobId)
 
   return (
     <div className="min-h-screen bg-background">
@@ -127,16 +179,19 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                 />
               </div>
               
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select 
+                value={selectedCategory || 'all'} 
+                onValueChange={(value) => setSelectedCategory(value === 'all' ? null : value)}
+              >
                 <SelectTrigger className="w-full md:w-64 h-11">
                   <Funnel size={16} className="mr-2" />
                   <SelectValue placeholder="Categoría" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas las categorías</SelectItem>
-                  {Object.entries(categoryLabels).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>
-                      {label}
+                  {categories.map(category => (
+                    <SelectItem key={category.id} value={category.name}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -169,9 +224,11 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
           transition={{ duration: 0.3 }}
         >
           <CategoryFilter
+            categories={categories}
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
             jobCounts={jobCounts}
+            totalJobs={jobs.length}
           />
         </motion.div>
 
@@ -180,33 +237,17 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
             <h2 className="text-xl font-semibold text-foreground mb-2">
               {isLoading ? 'Cargando empleos...' : `${filteredJobs.length} ${filteredJobs.length === 1 ? 'empleo disponible' : 'empleos disponibles'}`}
             </h2>
-            
-            <Tabs value={jobStatusFilter} onValueChange={(value) => setJobStatusFilter(value as any)} className="w-full sm:w-auto">
-              <TabsList className="grid w-full sm:w-auto grid-cols-3">
-                <TabsTrigger value="all" className="gap-1.5 text-xs sm:text-sm">
-                  Todas
-                </TabsTrigger>
-                <TabsTrigger value="available" className="gap-1.5 text-xs sm:text-sm">
-                  <CheckCircle size={14} weight="duotone" />
-                  Disponibles
-                </TabsTrigger>
-                <TabsTrigger value="occupied" className="gap-1.5 text-xs sm:text-sm">
-                  <XCircle size={14} weight="duotone" />
-                  Ocupadas
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
           </div>
           
-          {!isLoading && (searchTerm || selectedCategory !== 'all' || selectedLocation !== 'all' || jobStatusFilter !== 'all') && (
+          {!isLoading && (searchTerm || selectedCategory !== null || selectedLocation !== 'all' || employmentType !== 'all') && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => {
                 setSearchTerm('')
-                setSelectedCategory('all')
+                setSelectedCategory(null)
                 setSelectedLocation('all')
-                setJobStatusFilter('all')
+                setEmploymentType('all')
               }}
             >
               Limpiar filtros
@@ -237,9 +278,9 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                 <JobCard
                   key={job.id}
                   job={job}
-                  isFavorite={favoritesList.includes(job.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                  onViewJob={onViewJob}
+                  isFavorite={favoriteJobIds.includes(parseInt(job.id))}
+                  onToggleFavorite={() => handleToggleFavorite(job.id)}
+                  onViewJob={() => onViewJob(job.id)}
                   isApplied={appliedJobIds.includes(job.id)}
                 />
               ))}

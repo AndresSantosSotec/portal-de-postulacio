@@ -25,6 +25,10 @@ export interface GalleryPost {
   image_width?: number;
   image_height?: number;
   file_size?: number;
+  media_type: 'image' | 'video';
+  video_path?: string;
+  video_thumbnail?: string;
+  video_duration?: number;
   views_count: number;
   is_published: boolean;
   published_at?: string;
@@ -33,6 +37,8 @@ export interface GalleryPost {
   image_url?: string;
   thumbnail_url?: string;
   medium_url?: string;
+  video_url?: string;
+  video_thumbnail_url?: string;
   created_at: string;
   updated_at: string;
 }

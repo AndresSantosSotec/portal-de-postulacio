@@ -19,6 +19,8 @@ export type UserProfile = {
   profession?: string
   additionalStudies?: string
   cvFile?: string
+  linkedin?: string
+  portfolio?: string
   workReferences?: WorkReference[]
   personalReferences?: PersonalReference[]
   location?: string
@@ -93,11 +95,11 @@ export type Job = {
   title: string
   company: string
   location: string
-  category: JobCategory
+  category: string
   description: string
   requirements: string[]
   salary?: string
-  type: 'full-time' | 'part-time' | 'contract' | 'freelance'
+  type: 'full-time' | 'part-time' | 'contract' | 'freelance' | 'internship'
   postedDate: string
   applicants: number
   imageUrl?: string
@@ -113,6 +115,28 @@ export type ApplicationStatus =
   | 'finalista'
   | 'proceso-finalizado'
 
+// Tipo para datos del backend
+export type BackendApplication = {
+  id: number
+  estado: 'Postulado' | 'CV Visto' | 'En Proceso' | 'Finalista' | 'Rechazado' | 'Contratado'
+  fecha_postulacion: string
+  observaciones?: string
+  oferta: {
+    id: number
+    titulo: string
+    empresa: string
+    ubicacion: string
+    tipo_contrato: string
+  }
+  cv?: {
+    id: number
+    nombre_archivo: string
+    url: string
+    formato: 'pdf' | 'docx'
+  }
+}
+
+// Tipo legacy para frontend (mantener compatibilidad)
 export type Application = {
   id: string
   jobId: string
@@ -127,6 +151,15 @@ export type Application = {
   psychometricTestCompleted?: boolean
   psychometricTestCompletedDate?: string
   statusHistory?: ApplicationStatusHistory[]
+  // Datos adicionales del backend
+  observaciones?: string
+  oferta?: {
+    id: number
+    titulo: string
+    empresa: string
+    ubicacion: string
+    tipo_contrato: string
+  }
 }
 
 export type ApplicationStatusHistory = {

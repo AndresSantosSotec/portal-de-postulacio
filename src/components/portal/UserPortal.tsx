@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -23,6 +23,8 @@ import ProfileApplications from './ProfileApplications'
 import NotificationsPanel from './NotificationsPanel'
 import StatusSimulator from './StatusSimulator'
 import { useNotificationService } from '@/hooks/use-notification-service'
+import { applicationService, type Favorite } from '@/lib/applicationService'
+import { toast } from 'sonner'
 import type { User, Application, Job, JobAlert } from '@/lib/types'
 import type { Notification } from './NotificationsPanel'
 import { categoryLabels } from '@/lib/types'
@@ -40,6 +42,8 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
   const [alerts] = useKV<JobAlert[]>('job_alerts', [])
   const [notifications] = useKV<Notification[]>('notifications', [])
   const [activeTab, setActiveTab] = useState('curriculum')
+  const [backendFavorites, setBackendFavorites] = useState<Favorite[]>([])
+  const [loadingFavorites, setLoadingFavorites] = useState(false)
   
   const { notificationCount } = useNotificationService(user.id)
   
@@ -47,6 +51,37 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
   const userFavorites = jobs?.filter(job => favorites?.includes(job.id)) || []
   const userAlerts = alerts?.filter(alert => alert.userId === user.id) || []
   const unreadNotifications = notifications?.filter(n => n.userId === user.id && !n.read).length || 0
+
+  // Cargar favoritos desde el backend cuando se active la pestaña
+  useEffect(() => {
+    if (activeTab === 'favorites') {
+      loadBackendFavorites()
+    }
+  }, [activeTab])
+
+  const loadBackendFavorites = async () => {
+    setLoadingFavorites(true)
+    try {
+      const favs = await applicationService.getFavorites()
+      setBackendFavorites(favs)
+    } catch (error) {
+      console.error('Error al cargar favoritos:', error)
+      toast.error('No se pudieron cargar los favoritos')
+    } finally {
+      setLoadingFavorites(false)
+    }
+  }
+
+  const handleRemoveFavorite = async (ofertaId: number) => {
+    try {
+      await applicationService.removeFavorite(ofertaId)
+      toast.success('Eliminado de favoritos')
+      loadBackendFavorites()
+    } catch (error) {
+      console.error('Error al eliminar favorito:', error)
+      toast.error('No se pudo eliminar de favoritos')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,8 +138,8 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
                 <Heart size={18} weight="duotone" />
                 <span className="hidden sm:inline">Favoritos</span>
                 <span className="sm:hidden">Favoritos</span>
-                {userFavorites.length > 0 && (
-                  <Badge variant="secondary" className="ml-1">{userFavorites.length}</Badge>
+                {backendFavorites.length > 0 && (
+                  <Badge variant="secondary" className="ml-1">{backendFavorites.length}</Badge>
                 )}
               </TabsTrigger>
               <TabsTrigger 
@@ -171,7 +206,13 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
           </TabsContent>
 
           <TabsContent value="favorites" className="mt-0 space-y-6">
-            {userFavorites.length === 0 ? (
+            {loadingFavorites ? (
+              <Card>
+                <CardContent className="py-20 text-center">
+                  <p className="text-muted-foreground">Cargando favoritos...</p>
+                </CardContent>
+              </Card>
+            ) : backendFavorites.length === 0 ? (
               <Card>
                 <CardContent className="py-20 text-center">
                   <motion.div
@@ -190,35 +231,49 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
               </Card>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {userFavorites.map((job) => (
+                {backendFavorites.map((fav) => (
                   <motion.div
-                    key={job.id}
+                    key={fav.id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     whileHover={{ scale: 1.02 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Card
-                      className="hover:shadow-lg transition-all cursor-pointer h-full"
-                      onClick={() => onViewJob(job.id)}
-                    >
+                    <Card className="hover:shadow-lg transition-all h-full">
                       <CardHeader>
-                        <h3 className="font-semibold text-lg line-clamp-2">{job.title}</h3>
-                        <p className="text-sm text-muted-foreground">{job.company}</p>
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="flex-1 cursor-pointer" onClick={() => onViewJob(fav.oferta_id.toString())}>
+                            <h3 className="font-semibold text-lg line-clamp-2">{fav.titulo}</h3>
+                            <p className="text-sm text-muted-foreground">{fav.empresa}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => handleRemoveFavorite(fav.oferta_id)}
+                          >
+                            <Heart size={20} weight="fill" />
+                          </Button>
+                        </div>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <MapPin size={16} weight="duotone" />
-                          {job.location}
+                          {fav.ubicacion}
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {categoryLabels[job.category]}
-                          </Badge>
                           <Badge variant="outline" className="text-xs">
-                            {job.type}
+                            {fav.tipo_contrato}
                           </Badge>
+                          {fav.salario_min && fav.salario_max && (
+                            <Badge variant="secondary" className="text-xs">
+                              Q{fav.salario_min.toLocaleString()} - Q{fav.salario_max.toLocaleString()}
+                            </Badge>
+                          )}
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                          Agregado: {new Date(fav.fecha_agregado).toLocaleDateString()}
+                        </p>
                       </CardContent>
                     </Card>
                   </motion.div>

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { Camera, Upload, X } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { applicationService } from '@/lib/applicationService'
 
 type ProfilePhotoUploadProps = {
   currentPhotoUrl?: string
@@ -26,7 +27,9 @@ export default function ProfilePhotoUpload({
 }: ProfilePhotoUploadProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const initials = userName
@@ -37,16 +40,20 @@ export default function ProfilePhotoUpload({
     .slice(0, 2)
 
   const handleFileSelect = (file: File) => {
-    if (file.size > 3 * 1024 * 1024) {
-      toast.error('La imagen no debe superar 3 MB')
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('La imagen no debe superar 2 MB')
       return
     }
 
     if (!file.type.startsWith('image/')) {
-      toast.error('Solo se permiten archivos de imagen (JPG, PNG)')
+      toast.error('Solo se permiten archivos de imagen (JPG, PNG, WEBP)')
       return
     }
 
+    // Guardar el archivo para subirlo después
+    setSelectedFile(file)
+
+    // Crear preview
     const reader = new FileReader()
     reader.onloadend = () => {
       setPreviewUrl(reader.result as string)
@@ -80,18 +87,36 @@ export default function ProfilePhotoUpload({
     setIsDragging(false)
   }
 
-  const handleSave = () => {
-    if (previewUrl) {
-      onPhotoUpdate(previewUrl)
-      toast.success('Foto de perfil actualizada')
+  const handleSave = async () => {
+    if (!selectedFile) {
+      toast.error('No has seleccionado ninguna foto')
+      return
+    }
+
+    setUploading(true)
+    try {
+      // Subir foto al backend
+      const result = await applicationService.uploadProfilePhoto(selectedFile)
+      
+      // Actualizar el componente padre con la URL de la foto
+      onPhotoUpdate(result.avatar_url)
+      
+      toast.success('Foto de perfil actualizada exitosamente')
       setIsOpen(false)
       setPreviewUrl(null)
+      setSelectedFile(null)
+    } catch (error: any) {
+      console.error('Error al subir foto:', error)
+      toast.error(error.message || 'Error al subir la foto de perfil')
+    } finally {
+      setUploading(false)
     }
   }
 
   const handleCancel = () => {
     setIsOpen(false)
     setPreviewUrl(null)
+    setSelectedFile(null)
   }
 
   return (
@@ -159,7 +184,7 @@ export default function ProfilePhotoUpload({
                   Haz clic o arrastra una imagen aquí
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  JPG o PNG, máximo 3 MB
+                  JPG, PNG o WEBP, máximo 2 MB
                 </p>
               </div>
             )}
@@ -167,22 +192,22 @@ export default function ProfilePhotoUpload({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/jpg"
+              accept="image/jpeg,image/png,image/jpg,image/webp"
               onChange={handleFileInputChange}
               className="hidden"
             />
           </div>
 
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={handleCancel}>
+            <Button variant="outline" onClick={handleCancel} disabled={uploading}>
               Cancelar
             </Button>
             <Button 
               onClick={handleSave} 
-              disabled={!previewUrl}
+              disabled={!previewUrl || uploading}
               className="bg-secondary hover:bg-secondary/90"
             >
-              Guardar foto
+              {uploading ? 'Subiendo...' : 'Guardar foto'}
             </Button>
           </DialogFooter>
         </DialogContent>

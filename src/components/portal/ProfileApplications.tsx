@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useKV } from '@github/spark/hooks'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -28,8 +27,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
 import ApplicationTimeline from '@/components/jobs/ApplicationTimeline'
-import type { User, Application, Job, ApplicationStatus } from '@/lib/types'
+import type { User, ApplicationStatus } from '@/lib/types'
 import { statusLabels } from '@/lib/types'
+import { applicationService, type Application } from '@/lib/applicationService'
 
 type ProfileApplicationsProps = {
   user: User
@@ -47,31 +47,64 @@ const statusColors: Record<ApplicationStatus, { bg: string; text: string; border
 }
 
 export default function ProfileApplications({ user, onViewJob }: ProfileApplicationsProps) {
-  const [jobs] = useKV<Job[]>('jobs', [])
-  const [applications, setApplications] = useKV<Application[]>('applications', [])
+  const [applications, setApplications] = useState<Application[]>([])
+  const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<StatusFilterType>('all')
-  const [expandedApp, setExpandedApp] = useState<string | null>(null)
+  const [expandedApp, setExpandedApp] = useState<number | null>(null)
 
-  const userApplications = (applications?.filter(app => app.userId === user.id) || [])
-    .filter(app => statusFilter === 'all' || app.status === statusFilter)
-    .sort((a, b) => new Date(b.updatedDate).getTime() - new Date(a.updatedDate).getTime())
+  // Cargar postulaciones del backend
+  useEffect(() => {
+    loadApplications()
+  }, [])
 
-  const getJobForApplication = (app: Application) => {
-    return jobs?.find(j => j.id === app.jobId)
+  const loadApplications = async () => {
+    setLoading(true)
+    try {
+      const data = await applicationService.getMyApplications()
+      setApplications(data)
+    } catch (error) {
+      console.error('Error al cargar postulaciones:', error)
+      toast.error('Error al cargar tus postulaciones')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleWithdrawApplication = (appId: string) => {
-    setApplications(current => current?.filter(app => app.id !== appId) || [])
-    toast.success('Postulación retirada')
+  // Mapear estado del backend al frontend para filtros
+  const mapBackendStatusToFrontend = (backendStatus: string): ApplicationStatus => {
+    const statusMap: Record<string, ApplicationStatus> = {
+      'Postulado': 'postulado',
+      'CV Visto': 'cv-visto',
+      'En Proceso': 'en-proceso',
+      'Finalista': 'finalista',
+      'Rechazado': 'proceso-finalizado',
+      'Contratado': 'proceso-finalizado'
+    }
+    return statusMap[backendStatus] || 'postulado'
+  }
+
+  const userApplications = applications
+    .filter(app => statusFilter === 'all' || mapBackendStatusToFrontend(app.estado) === statusFilter)
+    .sort((a, b) => new Date(b.fecha_postulacion).getTime() - new Date(a.fecha_postulacion).getTime())
+
+  const handleWithdrawApplication = async (appId: number) => {
+    try {
+      await applicationService.withdrawApplication(appId)
+      setApplications(current => current.filter(app => app.id !== appId))
+      toast.success('Postulación retirada exitosamente')
+    } catch (error) {
+      console.error('Error al retirar postulación:', error)
+      toast.error('Error al retirar la postulación')
+    }
   }
 
   const statusCounts = {
-    all: applications?.filter(app => app.userId === user.id).length || 0,
-    postulado: applications?.filter(app => app.userId === user.id && app.status === 'postulado').length || 0,
-    'cv-visto': applications?.filter(app => app.userId === user.id && app.status === 'cv-visto').length || 0,
-    'en-proceso': applications?.filter(app => app.userId === user.id && app.status === 'en-proceso').length || 0,
-    finalista: applications?.filter(app => app.userId === user.id && app.status === 'finalista').length || 0,
-    'proceso-finalizado': applications?.filter(app => app.userId === user.id && app.status === 'proceso-finalizado').length || 0
+    all: applications.length,
+    postulado: applications.filter(app => app.estado === 'Postulado').length,
+    'cv-visto': applications.filter(app => app.estado === 'CV Visto').length,
+    'en-proceso': applications.filter(app => app.estado === 'En Proceso').length,
+    finalista: applications.filter(app => app.estado === 'Finalista').length,
+    'proceso-finalizado': applications.filter(app => app.estado === 'Rechazado' || app.estado === 'Contratado').length
   }
 
   const filterButtons: { key: StatusFilterType; label: string; icon?: React.ReactNode }[] = [
@@ -156,12 +189,12 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
       ) : (
         <div className="grid gap-4">
           {userApplications.map((app, index) => {
-            const job = getJobForApplication(app)
-            if (!job) return null
+            if (!app.oferta) return null
 
-            const statusStyle = statusColors[app.status]
+            const frontendStatus = mapBackendStatusToFrontend(app.estado)
+            const statusStyle = statusColors[frontendStatus]
             const daysSinceApplied = Math.floor(
-              (new Date().getTime() - new Date(app.appliedDate).getTime()) / (1000 * 60 * 60 * 24)
+              (new Date().getTime() - new Date(app.fecha_postulacion).getTime()) / (1000 * 60 * 60 * 24)
             )
 
             return (
@@ -171,18 +204,18 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:shadow-lg transition-all duration-300 border-l-4" style={{ borderLeftColor: `var(--color-${app.status === 'postulado' ? 'primary' : app.status === 'en-proceso' ? 'secondary' : app.status === 'finalista' ? 'warning' : 'muted'})` }}>
+                <Card className="hover:shadow-lg transition-all duration-300 border-l-4" style={{ borderLeftColor: `var(--color-${frontendStatus === 'postulado' ? 'primary' : frontendStatus === 'en-proceso' ? 'secondary' : frontendStatus === 'finalista' ? 'warning' : 'muted'})` }}>
                   <CardContent className="pt-6">
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                       <div className="flex-1 space-y-4">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <h3 className="text-xl font-semibold text-foreground mb-1 hover:text-primary transition-colors cursor-pointer" onClick={() => onViewJob(job.id)}>
-                              {job.title}
+                            <h3 className="text-xl font-semibold text-foreground mb-1 hover:text-primary transition-colors cursor-pointer" onClick={() => onViewJob(app.oferta!.id.toString())}>
+                              {app.oferta.titulo}
                             </h3>
                             <div className="flex items-center gap-2 text-muted-foreground">
                               <Buildings size={18} weight="duotone" />
-                              <span className="font-medium">{job.company}</span>
+                              <span className="font-medium">{app.oferta.empresa}</span>
                             </div>
                           </div>
 
@@ -193,13 +226,9 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => onViewJob(job.id)} className="gap-2">
+                              <DropdownMenuItem onClick={() => onViewJob(app.oferta!.id.toString())} className="gap-2">
                                 <Eye size={16} />
                                 Ver detalle
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="gap-2">
-                                <FileText size={16} />
-                                Descargar comprobante
                               </DropdownMenuItem>
                               <Separator className="my-1" />
                               <DropdownMenuItem 
@@ -216,75 +245,78 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
                             <MapPin size={16} weight="duotone" />
-                            {job.location}
+                            {app.oferta.ubicacion}
                           </div>
                           <div className="flex items-center gap-2">
                             <CalendarBlank size={16} weight="duotone" />
                             Postulado hace {daysSinceApplied} {daysSinceApplied === 1 ? 'día' : 'días'}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Users size={16} weight="duotone" />
-                            +{job.applicants} candidatos
-                          </div>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
-                          <Badge variant="outline">{job.type}</Badge>
-                          {job.salary && (
-                            <Badge variant="outline">{job.salary}</Badge>
+                          <Badge variant="outline">{app.oferta.tipo_contrato}</Badge>
+                          {app.observaciones && (
+                            <Badge variant="secondary" className="max-w-[200px] truncate">{app.observaciones}</Badge>
                           )}
+                        </div>
+
+                        {/* Barra de progreso del estado */}
+                        <div className="pt-2">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-medium text-muted-foreground">Progreso de postulación</span>
+                            <span className="text-xs font-semibold text-primary">
+                              {app.estado === 'Postulado' && '20%'}
+                              {app.estado === 'CV Visto' && '40%'}
+                              {app.estado === 'En Proceso' && '60%'}
+                              {app.estado === 'Finalista' && '80%'}
+                              {(app.estado === 'Contratado' || app.estado === 'Rechazado') && '100%'}
+                            </span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                            <div 
+                              className={`h-full transition-all duration-500 rounded-full ${
+                                app.estado === 'Rechazado' ? 'bg-destructive' : 
+                                app.estado === 'Contratado' ? 'bg-green-500' : 
+                                'bg-primary'
+                              }`}
+                              style={{
+                                width: 
+                                  app.estado === 'Postulado' ? '20%' :
+                                  app.estado === 'CV Visto' ? '40%' :
+                                  app.estado === 'En Proceso' ? '60%' :
+                                  app.estado === 'Finalista' ? '80%' :
+                                  '100%'
+                              }}
+                            />
+                          </div>
+                          <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                            <span className={app.estado === 'Postulado' || app.estado === 'CV Visto' || app.estado === 'En Proceso' || app.estado === 'Finalista' || app.estado === 'Contratado' || app.estado === 'Rechazado' ? 'text-primary font-medium' : ''}>Enviado</span>
+                            <span className={app.estado === 'CV Visto' || app.estado === 'En Proceso' || app.estado === 'Finalista' || app.estado === 'Contratado' || app.estado === 'Rechazado' ? 'text-primary font-medium' : ''}>Revisado</span>
+                            <span className={app.estado === 'En Proceso' || app.estado === 'Finalista' || app.estado === 'Contratado' || app.estado === 'Rechazado' ? 'text-primary font-medium' : ''}>En proceso</span>
+                            <span className={app.estado === 'Finalista' || app.estado === 'Contratado' || app.estado === 'Rechazado' ? 'text-primary font-medium' : ''}>Finalista</span>
+                            <span className={app.estado === 'Contratado' ? 'text-green-500 font-medium' : app.estado === 'Rechazado' ? 'text-destructive font-medium' : ''}>
+                              {app.estado === 'Contratado' ? 'Contratado' : app.estado === 'Rechazado' ? 'Rechazado' : 'Final'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       
                       <div className="flex flex-col items-start lg:items-end gap-3 lg:min-w-[200px]">
                         <div className={`px-4 py-2 rounded-full border-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} font-semibold text-sm`}>
-                          {statusLabels[app.status]}
+                          {app.estado}
                         </div>
                         
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => onViewJob(job.id)}
+                          onClick={() => onViewJob(app.oferta!.id.toString())}
                           className="gap-2 w-full lg:w-auto"
                         >
                           Ver empleo
                           <ArrowRight size={16} weight="bold" />
                         </Button>
-
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => setExpandedApp(expandedApp === app.id ? null : app.id)}
-                          className="gap-2 w-full lg:w-auto"
-                        >
-                          {expandedApp === app.id ? (
-                            <>
-                              Ocultar seguimiento
-                              <CaretUp size={16} weight="bold" />
-                            </>
-                          ) : (
-                            <>
-                              Ver seguimiento
-                              <CaretDown size={16} weight="bold" />
-                            </>
-                          )}
-                        </Button>
                       </div>
                     </div>
-
-                    <AnimatePresence>
-                      {expandedApp === app.id && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="mt-6 pt-6 border-t"
-                        >
-                          <ApplicationTimeline application={app} />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </CardContent>
                 </Card>
               </motion.div>

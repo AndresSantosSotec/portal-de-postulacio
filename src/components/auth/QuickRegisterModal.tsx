@@ -21,6 +21,7 @@ import {
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import type { User as UserType } from '@/lib/types'
+import { applicationService } from '@/lib/applicationService'
 
 type RegistrationStep = 'basic' | 'personal' | 'professional' | 'documents'
 
@@ -29,14 +30,17 @@ type QuickRegisterModalProps = {
   onClose: () => void
   onSuccess: (user: UserType, quickApply?: boolean) => void
   jobTitle?: string
+  jobId?: number // ID de la oferta para postulación rápida
 }
 
-export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitle }: QuickRegisterModalProps) {
+export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitle, jobId }: QuickRegisterModalProps) {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>('basic')
   const [cvFile, setCvFile] = useState<File | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    passwordConfirmation: '',
     fullName: '',
     dateOfBirth: '',
     dpi: '',
@@ -78,12 +82,16 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
   const validateStep = (): boolean => {
     switch (currentStep) {
       case 'basic':
-        if (!formData.email || !formData.password) {
+        if (!formData.email || !formData.password || !formData.passwordConfirmation) {
           toast.error('Por favor completa todos los campos requeridos')
           return false
         }
-        if (formData.password.length < 6) {
-          toast.error('La contraseña debe tener al menos 6 caracteres')
+        if (formData.password.length < 8) {
+          toast.error('La contraseña debe tener al menos 8 caracteres')
+          return false
+        }
+        if (formData.password !== formData.passwordConfirmation) {
+          toast.error('Las contraseñas no coinciden')
           return false
         }
         break
@@ -103,38 +111,100 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
     return true
   }
 
-  const handleSubmit = (quickApply: boolean = false) => {
+  const handleSubmit = async (quickApply: boolean = false) => {
     if (!validateStep()) return
 
-    const user: UserType = {
-      id: `user-${Date.now()}`,
-      email: formData.email,
-      password: formData.password,
-      name: formData.fullName,
-      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(formData.fullName)}`,
-      profile: {
-        fullName: formData.fullName,
-        dateOfBirth: formData.dateOfBirth,
-        dpi: formData.dpi,
-        phone: formData.phone,
-        address: formData.address,
-        profession: formData.profession,
-        middleSchoolDegree: formData.middleSchoolDegree,
-        universityDegree: formData.universityDegree,
-        additionalStudies: formData.additionalStudies,
-        cvFile: cvFile ? URL.createObjectURL(cvFile) : undefined,
-        experience: [],
-        education: [],
-        skills: []
-      }
-    }
+    setIsSubmitting(true)
 
-    toast.success(quickApply 
-      ? '¡Cuenta creada y postulación enviada!'
-      : '¡Cuenta creada exitosamente!'
-    )
-    onSuccess(user, quickApply)
-    onClose()
+    try {
+      // 1. Registrar usuario en el backend
+      const registerResult = await applicationService.registerCandidate({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        password_confirmation: formData.passwordConfirmation,
+        fecha_nacimiento: formData.dateOfBirth || undefined,
+        dpi: formData.dpi || undefined,
+        telefono: formData.phone || undefined,
+        direccion: formData.address || undefined,
+        profesion: formData.profession || undefined,
+      })
+
+      // 2. Si hay datos profesionales adicionales, actualizar perfil
+      if (formData.middleSchoolDegree || formData.universityDegree || formData.additionalStudies) {
+        try {
+          await applicationService.completeProfile({
+            nombre_completo: formData.fullName,
+            fecha_nacimiento: formData.dateOfBirth || undefined,
+            dpi: formData.dpi || undefined,
+            telefono: formData.phone || undefined,
+            direccion: formData.address || undefined,
+            profesion: formData.profession || undefined,
+          })
+        } catch (error) {
+          console.error('Error al completar perfil adicional:', error)
+          // No bloquear el flujo si falla la actualización adicional
+        }
+      }
+
+      // 3. Si hay CV, subirlo
+      if (cvFile) {
+        try {
+          await applicationService.uploadCV(cvFile)
+        } catch (error) {
+          console.error('Error al subir CV:', error)
+          toast.error('Usuario creado, pero hubo un error al subir el CV. Puedes subirlo después.')
+        }
+      }
+
+      // 4. Si es postulación rápida Y hay jobId, postular al puesto
+      if (quickApply && jobId) {
+        try {
+          await applicationService.applyToJob(jobId, `Postulación desde registro rápido para: ${jobTitle}`)
+          toast.success('¡Postulación enviada exitosamente!')
+        } catch (error: any) {
+          console.error('Error al postular:', error)
+          toast.error('Usuario creado, pero hubo un error al enviar la postulación. Puedes postularte manualmente.')
+        }
+      }
+
+      // 5. Crear objeto de usuario para el frontend
+      const user: UserType = {
+        id: registerResult.user.id.toString(),
+        email: registerResult.user.email,
+        password: formData.password,
+        name: registerResult.user.name,
+        avatar: registerResult.user.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(formData.fullName)}`,
+        profile: {
+          fullName: formData.fullName,
+          dateOfBirth: formData.dateOfBirth,
+          dpi: formData.dpi,
+          phone: formData.phone,
+          address: formData.address,
+          profession: formData.profession,
+          middleSchoolDegree: formData.middleSchoolDegree,
+          universityDegree: formData.universityDegree,
+          additionalStudies: formData.additionalStudies,
+          cvFile: cvFile ? URL.createObjectURL(cvFile) : undefined,
+          experience: [],
+          education: [],
+          skills: []
+        }
+      }
+
+      toast.success(quickApply && jobId
+        ? '¡Cuenta creada y postulación enviada exitosamente!'
+        : '¡Cuenta creada exitosamente!'
+      )
+      
+      onSuccess(user, quickApply)
+      onClose()
+    } catch (error: any) {
+      console.error('Error en registro:', error)
+      toast.error(error.message || 'Error al crear la cuenta. Por favor intenta nuevamente.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,9 +272,28 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
                     <Input
                       id="password"
                       type="password"
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder="Mínimo 8 caracteres"
                       value={formData.password}
                       onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                      className="pl-11 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="passwordConfirmation" className="text-sm font-semibold">
+                    Confirmar Contraseña <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <LockKey size={20} weight="duotone" />
+                    </div>
+                    <Input
+                      id="passwordConfirmation"
+                      type="password"
+                      placeholder="Repite tu contraseña"
+                      value={formData.passwordConfirmation}
+                      onChange={(e) => setFormData(prev => ({ ...prev, passwordConfirmation: e.target.value }))}
                       className="pl-11 h-12"
                     />
                   </div>
@@ -461,9 +550,25 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
                       onClick={() => handleSubmit(true)}
                       className="w-full bg-gradient-to-r from-secondary to-secondary/90"
                       size="lg"
+                      disabled={isSubmitting}
                     >
-                      <Lightning size={20} weight="fill" className="mr-2" />
-                      Registrar y Postularme Ahora
+                      {isSubmitting ? (
+                        <>
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="mr-2"
+                          >
+                            ⏳
+                          </motion.div>
+                          Creando cuenta...
+                        </>
+                      ) : (
+                        <>
+                          <Lightning size={20} weight="fill" className="mr-2" />
+                          Registrar y Postularme Ahora
+                        </>
+                      )}
                     </Button>
                   </motion.div>
                 )}
@@ -479,6 +584,7 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
               variant="outline"
               size="lg"
               className="flex-1"
+              disabled={isSubmitting}
             >
               Atrás
             </Button>
@@ -487,8 +593,22 @@ export default function QuickRegisterModal({ isOpen, onClose, onSuccess, jobTitl
             onClick={currentStep === 'documents' ? () => handleSubmit(false) : handleNext}
             size="lg"
             className="flex-1"
+            disabled={isSubmitting}
           >
-            {currentStep === 'documents' ? 'Completar Registro' : 'Siguiente'}
+            {isSubmitting ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="mr-2"
+                >
+                  ⏳
+                </motion.div>
+                Creando cuenta...
+              </>
+            ) : (
+              currentStep === 'documents' ? 'Completar Registro' : 'Siguiente'
+            )}
           </Button>
         </div>
       </DialogContent>
