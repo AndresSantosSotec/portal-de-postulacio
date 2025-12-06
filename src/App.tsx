@@ -54,6 +54,7 @@ export default function App() {
   }, [currentUser])
 
   const handleViewJob = (jobId: string) => {
+    console.log('🔄 [App] Navegando a detalle de empleo:', jobId)
     setSelectedJobId(jobId)
     setCurrentView('detail')
   }

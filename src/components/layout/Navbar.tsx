@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -28,8 +27,8 @@ import {
 import AuthModal from '@/components/auth/AuthModal'
 import NotificationsPanel from '@/components/portal/NotificationsPanel'
 import { ThemeToggle } from './ThemeToggle'
+import { notificationService } from '@/lib/notificationService'
 import type { User as UserType } from '@/lib/types'
-import type { Notification } from '@/components/portal/NotificationsPanel'
 
 type NavbarProps = {
   currentUser: UserType | null
@@ -47,9 +46,37 @@ export default function Navbar({
   notificationCount = 0
 }: NavbarProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [notifications] = useKV<Notification[]>('notifications', [])
-  
-  const unreadCount = notifications?.filter(n => currentUser && n.userId === currentUser.id && !n.read).length || 0
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  const fetchUnreadCount = useCallback(async () => {
+    if (!currentUser) {
+      setUnreadCount(0)
+      return
+    }
+
+    try {
+      const { count } = await notificationService.getUnreadNotifications()
+      setUnreadCount(count)
+    } catch (error) {
+      console.error('Error al obtener conteo de notificaciones:', error)
+      setUnreadCount(0)
+    }
+  }, [currentUser])
+
+  // Cargar conteo de notificaciones no leídas
+  useEffect(() => {
+    fetchUnreadCount()
+    
+    // Actualizar cada 30 segundos
+    const interval = setInterval(() => {
+      fetchUnreadCount()
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [fetchUnreadCount])
+
+  // Usar el prop si está disponible, sino usar el estado
+  const displayCount = notificationCount > 0 ? notificationCount : unreadCount
 
   const handleAuthSuccess = (user: UserType) => {
     onLoginSuccess(user)
@@ -132,36 +159,51 @@ export default function Navbar({
                         variant="ghost"
                         size="sm"
                         className="relative hover:bg-warning/10"
+                        onClick={() => fetchUnreadCount()} // Refrescar al abrir
                       >
-                        <Bell size={20} weight={unreadCount > 0 ? "fill" : "duotone"} className={unreadCount > 0 ? "text-warning" : ""} />
-                        {unreadCount > 0 && (
+                        <Bell 
+                          size={20} 
+                          weight={displayCount > 0 ? "fill" : "duotone"} 
+                          className={displayCount > 0 ? "text-warning" : ""} 
+                        />
+                        {displayCount > 0 && (
                           <Badge 
                             variant="destructive" 
-                            className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs animate-pulse"
+                            className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-0 text-xs font-bold animate-pulse shadow-lg"
                           >
-                            {unreadCount}
+                            {displayCount > 99 ? '99+' : displayCount}
                           </Badge>
                         )}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-96 p-0" align="end">
+                    <PopoverContent className="w-96 p-0" align="end" onOpenAutoFocus={() => fetchUnreadCount()}>
                       <div className="p-4 border-b border-border">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-base">Notificaciones</h3>
-                          {unreadCount > 0 && (
-                            <Badge variant="default">{unreadCount} nuevas</Badge>
+                          {displayCount > 0 && (
+                            <Badge variant="default" className="font-semibold">
+                              {displayCount} {displayCount === 1 ? 'nueva' : 'nuevas'}
+                            </Badge>
                           )}
                         </div>
                       </div>
                       <div className="p-4 max-h-[400px] overflow-y-auto">
-                        {currentUser && <NotificationsPanel user={currentUser} compact={true} />}
+                        {currentUser && (
+                          <NotificationsPanel 
+                            user={currentUser} 
+                            compact={true}
+                            onNotificationUpdate={fetchUnreadCount}
+                          />
+                        )}
                       </div>
                       <div className="p-3 border-t border-border">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="w-full"
-                          onClick={() => onNavigate('alerts')}
+                          onClick={() => {
+                            onNavigate('alerts')
+                          }}
                         >
                           Ver todas las notificaciones
                         </Button>

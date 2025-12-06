@@ -245,12 +245,21 @@ export default function WorkplaceGallery() {
                     <div className="relative aspect-video overflow-hidden bg-muted">
                       {!imageError[item.id] && item.url ? (
                         <>
-                          <img
-                            src={item.type === 'video' ? (item.thumbnail || item.url) : item.url}
-                            alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
-                          />
+                          {item.type === 'video' ? (
+                            <video
+                              src={item.url}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              preload="metadata"
+                              onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
+                            />
+                          ) : (
+                            <img
+                              src={item.url}
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
+                            />
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
                           {item.type === 'video' && (
                             <>
@@ -332,6 +341,9 @@ export default function WorkplaceGallery() {
                     src={selectedMedia.url}
                     alt={selectedMedia.title}
                     className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZW4gbm8gZGlzcG9uaWJsZTwvdGV4dD48L3N2Zz4='
+                    }}
                   />
                 ) : (
                   <video
@@ -339,7 +351,7 @@ export default function WorkplaceGallery() {
                     controls
                     className="w-full h-full bg-black"
                     autoPlay
-                    poster={selectedMedia.thumbnail}
+                    preload="metadata"
                   >
                     Tu navegador no soporta la reproducción de video.
                   </video>

@@ -22,12 +22,21 @@ import ProfilePersonalData from './ProfilePersonalData'
 import ProfileApplications from './ProfileApplications'
 import NotificationsPanel from './NotificationsPanel'
 import StatusSimulator from './StatusSimulator'
+import EvaluationsPanel from './EvaluationsPanel'
+import JobAlerts from '@/components/profile/JobAlerts'
 import { useNotificationService } from '@/hooks/use-notification-service'
 import { applicationService, type Favorite } from '@/lib/applicationService'
 import { toast } from 'sonner'
 import type { User, Application, Job, JobAlert } from '@/lib/types'
-import type { Notification } from './NotificationsPanel'
 import { categoryLabels } from '@/lib/types'
+
+type CustomNotification = {
+  id: string
+  userId: string
+  read: boolean
+  message: string
+  createdAt: string
+}
 
 type UserPortalProps = {
   user: User
@@ -40,7 +49,7 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
   const [applications] = useKV<Application[]>('applications', [])
   const [favorites] = useKV<string[]>('favorites', [])
   const [alerts] = useKV<JobAlert[]>('job_alerts', [])
-  const [notifications] = useKV<Notification[]>('notifications', [])
+  const [notifications] = useKV<CustomNotification[]>('notifications', [])
   const [activeTab, setActiveTab] = useState('curriculum')
   const [backendFavorites, setBackendFavorites] = useState<Favorite[]>([])
   const [loadingFavorites, setLoadingFavorites] = useState(false)
@@ -147,11 +156,8 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
                 className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
               >
                 <Bell size={18} weight="duotone" />
-                <span className="hidden sm:inline">Mis Alertas</span>
-                <span className="sm:hidden">Alertas</span>
-                {userAlerts.length > 0 && (
-                  <Badge variant="secondary" className="ml-1">{userAlerts.length}</Badge>
-                )}
+                <span className="hidden sm:inline">Vacantes Sugeridas</span>
+                <span className="sm:hidden">Sugeridas</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="tests" 
@@ -283,49 +289,20 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
           </TabsContent>
 
           <TabsContent value="alerts" className="mt-0 space-y-6">
-            <Card>
-              <CardContent className="py-20 text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200 }}
-                  className="inline-flex h-20 w-20 rounded-full bg-warning/10 items-center justify-center mx-auto mb-4"
-                >
-                  <Bell size={40} className="text-warning" weight="duotone" />
-                </motion.div>
-                <h3 className="text-xl font-semibold mb-2">Alertas de Empleo</h3>
-                <p className="text-muted-foreground mb-6">
-                  Configura alertas para recibir notificaciones de nuevos empleos
-                </p>
-                <Button size="lg" className="gap-2">
-                  <Bell size={20} weight="duotone" />
-                  Crear Alerta
-                </Button>
-              </CardContent>
-            </Card>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <JobAlerts 
+                categories={Object.entries(categoryLabels).map(([id, name]) => ({ id, name }))} 
+                onViewJob={onViewJob}
+              />
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="tests" className="mt-0 space-y-6">
-            <Card>
-              <CardContent className="py-20 text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200 }}
-                  className="inline-flex h-20 w-20 rounded-full bg-accent/10 items-center justify-center mx-auto mb-4"
-                >
-                  <ChartBar size={40} className="text-accent" weight="duotone" />
-                </motion.div>
-                <h3 className="text-xl font-semibold mb-2">Tests y Evaluaciones</h3>
-                <p className="text-muted-foreground mb-6">
-                  Completa evaluaciones para mejorar tu perfil profesional
-                </p>
-                <Button size="lg" variant="secondary" className="gap-2">
-                  <ChartBar size={20} weight="duotone" />
-                  Comenzar Test
-                </Button>
-              </CardContent>
-            </Card>
+            <EvaluationsPanel />
           </TabsContent>
         </Tabs>
       </div>
