@@ -53,7 +53,7 @@ export interface Notification {
   id: number
   titulo: string
   mensaje: string
-  tipo: 'Sistema' | 'Postulación' | 'Recordatorio' | 'Alerta'
+  tipo: 'Sistema' | 'Postulación' | 'Recordatorio' | 'Alerta' | 'Manual'
   leido: boolean
   fecha: string
 }
@@ -65,12 +65,70 @@ interface ApiResponse<T> {
   count?: number
 }
 
+interface PaginatedResponse<T> {
+  success: boolean
+  data: T[]
+  pagination: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
+  unread_count?: number
+}
+
+interface GetNotificationsParams {
+  page?: number
+  per_page?: number
+  tipo?: string
+  solo_no_leidas?: boolean
+}
+
 class NotificationService {
   /**
-   * Obtener todas las notificaciones
+   * Obtener notificaciones con paginación
    */
-  async getNotifications(): Promise<Notification[]> {
-    const response = await axios.get<ApiResponse<Notification[]>>(`${API_URL}/notifications`, getAuthHeaders())
+  async getNotifications(params?: GetNotificationsParams): Promise<{
+    notifications: Notification[]
+    pagination: {
+      currentPage: number
+      lastPage: number
+      perPage: number
+      total: number
+    }
+    unreadCount: number
+  }> {
+    const response = await axios.get<PaginatedResponse<Notification>>(`${API_URL}/notifications`, {
+      ...getAuthHeaders(),
+      params: {
+        page: params?.page || 1,
+        per_page: params?.per_page || 10,
+        tipo: params?.tipo,
+        solo_no_leidas: params?.solo_no_leidas,
+      }
+    })
+    
+    return {
+      notifications: response.data.data || [],
+      pagination: {
+        currentPage: response.data.pagination?.current_page || 1,
+        lastPage: response.data.pagination?.last_page || 1,
+        perPage: response.data.pagination?.per_page || 10,
+        total: response.data.pagination?.total || 0,
+      },
+      unreadCount: response.data.unread_count || 0
+    }
+  }
+
+  /**
+   * Obtener todas las notificaciones (sin paginación - para compatibilidad)
+   * @deprecated Usar getNotifications con paginación
+   */
+  async getAllNotifications(): Promise<Notification[]> {
+    const response = await axios.get<ApiResponse<Notification[]>>(`${API_URL}/notifications`, {
+      ...getAuthHeaders(),
+      params: { per_page: 100 }
+    })
     return response.data.data || []
   }
 

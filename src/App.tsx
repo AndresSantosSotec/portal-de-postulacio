@@ -132,10 +132,7 @@ export default function App() {
           )}
         </main>
 
-        <Chatbot 
-          applications={currentUser ? applications?.filter(app => app.userId === currentUser.id) : []}
-          userName={currentUser?.name}
-        />
+        <Chatbot userName={currentUser?.name} />
 
         <Toaster />
       </div>

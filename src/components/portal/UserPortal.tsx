@@ -14,7 +14,8 @@ import {
   FileText,
   ChartBar,
   MapPin,
-  IdentificationCard
+  IdentificationCard,
+  Brain
 } from '@phosphor-icons/react'
 import ProfileHeader from './ProfileHeader'
 import ProfileCurriculum from './ProfileCurriculum'
@@ -23,6 +24,7 @@ import ProfileApplications from './ProfileApplications'
 import NotificationsPanel from './NotificationsPanel'
 import StatusSimulator from './StatusSimulator'
 import EvaluationsPanel from './EvaluationsPanel'
+import PsychometricTestsPanel from './PsychometricTestsPanel'
 import JobAlerts from '@/components/profile/JobAlerts'
 import { useNotificationService } from '@/hooks/use-notification-service'
 import { applicationService, type Favorite } from '@/lib/applicationService'
@@ -302,7 +304,18 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
           </TabsContent>
 
           <TabsContent value="tests" className="mt-0 space-y-6">
-            <EvaluationsPanel />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              {/* Pruebas Psicométricas */}
+              <PsychometricTestsPanel />
+              
+              {/* Evaluaciones/Entrevistas */}
+              <EvaluationsPanel />
+            </motion.div>
           </TabsContent>
         </Tabs>
       </div>
