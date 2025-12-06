@@ -164,7 +164,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
     <>
       <div className="min-h-screen bg-background">
         <div className="bg-card border-b border-border sticky top-16 z-10 shadow-sm">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+          <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
             <Button
               variant="ghost"
               onClick={onBack}
@@ -176,8 +176,8 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-          <div className="grid lg:grid-cols-3 gap-8">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8">
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             <div className="lg:col-span-2 space-y-6">
               <Card className="overflow-hidden">
                 {job.imageUrl && (

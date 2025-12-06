@@ -93,8 +93,8 @@ export default function Navbar({
   return (
     <>
       <nav className="bg-card/80 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
             <button 
               onClick={() => onNavigate('listings')}
               className="flex items-center gap-3 group"
@@ -106,8 +106,8 @@ export default function Navbar({
               >
                 <Briefcase size={24} weight="bold" className="text-white" />
               </motion.div>
-              <div className="flex flex-col items-start">
-                <span className="text-xl font-bold bg-gradient-to-r from-primary to-[#003875] bg-clip-text text-transparent group-hover:from-primary/90 group-hover:to-[#003875]/90 transition-all">
+              <div className="flex flex-col items-start min-w-0">
+                <span className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-[#003875] bg-clip-text text-transparent group-hover:from-primary/90 group-hover:to-[#003875]/90 transition-all truncate">
                   Oportunidades Coosanjer
                 </span>
                 <span className="text-xs text-muted-foreground hidden sm:block">

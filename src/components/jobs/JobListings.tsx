@@ -155,17 +155,17 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-gradient-to-r from-primary via-[#003875] to-primary text-primary-foreground py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+      <div className="bg-gradient-to-r from-primary via-[#003875] to-primary text-primary-foreground py-8 sm:py-10 md:py-12 lg:py-16">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             Encuentra tu próximo empleo
           </h1>
-          <p className="text-primary-foreground/90 mb-6">
+          <p className="text-primary-foreground/90 mb-4 sm:mb-6 text-sm sm:text-base">
             Conectando talento con las mejores oportunidades
           </p>
           
-          <div className="bg-card rounded-xl p-4 shadow-xl">
-            <div className="flex flex-col md:flex-row gap-3">
+          <div className="bg-card rounded-xl p-3 sm:p-4 shadow-xl">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="relative flex-1">
                 <MagnifyingGlass 
                   size={20} 
@@ -175,7 +175,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                   placeholder="Buscar por cargo, empresa o palabra clave..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-11"
+                  className="pl-10 h-10 sm:h-11 text-sm sm:text-base"
                 />
               </div>
               
@@ -183,7 +183,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                 value={selectedCategory || 'all'} 
                 onValueChange={(value) => setSelectedCategory(value === 'all' ? null : value)}
               >
-                <SelectTrigger className="w-full md:w-64 h-11">
+                <SelectTrigger className="w-full sm:w-auto md:w-64 h-10 sm:h-11">
                   <Funnel size={16} className="mr-2" />
                   <SelectValue placeholder="Categoría" />
                 </SelectTrigger>
@@ -198,7 +198,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
               </Select>
 
               <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                <SelectTrigger className="w-full md:w-56 h-11">
+                <SelectTrigger className="w-full sm:w-auto md:w-56 h-10 sm:h-11">
                   <SelectValue placeholder="Ubicación" />
                 </SelectTrigger>
                 <SelectContent>
@@ -217,7 +217,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
 
       <WorkplaceGallery />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 md:py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

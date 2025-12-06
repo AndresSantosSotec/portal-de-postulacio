@@ -126,11 +126,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[480px] max-w-[95vw] max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="sm:max-w-[480px] max-w-[95vw] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-0">
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5" />
           
-          <div className="relative p-4 sm:p-8">
+          <div className="relative p-4 sm:p-6 md:p-8">
             <DialogHeader className="space-y-2 sm:space-y-3">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -153,7 +153,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               </DialogDescription>
             </DialogHeader>
             
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 mt-6 sm:mt-8">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 mt-4 sm:mt-6 md:mt-8">
               <AnimatePresence mode="wait">
                 {!isLogin && (
                   <motion.div
