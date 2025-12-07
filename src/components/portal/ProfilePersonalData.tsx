@@ -32,6 +32,7 @@ import {
   type Titulo
 } from '@/lib/applicationService'
 import type { User } from '@/lib/types'
+import ChangePasswordSection from './ChangePasswordSection'
 
 // Función para formatear fechas de input (YYYY-MM-DD) a formato de visualización
 // Agrega T00:00:00 para forzar zona horaria local y evitar el problema de UTC
@@ -1532,6 +1533,9 @@ export default function ProfilePersonalData({ user, onUpdateUser }: ProfilePerso
           </div>
         </CardContent>
       </Card>
+
+      {/* Sección de Cambio de Contraseña */}
+      <ChangePasswordSection />
     </div>
   )
 }

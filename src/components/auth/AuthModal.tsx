@@ -9,6 +9,7 @@ import { EnvelopeSimple, LockKey, User as UserIcon, Eye, EyeSlash, CheckCircle }
 import { toast } from 'sonner'
 import { authService } from '@/lib/authService'
 import type { User } from '@/lib/types'
+import ForgotPasswordModal from './ForgotPasswordModal'
 
 type AuthModalProps = {
   isOpen: boolean
@@ -20,6 +21,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -223,6 +225,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                     {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+                {isLogin && (
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(true)}
+                      className="text-xs text-primary hover:text-primary/80 transition-colors hover:underline"
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  </div>
+                )}
               </div>
               
               {!isLogin && (
@@ -287,6 +300,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           </div>
         </div>
       </DialogContent>
+
+      {/* Modal de recuperar contraseña */}
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onBackToLogin={() => setShowForgotPassword(false)}
+      />
     </Dialog>
   )
 }

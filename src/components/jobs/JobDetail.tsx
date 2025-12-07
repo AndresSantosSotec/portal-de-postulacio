@@ -13,6 +13,7 @@ import type { Application, User } from '@/lib/types'
 import AuthModal from '../auth/AuthModal'
 import QuickRegisterModal from '../auth/QuickRegisterModal'
 import ApplicationForm from './ApplicationForm'
+import { useSEO } from '@/hooks/useSEO'
 
 type JobDetailProps = {
   jobId: string
@@ -47,6 +48,15 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
       checkIfApplied()
     }
   }, [currentUser, jobId])
+
+  // SEO dinámico para cada oferta
+  useSEO({
+    title: job ? `${job.title} - Oportunidades Coosanjer` : undefined,
+    description: job ? `${job.description?.substring(0, 160)}...` : undefined,
+    url: job ? `https://www.oportunidadescoosanjer.com.gt/empleo/${job.id}` : undefined,
+    image: job?.imageUrl || undefined,
+    type: 'article'
+  })
 
   const loadJobDetail = async () => {
     try {
@@ -160,9 +170,54 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
     (Date.now() - new Date(job.postedDate).getTime()) / (1000 * 60 * 60 * 24)
   )
 
+  // Schema.org JSON-LD para Google Jobs
+  const jobSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description,
+    identifier: {
+      '@type': 'PropertyValue',
+      name: 'Coosanjer',
+      value: job.id.toString()
+    },
+    datePosted: job.publishedAt || new Date().toISOString(),
+    validThrough: job.deadline || undefined,
+    employmentType: job.employmentType === 'full-time' ? 'FULL_TIME' : 
+                    job.employmentType === 'part-time' ? 'PART_TIME' : 
+                    job.employmentType === 'contract' ? 'CONTRACTOR' : 'FULL_TIME',
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: 'Coosanjer',
+      sameAs: 'https://www.oportunidadescoosanjer.com.gt'
+    },
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: job.location,
+        addressCountry: 'GT'
+      }
+    },
+    baseSalary: job.salaryRange ? {
+      '@type': 'MonetaryAmount',
+      currency: 'GTQ',
+      value: {
+        '@type': 'QuantitativeValue',
+        value: job.salaryRange
+      }
+    } : undefined
+  }
+
   return (
     <>
       <div className="min-h-screen bg-background">
+        {/* Schema.org JSON-LD para Google Jobs */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobSchema) }}
+        />
+        
         <div className="bg-card border-b border-border sticky top-16 z-10 shadow-sm">
           <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
             <Button

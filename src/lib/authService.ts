@@ -171,6 +171,66 @@ class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('current_user');
   }
+
+  /**
+   * Solicitar recuperación de contraseña
+   */
+  async forgotPassword(email: string): Promise<{ success: boolean; message: string; debug?: any }> {
+    try {
+      const response = await api.post<{ success: boolean; message: string; debug?: any }>('/auth/forgot-password', { email });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al enviar solicitud de recuperación');
+    }
+  }
+
+  /**
+   * Verificar token de reset
+   */
+  async verifyResetToken(email: string, token: string): Promise<{ valid: boolean; message: string }> {
+    try {
+      const response = await api.post<{ success: boolean; valid: boolean; message: string }>('/auth/verify-reset-token', { 
+        email, 
+        token 
+      });
+      return { valid: response.data.valid, message: response.data.message };
+    } catch (error: any) {
+      return { valid: false, message: error.response?.data?.message || 'Token inválido' };
+    }
+  }
+
+  /**
+   * Restablecer contraseña
+   */
+  async resetPassword(email: string, token: string, password: string, password_confirmation: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await api.post<{ success: boolean; message: string }>('/auth/reset-password', {
+        email,
+        token,
+        password,
+        password_confirmation
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al restablecer contraseña');
+    }
+  }
+
+  /**
+   * Cambiar contraseña (usuario autenticado)
+   */
+  async changePassword(currentPassword: string, newPassword: string, newPasswordConfirmation: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await api.post<{ success: boolean; message: string }>('/auth/change-password', {
+        current_password: currentPassword,
+        new_password: newPassword,
+        new_password_confirmation: newPasswordConfirmation
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al cambiar la contraseña');
+    }
+  }
 }
 
 export const authService = new AuthService();
