@@ -108,7 +108,7 @@ export default function Navbar({
               </motion.div>
               <div className="flex flex-col items-start min-w-0">
                 <span className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-[#003875] bg-clip-text text-transparent group-hover:from-primary/90 group-hover:to-[#003875]/90 transition-all truncate">
-                  Oportunidades Coosanjer
+                  Oportunidades COOSANJER R.L.
                 </span>
                 <span className="text-xs text-muted-foreground hidden sm:block">
                   Conectando talento con oportunidades

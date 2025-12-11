@@ -51,7 +51,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
 
   // SEO dinámico para cada oferta
   useSEO({
-    title: job ? `${job.title} - Oportunidades Coosanjer` : undefined,
+    title: job ? `${job.title} - Oportunidades COOSANJER R.L.` : undefined,
     description: job ? `${job.description?.substring(0, 160)}...` : undefined,
     url: job ? `https://www.oportunidadescoosanjer.com.gt/empleo/${job.id}` : undefined,
     image: job?.imageUrl || undefined,
@@ -181,11 +181,11 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
       name: 'Coosanjer',
       value: job.id.toString()
     },
-    datePosted: job.publishedAt || new Date().toISOString(),
-    validThrough: job.deadline || undefined,
-    employmentType: job.employmentType === 'full-time' ? 'FULL_TIME' : 
-                    job.employmentType === 'part-time' ? 'PART_TIME' : 
-                    job.employmentType === 'contract' ? 'CONTRACTOR' : 'FULL_TIME',
+    datePosted: job.postedDate || new Date().toISOString(),
+    validThrough: undefined,
+    employmentType: job.type === 'full-time' ? 'FULL_TIME' : 
+                    job.type === 'part-time' ? 'PART_TIME' : 
+                    job.type === 'contract' ? 'CONTRACTOR' : 'FULL_TIME',
     hiringOrganization: {
       '@type': 'Organization',
       name: 'Coosanjer',
@@ -199,12 +199,12 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
         addressCountry: 'GT'
       }
     },
-    baseSalary: job.salaryRange ? {
+    baseSalary: job.salary ? {
       '@type': 'MonetaryAmount',
       currency: 'GTQ',
       value: {
         '@type': 'QuantitativeValue',
-        value: job.salaryRange
+        value: job.salary
       }
     } : undefined
   }
