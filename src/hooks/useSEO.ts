@@ -61,3 +61,4 @@ export function useSEO(data: SEOData) {
   }, [data])
 }
 
+
