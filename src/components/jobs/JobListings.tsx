@@ -196,25 +196,25 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                     </SelectItem>
                   ))}
                 </SelectContent>
-              </Select>
+                </Select>
 
-              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                <SelectTrigger className="w-full sm:w-auto md:w-56 h-10 sm:h-11">
-                  <SelectValue placeholder="Ubicación" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las ubicaciones</SelectItem>
-                  {locations.map(location => (
-                    <SelectItem key={location} value={location}>
-                      {location}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                  <SelectTrigger className="w-full h-9 sm:h-10 text-sm">
+                    <SelectValue placeholder="Ubicación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las ubicaciones</SelectItem>
+                    {locations.map(location => (
+                      <SelectItem key={location} value={location}>
+                        {location}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
       <WorkplaceGallery />
 
@@ -344,6 +344,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
           </>
         )}
       </div>
+    </div>
     </div>
   )
 }
