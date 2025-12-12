@@ -92,17 +92,23 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         })
         
         console.log('✅ [Portal Login] Registro exitoso:', response)
-        console.log('👤 Usuario creado:', response.user)
+        console.log('� Respuesta completa:', JSON.stringify(response, null, 2))
         
-        if (!response.user) {
+        // El backend devuelve los datos en response.data.user
+        const userData = response.user || (response as any).data?.user
+        
+        console.log('👤 Usuario extraído:', userData)
+        
+        if (!userData) {
+          console.error('❌ No se encontró usuario en la respuesta')
           throw new Error('No se recibió información del usuario')
         }
         
         const user: User = {
-          id: response.user.id.toString(),
-          email: response.user.email,
+          id: userData.id.toString(),
+          email: userData.email,
           password: '',
-          name: response.user.name,
+          name: userData.name,
           profile: {
             experience: [],
             education: [],
@@ -110,8 +116,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           }
         }
         
-        toast.success('¡Cuenta creada exitosamente!')
-        console.log('🎉 [Portal Login] Registro exitoso')
+        toast.success(`¡Bienvenido, ${userData.name}! Tu cuenta ha sido creada exitosamente`)
+        console.log('🎉 [Portal Login] Registro exitoso, iniciando sesión automáticamente')
         onSuccess(user)
         onClose()
       }

@@ -42,18 +42,36 @@ class AuthService {
    */
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await api.post<AuthResponse>('/auth/register', data);
+      const response = await api.post<any>('/auth/register', data);
       
-      if (response.data.token) {
-        this.setToken(response.data.token);
+      console.log('📦 [AUTH SERVICE] Respuesta de registro:', response.data);
+      
+      // El backend devuelve: { success, message, data: { user, token, ... } }
+      const responseData = response.data;
+      const token = responseData.data?.token || responseData.token;
+      const user = responseData.data?.user || responseData.user;
+      
+      console.log('🔑 Token extraído:', token ? 'Sí' : 'No');
+      console.log('👤 Usuario extraído:', user ? user.name : 'No encontrado');
+      
+      if (token) {
+        this.setToken(token);
       }
       
-      if (response.data.user) {
-        this.setUser(response.data.user);
+      if (user) {
+        this.setUser(user);
       }
       
-      return response.data;
+      // Retornar en formato esperado
+      return {
+        success: responseData.success,
+        message: responseData.message,
+        token: token,
+        expires_in: responseData.data?.expires_in || responseData.expires_in,
+        user: user
+      };
     } catch (error: any) {
+      console.error('❌ [AUTH SERVICE] Error en registro:', error.response?.data);
       throw new Error(error.response?.data?.message || 'Error al registrar usuario');
     }
   }
