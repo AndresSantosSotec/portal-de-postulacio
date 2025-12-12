@@ -602,6 +602,75 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
 
   const completeness = calculateCompleteness()
 
+  // ========== FUNCIONES PARA GENERAR Y DESCARGAR CV ==========
+  const handleDownloadPDF = async () => {
+    try {
+      toast.loading('Generando CV en PDF...', { id: 'pdf-download' })
+      
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/cv/download/pdf`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al generar el PDF')
+      }
+
+      // Descargar el archivo
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `CV_${user.name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      toast.success('CV descargado en PDF exitosamente', { id: 'pdf-download' })
+    } catch (error) {
+      console.error('Error al generar PDF:', error)
+      toast.error('Error al generar el CV en PDF', { id: 'pdf-download' })
+    }
+  }
+
+  const handleDownloadWord = async () => {
+    try {
+      toast.loading('Generando CV en Word...', { id: 'word-download' })
+      
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/cv/download/word`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al generar el Word')
+      }
+
+      // Descargar el archivo
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `CV_${user.name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.docx`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      toast.success('CV descargado en Word exitosamente', { id: 'word-download' })
+    } catch (error) {
+      console.error('Error al generar Word:', error)
+      toast.error('Error al generar el CV en Word', { id: 'word-download' })
+    }
+  }
+
   return (
     <div className="grid lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
@@ -1402,13 +1471,23 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
               <CardDescription>Descarga tu currículum en diferentes formatos</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full justify-start gap-3" variant="outline">
-                <FileText size={20} weight="duotone" />
-                Diseña tu CV
-              </Button>
-              <Button className="w-full justify-start gap-3" variant="outline">
+              <Button 
+                className="w-full justify-start gap-3" 
+                variant="outline"
+                onClick={handleDownloadPDF}
+                disabled={experiences.length === 0 && educations.length === 0}
+              >
                 <FileText size={20} weight="duotone" />
                 Descargar PDF
+              </Button>
+              <Button 
+                className="w-full justify-start gap-3" 
+                variant="outline"
+                onClick={handleDownloadWord}
+                disabled={experiences.length === 0 && educations.length === 0}
+              >
+                <FileText size={20} weight="duotone" />
+                Descargar Word
               </Button>
             </CardContent>
           </Card>
@@ -1458,9 +1537,6 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
                 <CheckCircle size={16} weight="fill" className="text-secondary mt-0.5" />
                 <span>Escribe un resumen profesional</span>
               </div>
-              <Button size="sm" variant="secondary" className="w-full mt-3">
-                Test de talento
-              </Button>
             </CardContent>
           </Card>
         </motion.div>
