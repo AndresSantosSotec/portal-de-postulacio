@@ -671,6 +671,72 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
     }
   }
 
+  const handleDownloadCoverLetterPDF = async () => {
+    try {
+      toast.loading('Generando carta de presentación en PDF...', { id: 'cover-pdf-download' })
+      
+      const token = localStorage.getItem('auth_token')
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/cover-letter/download/pdf`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al generar el PDF')
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `Carta_Presentacion_${user.name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      toast.success('Carta de presentación descargada en PDF', { id: 'cover-pdf-download' })
+    } catch (error) {
+      console.error('Error al generar carta PDF:', error)
+      toast.error('Error al generar la carta de presentación', { id: 'cover-pdf-download' })
+    }
+  }
+
+  const handleDownloadCoverLetterWord = async () => {
+    try {
+      toast.loading('Generando carta de presentación en Word...', { id: 'cover-word-download' })
+      
+      const token = localStorage.getItem('auth_token')
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/cover-letter/download/word`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al generar el Word')
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `Carta_Presentacion_${user.name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.docx`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      
+      toast.success('Carta de presentación descargada en Word', { id: 'cover-word-download' })
+    } catch (error) {
+      console.error('Error al generar carta Word:', error)
+      toast.error('Error al generar la carta de presentación', { id: 'cover-word-download' })
+    }
+  }
+
   return (
     <div className="grid lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
@@ -1503,10 +1569,22 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
               <CardTitle className="text-lg">Cartas de Presentación</CardTitle>
               <CardDescription>Personaliza tu mensaje para cada postulación</CardDescription>
             </CardHeader>
-            <CardContent>
-              <Button className="w-full justify-start gap-3" variant="outline">
+            <CardContent className="space-y-3">
+              <Button 
+                className="w-full justify-start gap-3" 
+                variant="outline"
+                onClick={handleDownloadCoverLetterPDF}
+              >
                 <FileText size={20} weight="duotone" />
-                Crear carta
+                Descargar PDF
+              </Button>
+              <Button 
+                className="w-full justify-start gap-3" 
+                variant="outline"
+                onClick={handleDownloadCoverLetterWord}
+              >
+                <FileText size={20} weight="duotone" />
+                Descargar Word
               </Button>
             </CardContent>
           </Card>
