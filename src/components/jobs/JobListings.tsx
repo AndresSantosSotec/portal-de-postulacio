@@ -198,9 +198,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                 </SelectContent>
               </Select>
 
-                </Select>
-
-                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                 <SelectTrigger className="w-full sm:w-auto md:w-56 h-10 sm:h-11">
                   <SelectValue placeholder="Ubicación" />
                 </SelectTrigger>

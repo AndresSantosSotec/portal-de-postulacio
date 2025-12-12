@@ -93,25 +93,28 @@ export default function Navbar({
   return (
     <>
       <nav className="bg-card/80 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16 gap-1 sm:gap-2">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-12 sm:h-14 md:h-16 gap-1 sm:gap-2">
             <button 
               onClick={() => onNavigate('listings')}
-              className="flex items-center gap-3 group"
+              className="flex items-center gap-1.5 sm:gap-2 md:gap-3 group min-w-0 flex-1 max-w-fit"
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary via-primary to-[#003875] flex items-center justify-center shadow-lg shadow-primary/30"
+                className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary via-primary to-[#003875] flex items-center justify-center shadow-md sm:shadow-lg shadow-primary/30 flex-shrink-0"
               >
-                <Briefcase size={24} weight="bold" className="text-white" />
+                <Briefcase size={18} weight="bold" className="text-white sm:hidden" />
+                <Briefcase size={20} weight="bold" className="text-white hidden sm:block md:hidden" />
+                <Briefcase size={24} weight="bold" className="text-white hidden md:block" />
               </motion.div>
               <div className="flex flex-col items-start min-w-0">
-                <span className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-[#003875] bg-clip-text text-transparent group-hover:from-primary/90 group-hover:to-[#003875]/90 transition-all truncate">
-                  Oportunidades COOSANJER R.L.
+                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold bg-gradient-to-r from-primary to-[#003875] bg-clip-text text-transparent group-hover:from-primary/90 group-hover:to-[#003875]/90 transition-all truncate max-w-[140px] sm:max-w-none">
+                  <span className="hidden md:inline">Oportunidades COOSANJER R.L.</span>
+                  <span className="md:hidden">COOSANJER R.L.</span>
                 </span>
-                <span className="text-xs text-muted-foreground hidden sm:block">
-                  Conectando talento con oportunidades
+                <span className="text-[10px] sm:text-xs text-muted-foreground hidden sm:block truncate">
+                  Conectando talento
                 </span>
               </div>
             </button>
@@ -215,14 +218,14 @@ export default function Navbar({
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="gap-2 hover:bg-primary/10">
-                        <Avatar className="h-8 w-8">
+                      <Button variant="ghost" size="sm" className="gap-1.5 sm:gap-2 hover:bg-primary/10 h-8 sm:h-9 px-1.5 sm:px-3">
+                        <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
                           {currentUser.avatar && <AvatarImage src={currentUser.avatar} alt={currentUser.name} />}
-                          <AvatarFallback className="bg-gradient-to-br from-primary to-[#003875] text-white text-sm font-semibold">
+                          <AvatarFallback className="bg-gradient-to-br from-primary to-[#003875] text-white text-xs sm:text-sm font-semibold">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="hidden sm:inline font-medium">{currentUser.name.split(' ')[0]}</span>
+                        <span className="hidden sm:inline font-medium text-xs sm:text-sm truncate max-w-[80px] md:max-w-none">{currentUser.name.split(' ')[0]}</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
@@ -257,19 +260,19 @@ export default function Navbar({
                     variant="ghost"
                     size="sm"
                     onClick={() => onNavigate('listings')}
-                    className="hidden sm:flex gap-2"
+                    className="hidden md:flex gap-2 text-xs sm:text-sm"
                   >
-                    <List size={18} weight="duotone" />
-                    Explorar Empleos
+                    <List size={16} weight="duotone" className="sm:w-[18px] sm:h-[18px]" />
+                    Empleos
                   </Button>
                   <Button
                     onClick={() => setShowAuthModal(true)}
                     size="sm"
-                    className="gap-2 bg-gradient-to-r from-primary to-[#003875] hover:from-primary/90 hover:to-[#003875]/90 shadow-lg shadow-primary/25"
+                    className="gap-1.5 sm:gap-2 bg-gradient-to-r from-primary to-[#003875] hover:from-primary/90 hover:to-[#003875]/90 shadow-md sm:shadow-lg shadow-primary/25 text-xs sm:text-sm h-8 sm:h-9 px-2.5 sm:px-3"
                   >
-                    <User size={18} weight="bold" />
+                    <User size={16} weight="bold" className="sm:w-[18px] sm:h-[18px]" />
                     <span className="hidden sm:inline">Iniciar Sesión</span>
-                    <span className="sm:hidden">Ingresar</span>
+                    <span className="sm:hidden">Entrar</span>
                   </Button>
                 </>
               )}

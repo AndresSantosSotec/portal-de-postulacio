@@ -340,13 +340,13 @@ export default function ApplicationForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-2">
-            <PaperPlaneRight size={24} weight="duotone" className="text-primary" />
-            Postular a {job.title}
+      <DialogContent className="sm:max-w-2xl max-w-[95vw] max-h-[92vh] sm:max-h-[88vh] overflow-y-auto p-3 sm:p-6">
+        <DialogHeader className="pb-2 sm:pb-4">
+          <DialogTitle className="text-base sm:text-xl md:text-2xl flex items-center gap-1.5 sm:gap-2 leading-tight">
+            <PaperPlaneRight size={18} weight="duotone" className="text-primary sm:w-6 sm:h-6 flex-shrink-0" />
+            <span className="truncate">Postular a {job.title}</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm truncate">
             {job.company} • {job.location}
           </DialogDescription>
         </DialogHeader>
@@ -418,20 +418,20 @@ export default function ApplicationForm({
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-accent/10 border border-accent/20 rounded-lg p-4 space-y-3"
+                className="bg-accent/10 border border-accent/20 rounded-lg p-2.5 sm:p-3 md:p-4 space-y-2 sm:space-y-3"
               >
-                <div className="flex items-start gap-3">
-                  <Lightning size={24} weight="fill" className="text-accent-foreground shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-sm mb-1">Postulación Rápida Disponible</h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Aplica en un clic usando tu perfil y CV guardados
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <Lightning size={18} weight="fill" className="text-accent-foreground shrink-0 mt-0.5 sm:w-6 sm:h-6" />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1">Postulación Rápida</h4>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mb-2 sm:mb-3 leading-snug">
+                      Aplica usando tu perfil guardado
                     </p>
                     <Button
                       onClick={handleQuickApply}
                       disabled={isSubmitting}
                       size="sm"
-                      className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2"
+                      className="bg-accent hover:bg-accent/90 text-accent-foreground gap-1.5 sm:gap-2 h-7 sm:h-8 md:h-9 text-xs sm:text-sm"
                     >
                       {isSubmitting ? (
                         <>
@@ -456,24 +456,24 @@ export default function ApplicationForm({
             )}
 
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Progreso del formulario</span>
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-muted-foreground">Progreso</span>
                 <span className="font-medium">{Math.round(progress)}%</span>
               </div>
-              <Progress value={progress} className="h-2" />
+              <Progress value={progress} className="h-1.5 sm:h-2" />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
               {currentUser && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="bg-muted/50 border border-border rounded-lg p-4 space-y-3"
+                  className="bg-muted/50 border border-border rounded-lg p-2.5 sm:p-3 md:p-4 space-y-2 sm:space-y-3"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <UserIcon size={18} weight="duotone" className="text-primary" />
-                      <span className="text-sm font-medium">Usar datos de mi perfil</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                      <UserIcon size={16} weight="duotone" className="text-primary flex-shrink-0 sm:w-[18px] sm:h-[18px]" />
+                      <span className="text-xs sm:text-sm font-medium truncate">Usar mi perfil</span>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -485,29 +485,30 @@ export default function ApplicationForm({
                       <div className="w-11 h-6 bg-muted-foreground/20 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground leading-snug">
                     {useSavedProfile 
-                      ? 'Tus datos guardados se completarán automáticamente' 
-                      : 'Completa manualmente los campos del formulario'
+                      ? 'Datos automáticos' 
+                      : 'Completa manualmente'
                     }
                   </p>
                 </motion.div>
               )}
               
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Nombre completo *</Label>
+              <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name" className="text-xs sm:text-sm">Nombre completo *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Juan Pérez"
                     required
+                    className="h-9 sm:h-10 text-sm"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="email">Correo electrónico *</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs sm:text-sm">Correo *</Label>
                   <Input
                     id="email"
                     type="email"
@@ -515,11 +516,12 @@ export default function ApplicationForm({
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="juan@ejemplo.com"
                     required
+                    className="h-9 sm:h-10 text-sm"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="phone">Teléfono *</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="phone" className="text-xs sm:text-sm">Teléfono *</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -527,12 +529,13 @@ export default function ApplicationForm({
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="+57 300 123 4567"
                     required
+                    className="h-9 sm:h-10 text-sm"
                   />
                 </div>
 
                 {!existingCV && !hasUploadedCV && (
-                  <div>
-                    <Label htmlFor="cv">CV / Hoja de Vida *</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="cv" className="text-xs sm:text-sm">CV / Hoja de Vida *</Label>
                     <input
                       id="cv"
                       type="file"
@@ -544,7 +547,7 @@ export default function ApplicationForm({
                       <motion.div
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
-                        className="mt-2 border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer group"
+                        className="mt-1 sm:mt-2 border-2 border-dashed border-border rounded-lg p-3 sm:p-4 md:p-6 text-center hover:border-primary/50 transition-colors cursor-pointer group"
                       >
                         {isUploadingCV ? (
                           <div className="flex flex-col items-center">
@@ -552,21 +555,21 @@ export default function ApplicationForm({
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             >
-                              <Upload size={40} weight="duotone" className="mx-auto mb-3 text-primary" />
+                              <Upload size={24} weight="duotone" className="mx-auto mb-2 text-primary sm:w-10 sm:h-10" />
                             </motion.div>
-                            <p className="text-sm font-medium text-primary">
-                              Subiendo CV...
+                            <p className="text-xs sm:text-sm font-medium text-primary">
+                              Subiendo...
                             </p>
                           </div>
                         ) : cvFileName ? (
                           <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center justify-between"
+                            className="flex items-center justify-between gap-2"
                           >
-                            <div className="flex items-center gap-2 text-secondary">
-                              <FilePdf size={20} weight="duotone" />
-                              <span className="text-sm font-medium">{cvFileName}</span>
+                            <div className="flex items-center gap-1.5 sm:gap-2 text-secondary min-w-0">
+                              <FilePdf size={16} weight="duotone" className="flex-shrink-0 sm:w-5 sm:h-5" />
+                              <span className="text-xs sm:text-sm font-medium truncate">{cvFileName}</span>
                             </div>
                             <Button
                               type="button"
@@ -576,8 +579,9 @@ export default function ApplicationForm({
                                 e.preventDefault()
                                 handleRemoveCV()
                               }}
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0 flex-shrink-0"
                             >
-                              <X size={16} />
+                              <X size={14} className="sm:w-4 sm:h-4" />
                             </Button>
                           </motion.div>
                         ) : (
@@ -586,13 +590,13 @@ export default function ApplicationForm({
                               animate={{ y: [0, -5, 0] }}
                               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                             >
-                              <Upload size={40} weight="duotone" className="mx-auto mb-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                              <Upload size={28} weight="duotone" className="mx-auto mb-2 text-muted-foreground group-hover:text-primary transition-colors sm:w-10 sm:h-10" />
                             </motion.div>
-                            <p className="text-sm font-medium mb-1 group-hover:text-primary transition-colors">
-                              Haz clic para adjuntar tu CV
+                            <p className="text-xs sm:text-sm font-medium mb-0.5 sm:mb-1 group-hover:text-primary transition-colors">
+                              Adjuntar CV
                             </p>
-                            <p className="text-xs text-muted-foreground">
-                              PDF o DOCX, máximo 5 MB
+                            <p className="text-[10px] sm:text-xs text-muted-foreground">
+                              PDF/DOCX, max 5MB
                             </p>
                           </>
                         )}

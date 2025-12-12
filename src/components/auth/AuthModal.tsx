@@ -128,34 +128,34 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[480px] max-w-[95vw] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="sm:max-w-[440px] max-w-[92vw] max-h-[92vh] sm:max-h-[88vh] overflow-y-auto p-0">
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5" />
           
-          <div className="relative p-4 sm:p-6 md:p-8">
-            <DialogHeader className="space-y-2 sm:space-y-3">
+          <div className="relative p-3 sm:p-5 md:p-6">
+            <DialogHeader className="space-y-1.5 sm:space-y-2">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20"
+                className="mx-auto w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md sm:shadow-lg shadow-primary/20"
               >
-                <UserIcon size={24} weight="bold" className="text-white sm:hidden" />
-                <UserIcon size={32} weight="bold" className="text-white hidden sm:block" />
+                <UserIcon size={20} weight="bold" className="text-white sm:hidden" />
+                <UserIcon size={28} weight="bold" className="text-white hidden sm:block" />
               </motion.div>
               
-              <DialogTitle className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                {isLogin ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}
+              <DialogTitle className="text-lg sm:text-2xl md:text-3xl font-bold text-center bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text leading-tight">
+                {isLogin ? 'Bienvenido' : 'Crea tu cuenta'}
               </DialogTitle>
               
-              <DialogDescription className="text-center text-sm sm:text-base px-2">
+              <DialogDescription className="text-center text-xs sm:text-sm px-1 sm:px-2 leading-snug">
                 {isLogin 
-                  ? 'Ingresa tus credenciales para acceder a tu cuenta' 
-                  : 'Comienza tu búsqueda de empleo hoy mismo'}
+                  ? 'Accede a tu cuenta' 
+                  : 'Empieza tu búsqueda hoy'}
               </DialogDescription>
             </DialogHeader>
             
-            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 mt-4 sm:mt-6 md:mt-8">
+            <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-3 md:space-y-4 mt-3 sm:mt-4 md:mt-6">
               <AnimatePresence mode="wait">
                 {!isLogin && (
                   <motion.div
@@ -163,12 +163,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="space-y-2"
+                    className="space-y-1.5"
                   >
-                    <Label htmlFor="name" className="text-sm font-semibold">Nombre Completo</Label>
+                    <Label htmlFor="name" className="text-xs sm:text-sm font-semibold">Nombre Completo</Label>
                     <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        <UserIcon size={20} weight="duotone" />
+                      <div className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        <UserIcon size={16} weight="duotone" className="sm:w-5 sm:h-5" />
                       </div>
                       <Input
                         id="name"
@@ -177,18 +177,18 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         required={!isLogin}
-                        className="pl-11 h-12 bg-background/50 border-border/50 focus:border-primary transition-all"
+                        className="pl-9 sm:pl-11 h-9 sm:h-10 md:h-11 text-sm bg-background/50 border-border/50 focus:border-primary transition-all"
                       />
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
               
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold">Correo Electrónico</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-xs sm:text-sm font-semibold">Correo Electrónico</Label>
                 <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    <EnvelopeSimple size={20} weight="duotone" />
+                  <div className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    <EnvelopeSimple size={16} weight="duotone" className="sm:w-5 sm:h-5" />
                   </div>
                   <Input
                     id="email"
@@ -197,16 +197,16 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     required
-                    className="pl-11 h-12 bg-background/50 border-border/50 focus:border-primary transition-all"
+                    className="pl-9 sm:pl-11 h-9 sm:h-10 md:h-11 text-sm bg-background/50 border-border/50 focus:border-primary transition-all"
                   />
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold">Contraseña</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-xs sm:text-sm font-semibold">Contraseña</Label>
                 <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    <LockKey size={20} weight="duotone" />
+                  <div className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    <LockKey size={16} weight="duotone" className="sm:w-5 sm:h-5" />
                   </div>
                   <Input
                     id="password"
@@ -215,22 +215,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                     value={formData.password}
                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                     required
-                    className="pl-11 pr-11 h-12 bg-background/50 border-border/50 focus:border-primary transition-all"
+                    className="pl-9 sm:pl-11 pr-9 sm:pr-11 h-9 sm:h-10 md:h-11 text-sm bg-background/50 border-border/50 focus:border-primary transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+                    {showPassword ? <EyeSlash size={16} className="sm:w-5 sm:h-5" /> : <Eye size={16} className="sm:w-5 sm:h-5" />}
                   </button>
                 </div>
                 {isLogin && (
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-0.5">
                     <button
                       type="button"
                       onClick={() => setShowForgotPassword(true)}
-                      className="text-xs text-primary hover:text-primary/80 transition-colors hover:underline"
+                      className="text-[10px] sm:text-xs text-primary hover:text-primary/80 transition-colors hover:underline"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
@@ -242,12 +242,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-2 sm:space-y-3 p-3 sm:p-4 rounded-lg bg-accent/5 border border-accent/20"
+                  className="space-y-1.5 sm:space-y-2 p-2.5 sm:p-3 rounded-lg bg-accent/5 border border-accent/20"
                 >
-                  <p className="text-xs sm:text-sm font-medium text-accent-foreground/80">Tu cuenta incluye:</p>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                      <CheckCircle size={14} weight="fill" className="text-secondary sm:w-4 sm:h-4 flex-shrink-0" />
+                  <p className="text-[10px] sm:text-xs font-medium text-accent-foreground/80">Tu cuenta incluye:</p>
+                  <div className="space-y-1 sm:space-y-1.5">
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
+                      <CheckCircle size={12} weight="fill" className="text-secondary sm:w-3.5 sm:h-3.5 flex-shrink-0" />
                       <span>Perfil profesional completo</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
@@ -265,14 +265,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 transition-all"
+                className="w-full h-9 sm:h-10 md:h-11 text-xs sm:text-sm md:text-base font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md sm:shadow-lg shadow-primary/20 transition-all"
                 size="lg"
               >
-                {isLoading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta Gratis')}
+                {isLoading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta')}
               </Button>
             </form>
             
-            <div className="mt-4 sm:mt-6">
+            <div className="mt-3 sm:mt-4 md:mt-5">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <Separator />
