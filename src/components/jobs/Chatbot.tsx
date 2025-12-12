@@ -23,7 +23,7 @@ type ChatbotProps = {
 type FAQCategory = 'main' | 'proceso' | 'portal' | 'cuenta' | 'vacantes' | 'contacto'
 
 const welcomeMessages = [
-  '¡Hola! 👋 Soy el asistente virtual de CoosanjerJobs.',
+  '¡Hola! 👋 Soy el asistente virtual de Oportunidades COOSANJER R.L..',
   'Estoy aquí para ayudarte con cualquier duda sobre la plataforma y mantenerte informado sobre tus postulaciones.',
   'Selecciona una categoría abajo para ver las preguntas frecuentes o espera las actualizaciones automáticas.'
 ]
@@ -134,7 +134,7 @@ const faqResponses: Record<string, Record<string, { question: string; answer: st
   'contacto': {
     'soporte': {
       question: '¿Cómo contacto a soporte?',
-      answer: '📞 Contactar soporte\n\nSi necesitas ayuda adicional:\n\n📧 Email: soporte@coosanjerjobs.com\n📱 WhatsApp: +502 1234-5678\n⏰ Horario: Lun-Vie 8:00-17:00\n\nTambién puedes usar el formulario de contacto en la sección "Ayuda".'
+      answer: '📞 Contactar soporte\n\nSi necesitas ayuda adicional:\n\n📧 Email: soporte@oportunidadescoosanjer.com\n📱 WhatsApp: +502 1234-5678\n⏰ Horario: Lun-Vie 8:00-17:00\n\nTambién puedes usar el formulario de contacto en la sección "Ayuda".'
     },
     'reclutador': {
       question: '¿Puedo contactar al reclutador?',
@@ -150,7 +150,7 @@ const faqResponses: Record<string, Record<string, { question: string; answer: st
     },
     'ubicacion': {
       question: '¿Dónde están ubicados?',
-      answer: '📍 Nuestra ubicación\n\nCoosanjerJobs\nCiudad de Guatemala, Guatemala\n\n🏢 Las entrevistas presenciales se realizan en nuestras oficinas.\n\n📌 La dirección exacta te será enviada cuando seas citado a entrevista.'
+      answer: '📍 Nuestra ubicación  Ciudad de Guatemala, Guatemala\n\n🏢 Las entrevistas presenciales se realizan en nuestras oficinas.\n\n📌 La dirección exacta te será enviada cuando seas citado a entrevista.'
     }
   }
 }
@@ -240,7 +240,7 @@ export default function Chatbot({ userName }: ChatbotProps) {
   useEffect(() => {
     const greetingName = userName ? userName.split(' ')[0] : ''
     const personalizedWelcome = greetingName 
-      ? [`¡Hola ${greetingName}! 👋 Soy el asistente virtual de CoosanjerJobs.`, ...welcomeMessages.slice(1)]
+      ? [`¡Hola ${greetingName}! 👋 Soy el asistente virtual de Oportunidades COOSANJER R.L..`, ...welcomeMessages.slice(1)]
       : welcomeMessages
 
     const initialMessages: ChatMessage[] = personalizedWelcome.map((content, index) => ({

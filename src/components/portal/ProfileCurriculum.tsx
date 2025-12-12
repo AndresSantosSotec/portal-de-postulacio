@@ -588,7 +588,7 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
 
   // Filtrar habilidades públicas
   const filteredPublicSkills = publicSkills.filter(skill => {
-    const matchesSearch = skill.nombre.toLowerCase().includes(skillSearchTerm.toLowerCase()) ||
+    const matchesSearch = skill.nombre?.toLowerCase().includes(skillSearchTerm.toLowerCase()) ||
                           skill.descripcion?.toLowerCase().includes(skillSearchTerm.toLowerCase())
     const matchesCategory = selectedCategory === 'all' || skill.categoria === selectedCategory
     return matchesSearch && matchesCategory
