@@ -346,6 +346,6 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
         )}
       </div>
     </div>
-    </div>
+
   )
 }
