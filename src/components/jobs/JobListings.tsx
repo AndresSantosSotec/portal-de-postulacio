@@ -79,7 +79,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
   }
 
   const locations = useMemo(() => {
-    const uniqueLocations = [...new Set(jobs.map(job => job.location))]
+    const uniqueLocations = [...new Set(jobs.map(job => job.location).filter(Boolean))]
     return uniqueLocations.sort()
   }, [jobs])
 
@@ -154,39 +154,40 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
   const appliedJobIds = applications.map(app => app.jobId)
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="bg-gradient-to-r from-primary via-[#003875] to-primary text-primary-foreground py-8 sm:py-10 md:py-12 lg:py-16">
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="bg-gradient-to-r from-primary via-[#003875] to-primary text-primary-foreground py-6 sm:py-8 md:py-12 lg:py-16">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
             Encuentra tu próximo empleo
           </h1>
-          <p className="text-primary-foreground/90 mb-4 sm:mb-6 text-sm sm:text-base">
+          <p className="text-primary-foreground/90 mb-4 sm:mb-6 text-xs sm:text-sm md:text-base">
             Conectando talento con las mejores oportunidades
           </p>
           
-          <div className="bg-card rounded-xl p-3 sm:p-4 shadow-xl">
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <div className="bg-card rounded-xl p-2 sm:p-3 md:p-4 shadow-xl">
+            <div className="flex flex-col gap-2">
               <div className="relative flex-1">
                 <MagnifyingGlass 
-                  size={20} 
+                  size={18} 
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" 
                 />
                 <Input
-                  placeholder="Buscar por cargo, empresa o palabra clave..."
+                  placeholder="Buscar empleo..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-10 sm:h-11 text-sm sm:text-base"
+                  className="pl-9 h-9 sm:h-10 md:h-11 text-sm"
                 />
               </div>
               
-              <Select 
-                value={selectedCategory || 'all'} 
-                onValueChange={(value) => setSelectedCategory(value === 'all' ? null : value)}
-              >
-                <SelectTrigger className="w-full sm:w-auto md:w-64 h-10 sm:h-11">
-                  <Funnel size={16} className="mr-2" />
-                  <SelectValue placeholder="Categoría" />
-                </SelectTrigger>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Select 
+                  value={selectedCategory || 'all'} 
+                  onValueChange={(value) => setSelectedCategory(value === 'all' ? null : value)}
+                >
+                  <SelectTrigger className="w-full h-9 sm:h-10 text-sm">
+                    <Funnel size={14} className="mr-2" />
+                    <SelectValue placeholder="Categoría" />
+                  </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas las categorías</SelectItem>
                   {categories.map(category => (
@@ -197,7 +198,9 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                 </SelectContent>
               </Select>
 
-              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                </Select>
+
+                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                 <SelectTrigger className="w-full sm:w-auto md:w-56 h-10 sm:h-11">
                   <SelectValue placeholder="Ubicación" />
                 </SelectTrigger>

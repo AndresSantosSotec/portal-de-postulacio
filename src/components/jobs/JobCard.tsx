@@ -41,7 +41,7 @@ export default function JobCard({
         onClick={() => onViewJob(job.id)}
       >
         {job.imageUrl && (
-          <div className="relative w-full h-48 bg-muted overflow-hidden">
+          <div className="relative w-full h-40 sm:h-48 bg-muted overflow-hidden">
             {!imageLoaded && !imageError && (
               <Skeleton className="absolute inset-0" />
             )}
@@ -65,13 +65,13 @@ export default function JobCard({
           </div>
         )}
         
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors leading-tight">
+        <CardHeader className="pb-2 sm:pb-3 px-4 pt-3 sm:pt-6">
+          <div className="flex items-start justify-between gap-2 sm:gap-3">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors leading-tight line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-sm font-medium text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-1 truncate">
                 {job.company}
               </p>
             </div>
@@ -79,7 +79,7 @@ export default function JobCard({
               variant="ghost"
               size="sm"
               className={cn(
-                "h-9 w-9 p-0 rounded-full shrink-0 transition-all",
+                "h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full shrink-0 transition-all",
                 isFavorite && "text-destructive hover:text-destructive"
               )}
               onClick={(e) => {

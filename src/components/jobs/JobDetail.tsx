@@ -211,7 +211,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
 
   return (
     <>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background overflow-x-hidden">
         {/* Schema.org JSON-LD para Google Jobs */}
         <script
           type="application/ld+json"
@@ -231,8 +231,8 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8">
-          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             <div className="lg:col-span-2 space-y-6">
               <Card className="overflow-hidden">
                 {job.imageUrl && (
@@ -260,43 +260,43 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                   </div>
                 )}
                 
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex-1">
-                      <Badge className="mb-3 bg-secondary text-secondary-foreground hover:bg-secondary/90">
+                <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex-1 min-w-0">
+                      <Badge className="mb-2 sm:mb-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 text-xs">
                         {job.category}
                       </Badge>
-                      <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3 leading-tight">
+                      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-2 sm:mb-3 leading-tight">
                         {job.title}
                       </h1>
-                      <div className="flex items-center gap-2 text-lg font-medium text-muted-foreground">
-                        <Buildings size={20} weight="duotone" />
-                        <span>{job.company}</span>
+                      <div className="flex items-center gap-2 text-base sm:text-lg font-medium text-muted-foreground">
+                        <Buildings size={18} className="sm:w-5 sm:h-5 shrink-0" weight="duotone" />
+                        <span className="truncate">{job.company}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
-                    <div className="flex items-center gap-2">
-                      <MapPin size={18} weight="duotone" />
-                      <span>{job.location}</span>
+                  <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <MapPin size={16} className="sm:w-[18px] sm:h-[18px] shrink-0" weight="duotone" />
+                      <span className="truncate">{job.location}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Briefcase size={18} weight="duotone" />
-                      <span className="capitalize">{job.type?.replace('-', ' ') || 'No especificado'}</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Briefcase size={16} className="sm:w-[18px] sm:h-[18px] shrink-0" weight="duotone" />
+                      <span className="capitalize truncate">{job.type?.replace('-', ' ') || 'No especificado'}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <CalendarBlank size={18} weight="duotone" />
-                      <span>
-                        {daysAgo === 0 ? 'Publicado hoy' : daysAgo === 1 ? 'Publicado ayer' : `Publicado hace ${daysAgo} días`}
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <CalendarBlank size={16} className="sm:w-[18px] sm:h-[18px] shrink-0" weight="duotone" />
+                      <span className="truncate">
+                        {daysAgo === 0 ? 'Hoy' : daysAgo === 1 ? 'Ayer' : `Hace ${daysAgo}d`}
                       </span>
                     </div>
                   </div>
 
                   {job.salary && (
-                    <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-4 mb-6">
-                      <p className="text-sm text-muted-foreground mb-1">Rango salarial</p>
-                      <p className="text-xl font-bold text-secondary">{job.salary}</p>
+                    <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1">Rango salarial</p>
+                      <p className="text-lg sm:text-xl font-bold text-secondary">{job.salary}</p>
                     </div>
                   )}
 

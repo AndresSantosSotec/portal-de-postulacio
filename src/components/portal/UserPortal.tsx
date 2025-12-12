@@ -102,27 +102,27 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
         </Card>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <div className="border-b border-border bg-card/50 backdrop-blur-sm rounded-lg p-2 sticky top-20 z-40 shadow-sm">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto gap-2 bg-transparent">
+          <div className="border-b border-border bg-card/50 backdrop-blur-sm rounded-lg p-2 sticky top-20 z-40 shadow-sm overflow-x-auto">
+            <TabsList className="inline-flex lg:grid w-full lg:grid-cols-7 h-auto gap-2 bg-transparent min-w-max lg:min-w-0">
               <TabsTrigger 
                 value="curriculum" 
-                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
+                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
-                <FileText size={18} weight="duotone" />
+                <FileText size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Mi Currículum</span>
                 <span className="sm:hidden">CV</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="personal-data" 
-                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
+                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
-                <IdentificationCard size={18} weight="duotone" />
+                <IdentificationCard size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Datos Personales</span>
                 <span className="sm:hidden">Datos</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="applications" 
-                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
+                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
                 <PaperPlaneRight size={18} weight="duotone" />
                 <span className="hidden sm:inline">Mis Postulaciones</span>
@@ -133,20 +133,20 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
               </TabsTrigger>
               <TabsTrigger 
                 value="notifications" 
-                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3 relative"
+                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap relative"
               >
-                <Bell size={18} weight="duotone" />
+                <Bell size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Notificaciones</span>
                 <span className="sm:hidden">Notif.</span>
                 {unreadNotifications > 0 && (
-                  <Badge variant="destructive" className="ml-1 animate-pulse">{unreadNotifications}</Badge>
+                  <Badge variant="destructive" className="ml-1 animate-pulse text-[10px] sm:text-xs px-1 h-4 sm:h-5">{unreadNotifications}</Badge>
                 )}
               </TabsTrigger>
               <TabsTrigger 
                 value="favorites" 
-                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
+                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
-                <Heart size={18} weight="duotone" />
+                <Heart size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Favoritos</span>
                 <span className="sm:hidden">Favoritos</span>
                 {backendFavorites.length > 0 && (

@@ -94,7 +94,7 @@ export default function Navbar({
     <>
       <nav className="bg-card/80 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
+          <div className="flex items-center justify-between h-14 sm:h-16 gap-1 sm:gap-2">
             <button 
               onClick={() => onNavigate('listings')}
               className="flex items-center gap-3 group"
