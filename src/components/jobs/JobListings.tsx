@@ -196,7 +196,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
                     </SelectItem>
                   ))}
                 </SelectContent>
-              </Select>
+                </Select>
 
               <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                 <SelectTrigger className="w-full sm:w-auto md:w-56 h-10 sm:h-11">
@@ -345,6 +345,7 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
           </>
         )}
       </div>
+    </div>
     </div>
   )
 }
