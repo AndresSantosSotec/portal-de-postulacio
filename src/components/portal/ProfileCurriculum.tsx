@@ -608,7 +608,7 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
       toast.loading('Generando CV en PDF...', { id: 'pdf-download' })
       
       const token = localStorage.getItem('token')
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/cv/download/pdf`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/cv/download/pdf`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -642,7 +642,7 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
       toast.loading('Generando CV en Word...', { id: 'word-download' })
       
       const token = localStorage.getItem('token')
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/cv/download/word`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/cv/download/word`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

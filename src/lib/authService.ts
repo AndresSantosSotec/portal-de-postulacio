@@ -44,15 +44,15 @@ class AuthService {
     try {
       const response = await api.post<any>('/auth/register', data);
       
-      console.log('📦 [AUTH SERVICE] Respuesta de registro:', response.data);
+      // console.log('📦 [AUTH SERVICE] Respuesta de registro:', response.data);
       
       // El backend devuelve: { success, message, data: { user, token, ... } }
       const responseData = response.data;
       const token = responseData.data?.token || responseData.token;
       const user = responseData.data?.user || responseData.user;
       
-      console.log('🔑 Token extraído:', token ? 'Sí' : 'No');
-      console.log('👤 Usuario extraído:', user ? user.name : 'No encontrado');
+      // console.log('🔑 Token extraído:', token ? 'Sí' : 'No');
+      // console.log('👤 Usuario extraído:', user ? user.name : 'No encontrado');
       
       if (token) {
         this.setToken(token);

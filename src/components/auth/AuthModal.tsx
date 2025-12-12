@@ -31,10 +31,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    console.log('🔐 [Portal Login] Iniciando autenticación...')
-    console.log('📧 Email:', formData.email)
-    console.log('🔑 Password length:', formData.password.length)
-    console.log('🎯 Modo:', isLogin ? 'Login' : 'Registro')
+    // console.log('🔐 [Portal Login] Iniciando autenticación...')
+    // console.log('📧 Email:', formData.email)
+    // console.log('🔑 Password length:', formData.password.length)
+    // console.log('🎯 Modo:', isLogin ? 'Login' : 'Registro')
     
     if (!formData.email || !formData.password) {
       toast.error('Por favor completa todos los campos')
@@ -50,16 +50,16 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
     try {
       if (isLogin) {
-        console.log('🔄 [Portal Login] Enviando petición de login...')
+        // console.log('🔄 [Portal Login] Enviando petición de login...')
         const response = await authService.login({
           email: formData.email,
           password: formData.password,
           user_type: 'candidate'
         })
         
-        console.log('✅ [Portal Login] Respuesta recibida:', response)
-        console.log('👤 Usuario:', response.user)
-        console.log('🎫 Token guardado:', !!localStorage.getItem('auth_token'))
+        // console.log('✅ [Portal Login] Respuesta recibida:', response)
+        // console.log('👤 Usuario:', response.user)
+        // console.log('🎫 Token guardado:', !!localStorage.getItem('auth_token'))
         
         if (!response.user) {
           throw new Error('No se recibió información del usuario')
@@ -78,11 +78,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         }
         
         toast.success(`¡Bienvenido, ${response.user.name}!`)
-        console.log('🎉 [Portal Login] Login exitoso')
+        // console.log('🎉 [Portal Login] Login exitoso')
         onSuccess(user)
         onClose()
       } else {
-        console.log('🔄 [Portal Login] Enviando petición de registro...')
+        // console.log('🔄 [Portal Login] Enviando petición de registro...')
         const response = await authService.register({
           name: formData.name,
           email: formData.email,
@@ -91,13 +91,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           user_type: 'candidate'
         })
         
-        console.log('✅ [Portal Login] Registro exitoso:', response)
-        console.log('� Respuesta completa:', JSON.stringify(response, null, 2))
+        // console.log('✅ [Portal Login] Registro exitoso:', response)
+        // console.log('📦 Respuesta completa:', JSON.stringify(response, null, 2))
         
         // El backend devuelve los datos en response.data.user
         const userData = response.user || (response as any).data?.user
         
-        console.log('👤 Usuario extraído:', userData)
+        // console.log('👤 Usuario extraído:', userData)
         
         if (!userData) {
           console.error('❌ No se encontró usuario en la respuesta')
@@ -117,7 +117,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
         }
         
         toast.success(`¡Bienvenido, ${userData.name}! Tu cuenta ha sido creada exitosamente`)
-        console.log('🎉 [Portal Login] Registro exitoso, iniciando sesión automáticamente')
+        // console.log('🎉 [Portal Login] Registro exitoso, iniciando sesión automáticamente')
         onSuccess(user)
         onClose()
       }
