@@ -607,7 +607,7 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
     try {
       toast.loading('Generando CV en PDF...', { id: 'pdf-download' })
       
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth_token')
       const response = await fetch(`${import.meta.env.VITE_API_URL}/cv/download/pdf`, {
         method: 'GET',
         headers: {
@@ -641,7 +641,7 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
     try {
       toast.loading('Generando CV en Word...', { id: 'word-download' })
       
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth_token')
       const response = await fetch(`${import.meta.env.VITE_API_URL}/cv/download/word`, {
         method: 'GET',
         headers: {
