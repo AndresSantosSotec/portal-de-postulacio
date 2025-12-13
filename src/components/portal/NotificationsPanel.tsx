@@ -14,7 +14,9 @@ import {
   CaretLeft,
   CaretRight,
   FunnelSimple,
-  ArrowClockwise
+  ArrowClockwise,
+  CaretDown,
+  CaretUp
 } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -86,6 +88,7 @@ export default function NotificationsPanel({ user, compact = false, onViewJob, o
   // Filtros
   const [filterType, setFilterType] = useState('all')
   const [showOnlyUnread, setShowOnlyUnread] = useState(false)
+  const [expandedNotificationId, setExpandedNotificationId] = useState<number | null>(null)
 
   const fetchNotifications = useCallback(async (showLoadingState = true) => {
     try {
@@ -400,24 +403,29 @@ export default function NotificationsPanel({ user, compact = false, onViewJob, o
                           ? 'bg-primary/5 border-l-primary' 
                           : 'border-l-transparent hover:bg-accent/30'
                       }`}
-                      onClick={() => handleNotificationClick(notif)}
+                      onClick={() => {
+                        handleNotificationClick(notif)
+                        setExpandedNotificationId(expandedNotificationId === notif.id ? null : notif.id)
+                      }}
                     >
                       <CardContent className="pt-6">
-                        <div className="flex gap-4">
-                          <div className={`h-12 w-12 rounded-full bg-background border-2 flex items-center justify-center shrink-0 ${colorClass}`}>
-                            <Icon size={24} weight="duotone" />
+                        <div className="flex gap-3 sm:gap-4">
+                          <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-background border-2 flex items-center justify-center shrink-0 ${colorClass}`}>
+                            <Icon size={20} weight="duotone" className="sm:w-6 sm:h-6" />
                           </div>
                           
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-3 mb-2">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-semibold text-base">{notif.titulo}</h4>
+                            <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                  <h4 className="font-semibold text-sm sm:text-base break-words">{notif.titulo}</h4>
                                   {!notif.leido && (
-                                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse shrink-0" />
                                   )}
                                 </div>
-                                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap line-clamp-3">
+                                <p className={`text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap ${
+                                  expandedNotificationId === notif.id ? '' : 'line-clamp-3'
+                                }`}>
                                   {notif.mensaje}
                                 </p>
                               </div>
@@ -425,17 +433,41 @@ export default function NotificationsPanel({ user, compact = false, onViewJob, o
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0 shrink-0 hover:bg-destructive/10 hover:text-destructive"
+                                className="h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0 hover:bg-destructive/10 hover:text-destructive"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   deleteNotification(notif.id)
                                 }}
                               >
-                                <X size={16} />
+                                <X size={14} className="sm:w-4 sm:h-4" />
                               </Button>
                             </div>
 
-                            <div className="flex items-center gap-2 text-xs mt-3 pt-3 border-t">
+                            {notif.mensaje.split('\n').length > 3 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-auto p-0 text-xs sm:text-sm text-primary hover:text-primary hover:bg-transparent mb-2"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setExpandedNotificationId(expandedNotificationId === notif.id ? null : notif.id)
+                                }}
+                              >
+                                {expandedNotificationId === notif.id ? (
+                                  <>
+                                    <CaretUp size={14} className="mr-1" />
+                                    Ver menos
+                                  </>
+                                ) : (
+                                  <>
+                                    <CaretDown size={14} className="mr-1" />
+                                    Ver más
+                                  </>
+                                )}
+                              </Button>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-2 text-xs mt-3 pt-3 border-t">
                               <p className="text-muted-foreground">
                                 {formatDistanceToNow(new Date(notif.fecha), { addSuffix: true, locale: es })}
                               </p>
