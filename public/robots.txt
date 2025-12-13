@@ -1,0 +1,24 @@
+# Portal de Empleos - Permitir indexación en Google
+User-agent: *
+Allow: /
+Allow: /jobs
+Allow: /profile
+Allow: /applications
+Disallow: /api/
+
+# Sitemaps
+Sitemap: https://www.oportunidadescoosanjer.com.gt/sitemap.xml
+Sitemap: https://www.oportunidadescoosanjer.com.gt/sitemap-jobs.xml
+
+# Delay para respetar servidores
+Crawl-delay: 1
+
+# Google específico
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
