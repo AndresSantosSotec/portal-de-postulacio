@@ -30,9 +30,10 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5000,
     strictPort: false,
-    hmr: {
-      clientPort: 8081,
-    },
+    // HMR comentado para desarrollo local (solo necesario con Docker/proxy)
+     hmr: {
+       clientPort: 8081,
+     },
     watch: {
       usePolling: true,
     },

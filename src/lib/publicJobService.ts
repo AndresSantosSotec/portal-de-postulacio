@@ -29,6 +29,8 @@ export interface Job {
   applicants: number
   isOccupied?: boolean
   skills?: Skill[]
+  isInternal?: boolean  // Indica si es oferta interna (solo para colaboradores)
+  visibility?: string   // 'Pública' | 'Interna'
 }
 
 interface JobOffersResponse {

@@ -67,6 +67,12 @@ export default function App() {
   const handleLoginSuccess = async (user: User) => {
     setCurrentUser(user)
     
+    // Disparar evento para recargar ofertas después del login
+    // Esto asegura que las ofertas internas se carguen correctamente
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('auth:login', { detail: { user } }))
+    }, 200)
+    
     // Fetch complete profile to get avatar if user has photo
     try {
       const completeProfile = await applicationService.getCompleteProfile()
@@ -82,8 +88,14 @@ export default function App() {
   }
 
   const handleLogout = () => {
+    // Limpiar token y usuario del localStorage
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('current_user')
     setCurrentUser(null)
     setCurrentView('listings')
+    
+    // Disparar evento para limpiar ofertas internas inmediatamente
+    window.dispatchEvent(new CustomEvent('auth:logout'))
   }
 
   const handleNavigate = (view: string) => {

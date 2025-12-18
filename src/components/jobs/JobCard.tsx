@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { MapPin, Briefcase, Heart, Image as ImageIcon } from '@phosphor-icons/react'
+import { MapPin, Briefcase, Heart, Image as ImageIcon, Buildings } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import type { Job, JobCategory } from '@/lib/types'
 import { categoryLabels } from '@/lib/types'
@@ -116,6 +116,13 @@ export default function JobCard({
           </div>
 
           <div className="flex flex-wrap gap-2">
+            {/* Badge de oferta interna - solo visible para colaboradores */}
+            {job.isInternal && (
+              <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                <Buildings size={14} weight="fill" className="mr-1" />
+                Interna
+              </Badge>
+            )}
             <Badge variant="secondary" className="font-medium">
               {categoryLabels[job.category as JobCategory]}
             </Badge>

@@ -38,9 +38,45 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
   const [favoriteJobIds, setFavoriteJobIds] = useState<number[]>([])
   const [applications, setApplications] = useState<any[]>([])
 
-  // Cargar datos al montar
+  // Cargar datos al montar Y cuando cambia el usuario (login/logout)
+  // Esto es importante para mostrar/ocultar ofertas internas según si es colaborador
   useEffect(() => {
-    loadJobsData()
+    // Si hay usuario, esperar un momento para que el token esté disponible en el interceptor
+    if (currentUser) {
+      // Pequeño delay para asegurar que el token esté en localStorage y disponible en axios
+      const timer = setTimeout(() => {
+        loadJobsData()
+      }, 100)
+      return () => clearTimeout(timer)
+    } else {
+      // Si no hay usuario, recargar inmediatamente para ocultar ofertas internas
+      loadJobsData()
+    }
+  }, [currentUser]) // Recargar ofertas cuando cambia el estado de autenticación
+
+  // Escuchar eventos de login/logout para recargar ofertas
+  useEffect(() => {
+    const handleLogin = () => {
+      // Esperar un momento para que el token esté disponible
+      setTimeout(() => {
+        loadJobsData()
+      }, 300)
+    }
+
+    const handleLogout = () => {
+      // Filtrar ofertas internas inmediatamente
+      setJobs(prevJobs => prevJobs.filter(job => !job.isInternal))
+      // Recargar para obtener solo ofertas públicas
+      loadJobsData()
+    }
+
+    window.addEventListener('auth:login', handleLogin)
+    window.addEventListener('auth:logout', handleLogout)
+
+    return () => {
+      window.removeEventListener('auth:login', handleLogin)
+      window.removeEventListener('auth:logout', handleLogout)
+    }
   }, [])
 
   useEffect(() => {
@@ -48,6 +84,9 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
       loadFavorites()
     } else {
       setFavoriteJobIds([])
+      setApplications([]) // Limpiar postulaciones al cerrar sesión
+      // Filtrar ofertas internas inmediatamente al cerrar sesión
+      setJobs(prevJobs => prevJobs.filter(job => !job.isInternal))
     }
   }, [currentUser])
 
@@ -60,7 +99,16 @@ export default function JobListings({ onViewJob, currentUser, onFavoriteToggle }
       ])
       
       setCategories(categoriesData)
-      setJobs(offersData.offers || [])
+      
+      // Filtrar ofertas internas si no hay usuario autenticado
+      // Esto es una capa adicional de seguridad en el frontend
+      // Verificamos si hay token en localStorage para determinar si el usuario está autenticado
+      const hasAuthToken = !!localStorage.getItem('auth_token')
+      const filteredOffers = hasAuthToken 
+        ? offersData.offers || []
+        : (offersData.offers || []).filter(job => !job.isInternal)
+      
+      setJobs(filteredOffers)
     } catch (error: any) {
       console.error('Error al cargar datos:', error)
       toast.error('Error al cargar ofertas laborales')

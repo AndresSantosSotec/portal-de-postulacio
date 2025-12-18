@@ -106,6 +106,8 @@ export type Job = {
   customQuestions?: CustomQuestion[]
   isOccupied?: boolean
   occupiedDate?: string
+  isInternal?: boolean    // Indica si es oferta interna (solo para colaboradores)
+  visibility?: string     // 'Pública' | 'Interna'
 }
 
 export type ApplicationStatus = 

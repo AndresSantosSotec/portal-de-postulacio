@@ -263,9 +263,18 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                 <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex-1 min-w-0">
-                      <Badge className="mb-2 sm:mb-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 text-xs">
-                        {job.category}
-                      </Badge>
+                      <div className="flex flex-wrap gap-2 mb-2 sm:mb-3">
+                        {/* Badge de oferta interna - solo visible para colaboradores */}
+                        {job.isInternal && (
+                          <Badge className="bg-amber-500 hover:bg-amber-600 text-white text-xs">
+                            <Buildings size={12} weight="fill" className="mr-1" />
+                            Oferta Interna
+                          </Badge>
+                        )}
+                        <Badge className="bg-secondary text-secondary-foreground hover:bg-secondary/90 text-xs">
+                          {job.category}
+                        </Badge>
+                      </div>
                       <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-2 sm:mb-3 leading-tight">
                         {job.title}
                       </h1>
