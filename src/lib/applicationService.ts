@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { ApplicationStatus } from './types'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+const API_URL = import.meta.env.VITE_API_URL || 'https://oportunidadescoosanjer.com.gt/api/v1'
 
 // Configurar interceptor para incluir token JWT
 const apiClient = axios.create({

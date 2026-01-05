@@ -15,7 +15,7 @@ import {
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+const API_URL = import.meta.env.VITE_API_URL || 'https://oportunidadescoosanjer.com.gt/api/v1'
 
 interface Evaluation {
   id: number
