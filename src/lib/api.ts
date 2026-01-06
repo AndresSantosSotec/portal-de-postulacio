@@ -11,6 +11,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
+  withCredentials: true, // Permite enviar cookies y headers de autenticación
 });
 
 /**
