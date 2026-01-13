@@ -51,9 +51,9 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
 
   // SEO dinámico para cada oferta
   useSEO({
-    title: job ? `${job.title} - Oportunidades COOSANJER R.L.` : undefined,
+    title: job ? `${job.title} - Portal de Empleos` : undefined,
     description: job ? `${job.description?.substring(0, 160)}...` : undefined,
-    url: job ? `https://www.oportunidadescoosanjer.com.gt/empleo/${job.id}` : undefined,
+    url: job ? `${window.location.origin}/empleo/${job.id}` : undefined,
     image: job?.imageUrl || undefined,
     type: 'article'
   })
@@ -178,7 +178,7 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
     description: job.description,
     identifier: {
       '@type': 'PropertyValue',
-      name: 'Coosanjer',
+      name: 'Tu Empresa',
       value: job.id.toString()
     },
     datePosted: job.postedDate || new Date().toISOString(),
@@ -188,8 +188,8 @@ export default function JobDetail({ jobId, currentUser, onBack, onLoginSuccess }
                     job.type === 'contract' ? 'CONTRACTOR' : 'FULL_TIME',
     hiringOrganization: {
       '@type': 'Organization',
-      name: 'Coosanjer',
-      sameAs: 'https://www.oportunidadescoosanjer.com.gt'
+      name: 'Tu Empresa',
+      sameAs: window.location.origin
     },
     jobLocation: {
       '@type': 'Place',

@@ -23,7 +23,7 @@ type ChatbotProps = {
 type FAQCategory = 'main' | 'proceso' | 'portal' | 'cuenta' | 'vacantes' | 'contacto'
 
 const welcomeMessages = [
-  '¡Hola! 👋 Soy el asistente virtual de Oportunidades COOSANJER R.L..',
+  '¡Hola! 👋 Soy el asistente virtual del Portal de Empleos.',
   'Estoy aquí para ayudarte con cualquier duda sobre la plataforma y mantenerte informado sobre tus postulaciones.',
   'Selecciona una categoría abajo para ver las preguntas frecuentes o espera las actualizaciones automáticas.'
 ]
@@ -134,7 +134,7 @@ const faqResponses: Record<string, Record<string, { question: string; answer: st
   'contacto': {
     'soporte': {
       question: '¿Cómo contacto a soporte?',
-      answer: '📞 Contactar soporte\n\nSi necesitas ayuda adicional:\n\n📧 Email: soporte@oportunidadescoosanjer.com\n📱 WhatsApp: +502 1234-5678\n⏰ Horario: Lun-Vie 8:00-17:00\n\nTambién puedes usar el formulario de contacto en la sección "Ayuda".'
+      answer: '📞 Contactar soporte\n\nSi necesitas ayuda adicional:\n\n📧 Email: soporte@tuempresa.com\n📱 WhatsApp: +502 1234-5678\n⏰ Horario: Lun-Vie 8:00-17:00\n\nTambién puedes usar el formulario de contacto en la sección "Ayuda".'
     },
     'reclutador': {
       question: '¿Puedo contactar al reclutador?',
@@ -240,7 +240,7 @@ export default function Chatbot({ userName }: ChatbotProps) {
   useEffect(() => {
     const greetingName = userName ? userName.split(' ')[0] : ''
     const personalizedWelcome = greetingName 
-      ? [`¡Hola ${greetingName}! 👋 Soy el asistente virtual de Oportunidades COOSANJER R.L..`, ...welcomeMessages.slice(1)]
+      ? [`¡Hola ${greetingName}! 👋 Soy el asistente virtual del Portal de Empleos.`, ...welcomeMessages.slice(1)]
       : welcomeMessages
 
     const initialMessages: ChatMessage[] = personalizedWelcome.map((content, index) => ({

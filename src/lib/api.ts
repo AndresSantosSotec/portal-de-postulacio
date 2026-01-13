@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // URL base del backend desde variables de entorno
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://oportunidadescoosanjer.com.gt';
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 export const API_BASE_URL = import.meta.env.VITE_API_URL || `${BACKEND_URL}/api/v1`;
 
 // Configuración base de Axios
@@ -17,7 +17,7 @@ const api = axios.create({
 /**
  * Convierte una ruta relativa del storage a URL absoluta
  * @param path - Ruta relativa como "/storage/gallery/image.jpg"
- * @returns URL absoluta como "https://oportunidadescoosanjer.com.gt/storage/gallery/image.jpg"
+ * @returns URL absoluta del backend
  */
 export const getStorageUrl = (path: string | null | undefined): string | null => {
   if (!path) return null;

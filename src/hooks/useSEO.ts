@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-const BASE_URL = 'https://www.oportunidadescoosanjer.com.gt'
+const BASE_URL = window.location.origin
 
 interface SEOData {
   title?: string
@@ -13,8 +13,8 @@ interface SEOData {
 export function useSEO(data: SEOData) {
   useEffect(() => {
     const {
-      title = 'Oportunidades COOSANJER R.L. - Portal de Empleos | Encuentra tu Próximo Trabajo',
-      description = 'Portal de empleos de Coosanjer. Encuentra las mejores oportunidades laborales en Guatemala. Postula fácilmente y únete a nuestro equipo.',
+      title = 'Portal de Empleos | Encuentra tu Próximo Trabajo',
+      description = 'Portal de empleos. Encuentra las mejores oportunidades laborales. Postula fácilmente y únete a nuestro equipo.',
       image = `${BASE_URL}/og-image.jpg`,
       url = BASE_URL,
       type = 'website'
@@ -51,10 +51,10 @@ export function useSEO(data: SEOData) {
 
     // Cleanup: restaurar valores por defecto al desmontar
     return () => {
-      document.title = 'Oportunidades COOSANJER R.L. - Portal de Empleos | Encuentra tu Próximo Trabajo'
-      updateMetaTag('description', 'Portal de empleos de COOSANJER R.L. Encuentra las mejores oportunidades laborales en Guatemala. Postula fácilmente y únete a nuestro equipo.', false)
-      updateMetaTag('og:title', 'Oportunidades COOSANJER R.L. - Portal de Empleos')
-      updateMetaTag('og:description', 'Encuentra las mejores oportunidades laborales en Guatemala. Postula fácilmente y únete a nuestro equipo.')
+      document.title = 'Portal de Empleos | Encuentra tu Próximo Trabajo'
+      updateMetaTag('description', 'Portal de empleos. Encuentra las mejores oportunidades laborales. Postula fácilmente y únete a nuestro equipo.', false)
+      updateMetaTag('og:title', 'Portal de Empleos')
+      updateMetaTag('og:description', 'Encuentra las mejores oportunidades laborales. Postula fácilmente y únete a nuestro equipo.')
       updateMetaTag('og:url', BASE_URL)
       updateMetaTag('og:type', 'website')
     }
