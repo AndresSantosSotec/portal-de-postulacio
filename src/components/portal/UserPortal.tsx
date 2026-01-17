@@ -15,7 +15,9 @@ import {
   ChartBar,
   MapPin,
   IdentificationCard,
-  Brain
+  Brain,
+  GraduationCap,
+  BookOpen
 } from '@phosphor-icons/react'
 import ProfileHeader from './ProfileHeader'
 import ProfileCurriculum from './ProfileCurriculum'
@@ -25,6 +27,8 @@ import NotificationsPanel from './NotificationsPanel'
 import StatusSimulator from './StatusSimulator'
 import EvaluationsPanel from './EvaluationsPanel'
 import PsychometricTestsPanel from './PsychometricTestsPanel'
+import CapacitacionesPanel from './CapacitacionesPanel'
+import MisCursosPanel from './MisCursosPanel'
 import JobAlerts from '@/components/profile/JobAlerts'
 import { useNotificationService } from '@/hooks/use-notification-service'
 import { applicationService, type Favorite } from '@/lib/applicationService'
@@ -102,11 +106,11 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
         </Card>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <div className="border-b border-border bg-card/50 backdrop-blur-sm rounded-lg p-2 sticky top-20 z-40 shadow-sm overflow-x-auto">
-            <TabsList className="inline-flex lg:grid w-full lg:grid-cols-7 h-auto gap-2 bg-transparent min-w-max lg:min-w-0">
+          <div className="border-b border-border bg-card/50 backdrop-blur-sm rounded-lg p-2 sticky top-20 z-40 shadow-sm">
+            <TabsList className="flex flex-wrap w-full h-auto gap-2 bg-transparent">
               <TabsTrigger 
                 value="curriculum" 
-                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
+                className="flex-1 min-w-[100px] sm:min-w-[120px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
                 <FileText size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Mi Currículum</span>
@@ -114,7 +118,7 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
               </TabsTrigger>
               <TabsTrigger 
                 value="personal-data" 
-                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
+                className="flex-1 min-w-[100px] sm:min-w-[120px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
                 <IdentificationCard size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Datos Personales</span>
@@ -122,18 +126,18 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
               </TabsTrigger>
               <TabsTrigger 
                 value="applications" 
-                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
+                className="flex-1 min-w-[100px] sm:min-w-[140px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
-                <PaperPlaneRight size={18} weight="duotone" />
+                <PaperPlaneRight size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Mis Postulaciones</span>
                 <span className="sm:hidden">Postulaciones</span>
                 {userApplications.length > 0 && (
-                  <Badge variant="secondary" className="ml-1">{userApplications.length}</Badge>
+                  <Badge variant="secondary" className="ml-1 text-[10px] sm:text-xs px-1 h-4 sm:h-5">{userApplications.length}</Badge>
                 )}
               </TabsTrigger>
               <TabsTrigger 
                 value="notifications" 
-                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap relative"
+                className="flex-1 min-w-[100px] sm:min-w-[130px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap relative"
               >
                 <Bell size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Notificaciones</span>
@@ -144,30 +148,46 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
               </TabsTrigger>
               <TabsTrigger 
                 value="favorites" 
-                className="gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
+                className="flex-1 min-w-[100px] sm:min-w-[110px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
                 <Heart size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Favoritos</span>
                 <span className="sm:hidden">Favoritos</span>
                 {backendFavorites.length > 0 && (
-                  <Badge variant="secondary" className="ml-1">{backendFavorites.length}</Badge>
+                  <Badge variant="secondary" className="ml-1 text-[10px] sm:text-xs px-1 h-4 sm:h-5">{backendFavorites.length}</Badge>
                 )}
               </TabsTrigger>
               <TabsTrigger 
                 value="alerts" 
-                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
+                className="flex-1 min-w-[120px] sm:min-w-[150px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
-                <Bell size={18} weight="duotone" />
+                <Bell size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Vacantes Sugeridas</span>
                 <span className="sm:hidden">Sugeridas</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="tests" 
-                className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-3"
+                className="flex-1 min-w-[80px] sm:min-w-[100px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
               >
-                <ChartBar size={18} weight="duotone" />
+                <ChartBar size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
                 <span className="hidden sm:inline">Tests</span>
                 <span className="sm:hidden">Tests</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="Capacitaciones" 
+                className="flex-1 min-w-[100px] sm:min-w-[140px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
+              >
+                <BookOpen size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
+                <span className="hidden sm:inline">Capacitaciones</span>
+                <span className="sm:hidden">Capacit.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="mis-cursos" 
+                className="flex-1 min-w-[100px] sm:min-w-[120px] md:flex-initial gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
+              >
+                <GraduationCap size={16} className="sm:w-[18px] sm:h-[18px]" weight="duotone" />
+                <span className="hidden sm:inline">Mis Cursos</span>
+                <span className="sm:hidden">Cursos</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -315,6 +335,26 @@ export default function UserPortal({ user, onUpdateUser, onViewJob }: UserPortal
               
               {/* Evaluaciones/Entrevistas */}
               <EvaluationsPanel />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="Capacitaciones" className="mt-0 space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CapacitacionesPanel />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="mis-cursos" className="mt-0 space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {typeof MisCursosPanel === "function" && (MisCursosPanel() ?? null)}
             </motion.div>
           </TabsContent>
         </Tabs>
