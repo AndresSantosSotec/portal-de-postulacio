@@ -182,14 +182,14 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
     const total = 7
     
     if (user.avatar) completed++
-    if (user.name) completed++
-    if (user.profile?.phone) completed++
-    if (user.profile?.location) completed++
-    if (user.profile?.bio) completed++
+    if (basicData.name) completed++
+    if (basicData.phone) completed++
+    if (basicData.location) completed++
+    if (basicData.bio) completed++
     if (experiences.length > 0) completed++
     if (educations.length > 0) completed++
     
-    return Math.round((completed / total) * 100)
+    return Math.min(100, Math.round((completed / total) * 100))
   }
 
   const handlePhotoUpdate = async (photoDataUrl: string) => {
@@ -771,10 +771,10 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
                           <ul className="space-y-1">
                             {[
                               { label: 'Foto de perfil', done: !!user.avatar },
-                              { label: 'Nombre completo', done: !!user.name },
-                              { label: 'Teléfono', done: !!user.profile?.phone },
-                              { label: 'Ubicación', done: !!user.profile?.location },
-                              { label: 'Descripción / Bio', done: !!user.profile?.bio },
+                              { label: 'Nombre completo', done: !!basicData.name },
+                              { label: 'Teléfono', done: !!basicData.phone },
+                              { label: 'Ubicación', done: !!basicData.location },
+                              { label: 'Descripción / Bio', done: !!basicData.bio },
                               { label: 'Al menos una experiencia laboral', done: experiences.length > 0 },
                               { label: 'Al menos un estudio o educación', done: educations.length > 0 },
                             ]
