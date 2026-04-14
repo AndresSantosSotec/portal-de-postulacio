@@ -765,6 +765,31 @@ export default function ProfileCurriculum({ user, onUpdateUser }: ProfileCurricu
                         </Badge>
                       </div>
                       <Progress value={completeness} className="h-2" />
+                      {completeness < 100 && (
+                        <div className="mt-3 space-y-1.5">
+                          <p className="text-xs font-medium text-muted-foreground">Para llegar al 100% completa:</p>
+                          <ul className="space-y-1">
+                            {[
+                              { label: 'Foto de perfil', done: !!user.avatar },
+                              { label: 'Nombre completo', done: !!user.name },
+                              { label: 'Teléfono', done: !!user.profile?.phone },
+                              { label: 'Ubicación', done: !!user.profile?.location },
+                              { label: 'Descripción / Bio', done: !!user.profile?.bio },
+                              { label: 'Al menos una experiencia laboral', done: experiences.length > 0 },
+                              { label: 'Al menos un estudio o educación', done: educations.length > 0 },
+                            ]
+                              .filter(item => !item.done)
+                              .map(item => (
+                                <li key={item.label} className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+                                  <span className="shrink-0 h-3.5 w-3.5 rounded-full border border-amber-500 flex items-center justify-center">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                  </span>
+                                  {item.label}
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
