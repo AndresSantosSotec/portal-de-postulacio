@@ -195,9 +195,6 @@ export default function MisCursosPanel() {
       toast.error('Error al abrir el curso')
     }
   }
-    // TODO: Implementar navegación al curso
-    toast.info(`Continuar con: ${curso.titulo}`)
-  }
 
   const handleDownloadCertificate = (curso: Curso) => {
     if (curso.certificado_url) {
