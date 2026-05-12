@@ -61,7 +61,7 @@ export interface CVData {
 export interface Application {
   id: number
   oferta_id: number
-  estado: 'Postulado' | 'CV Visto' | 'En Proceso' | 'Finalista' | 'Rechazado' | 'Contratado'
+  estado: 'Postulado' | 'CV Visto' | 'En Proceso' | 'Pruebas Enviadas' | 'Finalista' | 'Rechazado' | 'Contratado'
   fecha_postulacion: string
   observaciones?: string
   oferta?: {

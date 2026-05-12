@@ -47,7 +47,7 @@ export default function StatusSimulator({ userId }: StatusSimulatorProps) {
     }
 
     const randomApp = userApplications[Math.floor(Math.random() * userApplications.length)]
-    const statuses: ApplicationStatus[] = ['postulado', 'cv-visto', 'en-proceso', 'finalista', 'proceso-finalizado']
+    const statuses: ApplicationStatus[] = ['postulado', 'cv-visto', 'en-proceso', 'pruebas-enviadas', 'finalista', 'proceso-finalizado']
     const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
 
     setApplications(current => 
@@ -117,6 +117,7 @@ export default function StatusSimulator({ userId }: StatusSimulatorProps) {
                 <SelectItem value="postulado">{statusLabels['postulado']}</SelectItem>
                 <SelectItem value="cv-visto">{statusLabels['cv-visto']}</SelectItem>
                 <SelectItem value="en-proceso">{statusLabels['en-proceso']}</SelectItem>
+                <SelectItem value="pruebas-enviadas">{statusLabels['pruebas-enviadas']}</SelectItem>
                 <SelectItem value="finalista">{statusLabels['finalista']}</SelectItem>
                 <SelectItem value="proceso-finalizado">{statusLabels['proceso-finalizado']}</SelectItem>
               </SelectContent>

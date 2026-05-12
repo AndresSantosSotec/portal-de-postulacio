@@ -76,6 +76,7 @@ export function generateStatusHistory(
     'postulado',
     'cv-visto',
     'en-proceso',
+    'pruebas-enviadas',
     'finalista',
     'proceso-finalizado'
   ]

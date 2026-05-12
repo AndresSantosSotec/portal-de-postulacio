@@ -42,6 +42,7 @@ const statusColors: Record<ApplicationStatus, { bg: string; text: string; border
   'postulado': { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/30' },
   'cv-visto': { bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-border' },
   'en-proceso': { bg: 'bg-secondary/10', text: 'text-secondary', border: 'border-secondary/30' },
+  'pruebas-enviadas': { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
   'finalista': { bg: 'bg-warning/10', text: 'text-warning-foreground', border: 'border-warning/30' },
   'proceso-finalizado': { bg: 'bg-muted/50', text: 'text-muted-foreground', border: 'border-border' }
 }
@@ -76,6 +77,7 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
       'Postulado': 'postulado',
       'CV Visto': 'cv-visto',
       'En Proceso': 'en-proceso',
+      'Pruebas Enviadas': 'pruebas-enviadas',
       'Finalista': 'finalista',
       'Rechazado': 'proceso-finalizado',
       'Contratado': 'proceso-finalizado'
@@ -103,6 +105,7 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
     postulado: applications.filter(app => app.estado === 'Postulado').length,
     'cv-visto': applications.filter(app => app.estado === 'CV Visto').length,
     'en-proceso': applications.filter(app => app.estado === 'En Proceso').length,
+    'pruebas-enviadas': applications.filter(app => app.estado === 'Pruebas Enviadas').length,
     finalista: applications.filter(app => app.estado === 'Finalista').length,
     'proceso-finalizado': applications.filter(app => app.estado === 'Rechazado' || app.estado === 'Contratado').length
   }
@@ -112,6 +115,7 @@ export default function ProfileApplications({ user, onViewJob }: ProfileApplicat
     { key: 'postulado', label: 'Postulado', icon: <CheckCircle size={16} weight="duotone" /> },
     { key: 'cv-visto', label: 'CV Visto', icon: <Eye size={16} weight="duotone" /> },
     { key: 'en-proceso', label: 'En Proceso' },
+    { key: 'pruebas-enviadas', label: 'Pruebas Enviadas' },
     { key: 'finalista', label: 'Finalista' },
     { key: 'proceso-finalizado', label: 'Finalizadas' }
   ]

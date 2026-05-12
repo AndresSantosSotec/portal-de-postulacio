@@ -114,13 +114,14 @@ export type ApplicationStatus =
   | 'postulado'
   | 'cv-visto'
   | 'en-proceso'
+  | 'pruebas-enviadas'
   | 'finalista'
   | 'proceso-finalizado'
 
 // Tipo para datos del backend
 export type BackendApplication = {
   id: number
-  estado: 'Postulado' | 'CV Visto' | 'En Proceso' | 'Finalista' | 'Rechazado' | 'Contratado'
+  estado: 'Postulado' | 'CV Visto' | 'En Proceso' | 'Pruebas Enviadas' | 'Finalista' | 'Rechazado' | 'Contratado'
   fecha_postulacion: string
   observaciones?: string
   oferta: {
@@ -199,6 +200,7 @@ export const statusLabels: Record<ApplicationStatus, string> = {
   'postulado': 'Postulado',
   'cv-visto': 'CV Visto',
   'en-proceso': 'En Proceso',
+  'pruebas-enviadas': 'Pruebas Enviadas',
   'finalista': 'Finalista',
   'proceso-finalizado': 'Proceso Finalizado'
 }

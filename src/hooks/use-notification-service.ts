@@ -41,6 +41,10 @@ export function useNotificationService(userId: string | null) {
             title: '¡Estás en proceso!',
             message: `Tu candidatura para ${job?.title || 'el empleo'} en ${job?.company || 'la empresa'} está siendo evaluada activamente.`
           },
+          'pruebas-enviadas': {
+            title: '¡Tienes pruebas pendientes!',
+            message: `Ya te enviaron las pruebas para ${job?.title || 'el empleo'} en ${job?.company || 'la empresa'}. Revisa tu correo y el portal para completarlas.`
+          },
           'finalista': {
             title: '🎉 ¡Eres finalista!',
             message: `¡Felicitaciones! Has sido seleccionado como finalista para ${job?.title || 'el empleo'} en ${job?.company || 'la empresa'}.`
@@ -70,6 +74,7 @@ export function useNotificationService(userId: string | null) {
           'postulado': { icon: '✅', variant: 'default' as const },
           'cv-visto': { icon: '👁️', variant: 'default' as const },
           'en-proceso': { icon: '⏳', variant: 'default' as const },
+          'pruebas-enviadas': { icon: '🧪', variant: 'default' as const },
           'finalista': { icon: '🎉', variant: 'default' as const },
           'proceso-finalizado': { icon: '✓', variant: 'default' as const }
         }

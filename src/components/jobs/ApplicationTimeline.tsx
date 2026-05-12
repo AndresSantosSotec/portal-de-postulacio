@@ -10,6 +10,7 @@ const statusSteps: Array<{ key: ApplicationStatus; label: string; icon: typeof C
   { key: 'postulado', label: 'Postulado', icon: CheckCircle },
   { key: 'cv-visto', label: 'CV Visto', icon: Eye },
   { key: 'en-proceso', label: 'En Proceso', icon: Clock },
+  { key: 'pruebas-enviadas', label: 'Pruebas Enviadas', icon: Flask },
   { key: 'finalista', label: 'Finalista', icon: UserFocus },
   { key: 'proceso-finalizado', label: 'Proceso Finalizado', icon: Sparkle }
 ]
